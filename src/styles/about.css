@@ -1,0 +1,124 @@
+/* ===== About Screen ===== */
+.about-screen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 27svh;
+  padding: 3svh 0 0 0;
+  min-height: 70svh;
+  position: relative;
+}
+
+.about-screen-head {
+  width: 97%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 0 0 3%;
+
+}
+
+.about-card {
+  max-width: 560px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.about-card h1 {
+  font-size: 36px;
+  margin: 0;
+  text-align: center;
+}
+
+.about-desc {
+  font-size: 18px;
+  line-height: 160%;
+  color: var(--text);
+}
+
+.about-desc strong {
+  color: var(--text-h);
+}
+
+.about-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+}
+
+.about-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.about-label {
+  font-weight: 500;
+  color: var(--text-h);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.about-value {
+  color: var(--text);
+  word-break: break-word;
+}
+
+.about-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  transition: all 0.25s ease;
+}
+
+.about-link:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.about-link img {
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .about-card h1 {
+    font-size: 36px;
+  }
+  .about-label {
+    min-width: 100px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .about-card {
+    max-width: 90%;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .about-screen{
+    gap: 17svh;
+  }
+}

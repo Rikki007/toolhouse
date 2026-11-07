@@ -1,0 +1,197 @@
+/* ===== Tutorial Screen ===== */
+.tutorial-screen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* Отступ меньше, чем у about/share: аккордеон из 8 пунктов иначе не влезает в вьюпорт */
+  gap: 4svh;
+  padding: 3svh 0 6svh 0;
+  min-height: 70svh;
+  position: relative;
+}
+
+.tutorial-screen-head {
+  width: 97%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 0 0 3%;
+}
+
+.tutorial-card {
+  max-width: 560px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tutorial-card h1 {
+  font-size: 36px;
+  margin: 0;
+  text-align: center;
+}
+
+/* ===== Accordion ===== */
+.tutorial-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tutorial-accordion-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--code-bg);
+  overflow: hidden;
+  transition: border-color 0.25s ease;
+}
+
+.tutorial-accordion-item:hover {
+  border-color: var(--accent-border);
+}
+
+.tutorial-accordion-item-open {
+  border-color: var(--accent-border);
+}
+
+/* Заголовок-кнопка */
+.tutorial-accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--text-h);
+  font-weight: 500;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+@media (max-width: 1024px) {
+  .tutorial-accordion-header {
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+}
+
+.tutorial-accordion-header:hover {
+  color: var(--accent);
+}
+
+.tutorial-accordion-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Индикатор: плюс превращается в крестик на раскрытом пункте */
+.tutorial-accordion-marker {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.tutorial-accordion-marker::before,
+.tutorial-accordion-marker::after {
+  content: "";
+  position: absolute;
+  background: var(--accent);
+  transition: transform 0.25s ease;
+}
+
+.tutorial-accordion-marker::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.tutorial-accordion-marker::after {
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.tutorial-accordion-item-open .tutorial-accordion-marker::after {
+  transform: translateX(-50%) rotate(90deg);
+}
+
+/* Панель: анимация высоты через grid-template-rows (0fr -> 1fr) */
+.tutorial-accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+}
+
+.tutorial-accordion-item-open .tutorial-accordion-panel {
+  grid-template-rows: 1fr;
+}
+
+.tutorial-accordion-panel-inner {
+  overflow: hidden;
+  /* Скрытый контент недоступен скринридеру и таб-порядку */
+  visibility: hidden;
+  transition: visibility 0s linear 0.28s;
+}
+
+.tutorial-accordion-item-open .tutorial-accordion-panel-inner {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* Иконка раздела поверх текста описания */
+.tutorial-accordion-icon {
+  display: flex;
+  justify-content: center;
+  padding: 4px 20px 14px;
+}
+
+.tutorial-accordion-icon img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.tutorial-accordion-text {
+  padding: 0 20px 18px;
+  font-size: 16px;
+  line-height: 160%;
+  color: var(--text);
+  text-align: left;
+}
+
+.tutorial-accordion-text-placeholder {
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .tutorial-card h1 {
+    font-size: 36px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .tutorial-card {
+    max-width: 90%;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .tutorial-screen {
+    gap: 3svh;
+  }
+}

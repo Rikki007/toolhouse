@@ -1,0 +1,143 @@
+/* ===== Share Screen ===== */
+.share-screen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 27svh;
+  padding: 3svh 0 0 0;
+  min-height: 70svh;
+  position: relative;
+}
+
+.share-screen-head {
+  width: 97%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 0 0 3%;
+}
+
+.share-card {
+  max-width: 560px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.share-card h1 {
+  font-size: 36px;
+  margin: 0;
+  text-align: center;
+}
+
+.share-desc {
+  font-size: 18px;
+  line-height: 160%;
+  color: var(--text);
+}
+
+.share-desc strong {
+  color: var(--text-h);
+}
+
+/* Блок с наградой */
+.share-reward {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--code-bg);
+}
+
+.share-reward-label {
+  font-weight: 500;
+  color: var(--text-h);
+  font-size: 16px;
+}
+
+.share-reward-value {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 22px;
+}
+
+/* Кнопки действий — круглые иконки в ряд */
+.share-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 24px;
+}
+
+.share-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.share-action-btn:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.share-action-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.share-action-icon {
+  width: 100%;
+  object-fit: contain;
+}
+
+/* Сообщение результата */
+.share-result {
+  font-size: 15px;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 12px 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  background: var(--accent-bg);
+  text-align: center;
+}
+
+/* Пока сообщения нет — блок невидим */
+.share-result:empty {
+  display: none;
+}
+
+/* Адаптив */
+@media (max-width: 1024px) {
+  .share-card h1 {
+    font-size: 36px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .share-card {
+    max-width: 90%;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .share-screen {
+    gap: 17svh;
+  }
+}

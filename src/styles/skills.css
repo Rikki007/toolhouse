@@ -1,0 +1,892 @@
+/* ===== Player Level Progress ===== */
+
+.player-level-bar {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+}
+
+.player-level-bar-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.player-level-icon {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.player-level-text {
+  font-size: 14px;
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.player-level-number {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Шкала прогресса */
+.player-level-track {
+  width: 100%;
+  height: 12px;
+  background: var(--bg);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.player-level-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-border));
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.player-level-bar-bottom {
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+}
+
+/* ===== Department Cards ===== */
+
+.department-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: default;
+  position: relative;
+  animation: department-float 18s ease-in-out infinite;
+}
+
+/* Разные задержки для разных отделов — каждая иконка колышется в своём ритме */
+.department-card:nth-child(1) {
+  animation-duration: 16.8s;
+  animation-delay: 0s;
+}
+.department-card:nth-child(2) {
+  animation-duration: 19.2s;
+  animation-delay: 2.4s;
+}
+.department-card:nth-child(3) {
+  animation-duration: 15.6s;
+  animation-delay: 4.8s;
+}
+.department-card:nth-child(4) {
+  animation-duration: 20.4s;
+  animation-delay: 1.2s;
+}
+.department-card:nth-child(5) {
+  animation-duration: 17.4s;
+  animation-delay: 0.6s;
+}
+.department-card:nth-child(6) {
+  animation-duration: 18.6s;
+  animation-delay: 6s;
+}
+.department-card:nth-child(7) {
+  animation-duration: 16.2s;
+  animation-delay: 0.9s;
+}
+
+@keyframes department-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(3px, -5px);
+  }
+  50% {
+    transform: translate(-2px, -8px);
+  }
+  75% {
+    transform: translate(-4px, -3px);
+  }
+}
+
+.department-card {
+  cursor: pointer;
+}
+
+.department-card:hover .department-icon,
+.department-card:hover .department-icon-fallback {
+  transform: scale(1.12);
+  box-shadow: 0 0 20px var(--accent-border);
+}
+
+/* Контейнер иконки + бейдж */
+.department-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.department-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 50%;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.department-icon-fallback {
+  display: none;
+  width: 72px;
+  height: 72px;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Индикатор доступных навыков */
+.department-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+
+.department-indicator-available {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: indicator-pulse 2s ease-in-out infinite;
+}
+
+@keyframes indicator-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+}
+
+.department-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-h);
+  text-align: center;
+}
+
+/* ===== Skills Tree (кружки с коннекторами) ===== */
+
+.skill-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  max-width: 260px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+
+/* Контейнер модалки (прогресс + сетка отделов) */
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Сетка отделов */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px 8px;
+  padding: 8px 0;
+  justify-items: center;
+  align-items: center;
+}
+
+/* Последний отдел (7-й) центрируется во второй колонке */
+.skills-grid .department-card:last-child {
+  grid-column: 2;
+}
+
+/* Контейнер контента модалки */
+.skills-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 200px;
+}
+
+.skill-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 84px;
+  position: relative;
+  z-index: 2;
+}
+
+.skill-row-branch {
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+/* Вертикальный коннектор между строками */
+.skill-tree-connector {
+  width: 2px;
+  height: 24px;
+  background: var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+/* Развилка/схождение (SVG) */
+.skill-tree-fork {
+  width: 100%;
+  height: 44px;
+  position: relative;
+  z-index: 1;
+}
+
+.skill-tree-fork svg {
+  width: 100%;
+  height: 100%;
+}
+
+.skill-tree-fork-line {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Круглый узел скилла */
+.skill-node {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--code-bg);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: default;
+  animation: skill-float 9s ease-in-out infinite;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.skill-node:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 16px var(--accent-border);
+}
+
+.skill-node-image {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Статусы */
+.skill-node-purchased {
+  border-color: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+.skill-node-available {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(192, 132, 252, 0.2);
+  filter: brightness(0.8);
+  cursor: pointer;
+}
+
+.skill-node-available:hover {
+  filter: brightness(1);
+  transform: scale(1.12);
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
+}
+
+.skill-node-locked {
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+
+/* Затемняем только иконку — иначе filter на узеле скроет и замок-индикатор */
+.skill-node-locked .skill-node-image {
+  filter: brightness(0.35) saturate(0.3);
+}
+
+.skill-node-locked:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Индикатор доступности (зелёный пульсирующий) */
+.skill-node-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: indicator-pulse 2s ease-in-out infinite;
+}
+
+/* Замок на заблокированном */
+.skill-node-lock {
+  position: absolute;
+  font-size: 18px;
+  filter: grayscale(0.5);
+}
+
+/* Клик по закрытому узлу: короткая вибрация */
+.skill-node-denied {
+  animation: skill-node-denied 0.36s ease;
+}
+
+@keyframes skill-node-denied {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Анимация покачивания */
+@keyframes skill-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(3px, -5px);
+  }
+  50% {
+    transform: translate(-2px, -8px);
+  }
+  75% {
+    transform: translate(-4px, -3px);
+  }
+}
+
+/* ===== Skill Detail Card (карточка отдела с деревом) ===== */
+
+.skill-detail-card {
+  width: 100%;
+  padding: 8px 0;
+}
+
+.skill-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.skill-back-btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.skill-back-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent-border);
+}
+
+.skill-detail-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.skill-detail-title {
+  font-size: 18px;
+  margin: 0;
+  color: var(--text-h);
+}
+
+/* ===== Skill Modal (покупка уровня / выбор ветки) ===== */
+
+.skill-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.skill-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.skill-modal-content {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+
+.skill-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.skill-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-h);
+}
+
+.skill-modal-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.skill-modal-close:hover {
+  color: var(--accent);
+}
+
+.skill-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skill-modal-image {
+  width: 40%;
+  margin: auto;
+  object-fit: contain;
+  border-radius: 50%;
+  background: var(--code-bg);
+}
+
+.skill-modal-description {
+  font-size: 13px;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.skill-modal-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skill-modal-stats > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.skill-modal-label {
+  color: var(--text);
+}
+
+.skill-modal-value {
+  color: var(--accent);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.skill-modal-coin {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.skill-modal-buy-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.skill-modal-buy-btn:hover {
+  background: var(--accent-border);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.skill-modal-buy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ===== Gate Notice: незакрытая развилка блокирует новые улучшения ===== */
+
+.skill-gate-notice {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-h);
+  text-align: left;
+}
+
+/* ===== Skill Analysis Modal: окно анализа закрытых разветвлений ===== */
+
+.skill-analysis-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1100;
+}
+
+.skill-analysis-modal {
+  background: var(--bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  animation: analysis-pop 0.35s ease;
+}
+
+.skill-analysis-modal-final {
+  border-color: var(--accent);
+}
+
+@keyframes analysis-pop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.skill-analysis-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.skill-analysis-title {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-h);
+}
+
+.skill-analysis-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.skill-analysis-close:hover {
+  color: var(--accent);
+}
+
+.skill-analysis-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.skill-analysis-intro {
+  font-size: 13px;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.skill-analysis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-analysis-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--code-bg);
+}
+
+/* Мягкая (legal/liberal) и жёсткая (dark/totalitarian) ветки */
+.skill-analysis-item-light {
+  border-left: 3px solid #38bdf8;
+}
+
+.skill-analysis-item-hard {
+  border-left: 3px solid #ef4444;
+}
+
+.skill-analysis-item-image {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+
+.skill-analysis-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.skill-analysis-item-dept {
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: var(--text);
+}
+
+.skill-analysis-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.skill-analysis-item-description {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.skill-analysis-item-factor {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.skill-analysis-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--accent-bg);
+}
+
+.skill-analysis-counters {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.skill-analysis-counter-light {
+  color: #38bdf8;
+}
+
+.skill-analysis-counter-hard {
+  color: #ef4444;
+}
+
+.skill-analysis-factor {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.skill-analysis-verdict {
+  font-size: 13px;
+  color: var(--text-h);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.skill-analysis-finale {
+  font-size: 13px;
+  color: var(--text-h);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.skill-analysis-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  justify-content: center;
+}
+
+.skill-analysis-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.skill-analysis-btn-primary {
+  color: var(--bg);
+  background: var(--accent);
+}
+
+.skill-analysis-btn-primary:hover {
+  background: var(--accent-border);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.skill-analysis-btn-restart {
+  color: #ff6b6b;
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+}
+
+.skill-analysis-btn-restart:hover {
+  background: rgba(255, 107, 107, 0.12);
+  transform: translateY(-1px);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .skills-grid {
+    gap: 10px 4px;
+  }
+
+  .skill-node {
+    width: 56px;
+    height: 56px;
+  }
+
+  .skill-node-image {
+    width: 44px;
+    height: 44px;
+  }
+
+  .skill-tree {
+    max-width: 220px;
+  }
+
+  .skill-analysis-modal {
+    max-width: 100%;
+    max-height: 90vh;
+  }
+
+  .skill-analysis-item-image {
+    width: 36px;
+    height: 36px;
+  }
+
+  .skill-analysis-actions {
+    flex-direction: column;
+  }
+}

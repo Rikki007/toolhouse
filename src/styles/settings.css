@@ -1,0 +1,98 @@
+/* ===== Settings Screen ===== */
+.settings-screen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 27svh;
+  padding: 3svh 0 0 0;
+  min-height: 70svh;
+  position: relative;
+}
+
+.settings-screen-head {
+  width: 97%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 0 0 3%;
+
+}
+
+.settings-card {
+  max-width: 480px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-card h1 {
+  font-size: 48px;
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--code-bg);
+}
+
+.settings-label {
+  font-weight: 500;
+  color: var(--text-h);
+  font-size: 16px;
+}
+
+.settings-select {
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 8px 24px 8px 34px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+  min-width: 140px;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.settings-select:hover,
+.settings-select:focus {
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+.settings-select option {
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+@media (max-width: 1024px) {
+  .settings-card h1 {
+    font-size: 36px;
+  }
+  .settings-row {
+    padding: 12px 14px;
+  }
+  .settings-select {
+    min-width: 120px;
+  }
+}
+
+@media screen and (max-width: 530px) {
+  .settings-card {
+    max-width: 90%;
+  }
+}
