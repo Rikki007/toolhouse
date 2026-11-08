@@ -3,6 +3,7 @@ import { initPixiBackground } from '../effects/pixiBackground.ts'
 import { createBackgroundContainer } from '../utils/domFactory.ts'
 import { menuItems, type MenuItem } from '../data/menu.ts'
 import { playSound } from '../state/audioManager.ts'
+import mainMenuBack from '../assets/backgrounds/mainMenuBack.png'
 
 export type MenuAction = MenuItem['id']
 
@@ -39,7 +40,7 @@ export async function renderMenu(container: HTMLElement, handlers: MenuHandlers 
 
   const { cleanup: cleanupBg, app } = await initPixiBackground({
     container: bgContainer,
-    backgroundUrl: 'src/assets/backgrounds/mainMenuBack.png',
+    backgroundUrl: mainMenuBack,
     resizeMode: 'stretch',
   })
 

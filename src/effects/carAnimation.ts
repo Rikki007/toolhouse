@@ -16,16 +16,30 @@ interface CarAnimationConfig {
 
 const baseSpeed = 40
 
+// Статические импорты картинок — Vite хэширует их в dist/
+// (в dev работает и как строка, но в проде src/ недоступен)
+import carBack1 from '../assets/transportBack/car1.png'
+import carBack2 from '../assets/transportBack/car2.png'
+import carBack3 from '../assets/transportBack/car3.png'
+import carBack4 from '../assets/transportBack/car4.png'
+import carBack5 from '../assets/transportBack/car5.png'
+import carBack6 from '../assets/transportBack/car6.png'
+
+import carFront1 from '../assets/transportFront/car1.png'
+import carFront2 from '../assets/transportFront/car2.png'
+import carFront3 from '../assets/transportFront/car3.png'
+import carFront4 from '../assets/transportFront/car4.png'
+import carFront5 from '../assets/transportFront/car5.png'
+import carFront6 from '../assets/transportFront/car6.png'
+import carFront7 from '../assets/transportFront/car7.png'
+import carFront8 from '../assets/transportFront/car8.png'
+
+const BACK_CAR_FILES: string[] = [carBack1, carBack2, carBack3, carBack4, carBack5, carBack6]
+const FRONT_CAR_FILES: string[] = [carFront1, carFront2, carFront3, carFront4, carFront5, carFront6, carFront7, carFront8]
+
 export function startCarAnimationBack(app: Application): () => void {
   return startCarAnimation(app, {
-    carFiles: [
-      'src/assets/transportBack/car1.png',
-      'src/assets/transportBack/car2.png',
-      'src/assets/transportBack/car3.png',
-      'src/assets/transportBack/car4.png',
-      'src/assets/transportBack/car5.png',
-      'src/assets/transportBack/car6.png',
-    ],
+    carFiles: BACK_CAR_FILES,
     getStartPoint: (winW, winH) => ({ x: winW, y: winH * 0.97 }),
     getTargetAngle: (winW, winH) => Math.atan2(-winH / 2.26, -winW),
     isOutOfBounds: (car, _currentWinW, currentWinH) =>
@@ -37,16 +51,7 @@ export function startCarAnimationBack(app: Application): () => void {
 
 export function startCarAnimationFront(app: Application): () => void {
   return startCarAnimation(app, {
-    carFiles: [
-      'src/assets/transportFront/car1.png',
-      'src/assets/transportFront/car2.png',
-      'src/assets/transportFront/car3.png',
-      'src/assets/transportFront/car4.png',
-      'src/assets/transportFront/car5.png',
-      'src/assets/transportFront/car6.png',
-      'src/assets/transportFront/car7.png',
-      'src/assets/transportFront/car8.png',
-    ],
+    carFiles: FRONT_CAR_FILES,
     getStartPoint: (_winW, winH) => ({ x: 0, y: winH / 1.77 }),
     getTargetAngle: (winW, winH) => {
       const targetX = winW * 1.09
