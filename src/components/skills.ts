@@ -728,17 +728,10 @@ function renderPlayerLevelBar(): {
 
   bar.appendChild(track)
 
-  // Текст под шкалой
-  const bottomRow = document.createElement('div')
-  bottomRow.className = 'player-level-bar-bottom'
-  bar.appendChild(bottomRow)
-
   const update = (state: AppState): void => {
     levelNum.textContent = String(levelFromXp(state.xpMoney))
     const progress = nextLevelProgress(state.xpMoney)
     fill.style.width = `${Math.min(progress.progress * 100, 100)}%`
-    const remaining = Math.max(0, progress.next - state.xpMoney)
-    bottomRow.textContent = `Осталось: ${remaining.toLocaleString('ru-RU')} xp`
   }
 
   update(getState())

@@ -147,6 +147,8 @@ export interface AppState {
   analysisShown: number[]
   /** Последний выданный уровень игрока (для лутбоксов) */
   lastPlayerLevel: number
+  /** Последний уровень, за который выдана награда (для системы наград за уровень) */
+  lastRewardedLevel: number
   /** Новости о событиях, о которых игрок ещё не проинформирован */
   news: NewsItem[]
   /** Уровень игрока, который был показан в интерфейсе (для индикаторов) */
@@ -398,6 +400,9 @@ function loadState(): AppState {
         branchChoices: branchChoicesState,
         analysisShown: parsed.analysisShown ?? [],
         lastPlayerLevel: parsed.lastPlayerLevel ?? 1,
+        // Старые сейвы без поля: стартуем с текущего уровня, чтобы не выдавать
+        // награды за уже пройденные уровни после обновления
+        lastRewardedLevel: parsed.lastRewardedLevel ?? (parsed.lastPlayerLevel ?? 1),
         news: parsed.news ?? [],
         seenPlayerLevel: parsed.seenPlayerLevel ?? levelFromXp(parsed.xpMoney ?? 0),
         shifts,
@@ -438,6 +443,7 @@ function loadState(): AppState {
       branchChoices: {},
       analysisShown: [],
       lastPlayerLevel: 1,
+      lastRewardedLevel: 1,
       news: [],
       seenPlayerLevel: levelFromXp(oldData.money ?? 0),
       shifts: oldData.shifts || { ...DEFAULT_SHIFTS },
@@ -478,6 +484,7 @@ function createDefaultState(): AppState {
     branchChoices: { ...DEFAULT_BRANCH_CHOICES },
     analysisShown: [],
     lastPlayerLevel: 1,
+    lastRewardedLevel: 1,
     news: [],
     seenPlayerLevel: 1,
     shifts: { ...DEFAULT_SHIFTS },

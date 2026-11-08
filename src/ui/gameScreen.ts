@@ -10,11 +10,12 @@ import { initPixiBackground } from '../effects/pixiBackground.ts'
 import { showPreloaderWithMinDuration } from '../utils/preloader.ts'
 import { createBackButton, createBackgroundContainer } from '../utils/domFactory.ts'
 import { createModal } from '../utils/modalFactory.ts'
-import { getState, calculateOfflineIncome, applyOfflineIncome, addNewsItem, markPlayerLevelSeen, subscribe, startPassiveIncomeTracking, stopPassiveIncomeTracking, MAX_OFFLINE_MS } from '../state/state.ts'
-import { formatMoney, formatDuration } from '../utils/format.ts'
+import { getState, calculateOfflineIncome, applyOfflineIncome, addNewsItem, markPlayerLevelSeen, subscribe, startPassiveIncomeTracking, stopPassiveIncomeTracking } from '../state/state.ts'
+import { formatMoney } from '../utils/format.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 import { setupClicker } from '../utils/clicker.ts'
 import { startGlobalEventsObserver } from '../utils/globalEvents.ts'
+import { startLevelRewardObserver } from '../components/levelRewardModal.ts'
 import { interfaceIconImages } from '../assets/assetLoader.ts'
 import { playSound } from '../state/audioManager.ts'
 
@@ -81,18 +82,19 @@ export async function renderGameScreen(
   // Начисляем оффлайн-доход сразу и сообщаем о нём новостью
   if (offline.amount > 0) {
     applyOfflineIncome(offline.amount)
-    // Если отсутствовал дольше потолка — честно говорим, что начислили только за час
-    const cappedNote = offline.capped
-      ? ` Доход начисляется максимум за ${formatDuration(MAX_OFFLINE_MS)} — заглядывайте чаще.`
-      : ''
     addNewsItem({
       kind: 'offline',
       title: 'Оффлайн доход',
-      description: `Пока вас не было (${formatDuration(offline.offlineMs)}), вы заработали ${formatMoney(offline.amount)} монет.${cappedNote}`,
+      description: 'Вы заработали:',
       amount: offline.amount,
     })
     if (moneyEl) moneyEl.textContent = formatMoney(getState().money)
   }
+
+  // Награды за новые уровни.
+  // Запускаем после оффлайн-дохода: subscribe дёргается сразу и ловит уровни,
+  // полученные за время отсутствия.
+  const stopLevelRewards = startLevelRewardObserver(container)
 
   // Нижняя панель (тулбар)
   const bottomBar = createBottomBar(container)
@@ -103,6 +105,7 @@ export async function renderGameScreen(
     clicker.cleanup()
     stopGlobalEvents()
     stopSkillAnalysis()
+    stopLevelRewards()
     bottomBar.cleanup()
     stopPassiveIncomeTracking()
   }

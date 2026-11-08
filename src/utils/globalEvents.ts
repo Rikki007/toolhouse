@@ -194,7 +194,7 @@ function renderEventModal(container: HTMLElement, data: EventModalData): void {
       const sign = data.isPositive ? '+' : '−'
       content.appendChild(
         createText(
-          `${sign}${formatPassiveIncome(data.amount)} монет`,
+          `${sign}${formatPassiveIncome(data.amount)}`,
           `global-event-result ${data.isPositive ? 'global-event-positive' : 'global-event-negative'}`
         )
       )

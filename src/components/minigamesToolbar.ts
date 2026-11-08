@@ -6,17 +6,16 @@ import { createModal } from '../utils/modalFactory.ts'
 import { openInventoryModal } from './inventory.ts'
 import { renderNewsModal } from './newsModal.ts'
 import { getState, updateState, subscribe, markNewsRead } from '../state/state.ts'
-import { interfaceIconImages, pickerImages, richDriversImages } from '../assets/assetLoader.ts'
+import { interfaceIconImages } from '../assets/assetLoader.ts'
 import { getRandomLootBoxReward } from '../data/lootBoxRewards.ts'
 import { sellLootboxReward, getAllStaffIds } from '../state/inventoryStore.ts'
 import { getStaffCategory } from '../state/inventoryStore.ts'
 import { getStaffById, getRiggingById } from '../utils/itemLookup.ts'
-import { getRiggingImage } from '../utils/assets.ts'
-import { createProgressBar } from '../utils/progressBar.ts'
+import { createRewardCardForStaff, createRewardCardForRigging } from '../utils/rewardCard.ts'
 import { playSound } from '../state/audioManager.ts'
 import { formatMoney } from '../utils/format.ts'
 // Кулдаун лутбокса: 5 секунд (5000 мс)
-const LOOTBOX_COOLDOWN = 15 * 60 * 1000
+const LOOTBOX_COOLDOWN = 10 * 60 * 1000
 
 /**
  * Рендерит тулбар с мини-играми, лутбоксами и сменами
@@ -122,91 +121,6 @@ export function renderGameToolbar(container: HTMLElement): HTMLElement {
 
 // ===== Вспомогательные функции для карточек наград =====
 
-function createRewardCardForStaff(staff: { name: string; avatar: string; baseSpeed: number; position: string }): HTMLElement {
-  const card = document.createElement('div')
-  card.className = 'shop-card lootbox-reward-card'
-
-  // Аватар
-  const avatarKey = staff.avatar
-  const imageSrc = avatarKey ? (pickerImages[avatarKey] || richDriversImages[avatarKey]) : ''
-  if (imageSrc) {
-    const image = document.createElement('img')
-    image.className = 'shop-card-image'
-    image.src = imageSrc
-    image.alt = staff.name
-    image.onerror = () => {
-      image.style.display = 'none'
-      const placeholder = document.createElement('div')
-      placeholder.className = 'shop-card-image-placeholder'
-      placeholder.textContent = '👤'
-      card.insertBefore(placeholder, card.firstChild)
-    }
-    card.appendChild(image)
-  } else {
-    const imagePlaceholder = document.createElement('div')
-    imagePlaceholder.className = 'shop-card-image'
-    imagePlaceholder.textContent = '👤'
-    card.appendChild(imagePlaceholder)
-  }
-
-  // Имя
-  const name = document.createElement('h3')
-  name.className = 'shop-card-name'
-  name.textContent = staff.name
-  card.appendChild(name)
-
-  // Позиция
-  const position = document.createElement('div')
-  position.style.fontSize = '12px'
-  position.style.color = '#999'
-  position.style.marginBottom = '8px'
-  position.textContent = staff.position
-  card.appendChild(position)
-
-  // Скорость (звёзды)
-  card.appendChild(createProgressBar('Скорость', staff.baseSpeed))
-
-  return card
-}
-
-function createRewardCardForRigging(rigging: { name: string; image: string; speed: number }): HTMLElement {
-  const card = document.createElement('div')
-  card.className = 'shop-card lootbox-reward-card'
-
-  // Изображение
-  const imageSrc = getRiggingImage(rigging.image)
-  if (imageSrc) {
-    const image = document.createElement('img')
-    image.className = 'shop-card-image'
-    image.src = imageSrc
-    image.alt = rigging.name
-    image.onerror = () => {
-      image.style.display = 'none'
-      const placeholder = document.createElement('div')
-      placeholder.className = 'shop-card-image-placeholder'
-      placeholder.textContent = '🪖'
-      card.insertBefore(placeholder, card.firstChild)
-    }
-    card.appendChild(image)
-  } else {
-    const imagePlaceholder = document.createElement('div')
-    imagePlaceholder.className = 'shop-card-image'
-    imagePlaceholder.textContent = '🪖'
-    card.appendChild(imagePlaceholder)
-  }
-
-  // Имя
-  const name = document.createElement('h3')
-  name.className = 'shop-card-name'
-  name.textContent = rigging.name
-  card.appendChild(name)
-
-  // Скорость (звёзды)
-  card.appendChild(createProgressBar('Скорость', rigging.speed))
-
-  return card
-}
-
 async function openLootBoxAnimation(container: HTMLElement): Promise<void> {
   // Показываем прелоадер
   const preloader = showPreloader(container)
@@ -237,7 +151,7 @@ async function openLootBoxAnimation(container: HTMLElement): Promise<void> {
       // Деньги — показываем сообщение
       const message = document.createElement('div')
       message.className = 'lootbox-result'
-      message.textContent = `Вы получили ${formatMoney(reward.amount)} монет!`
+      message.textContent = `Вы получили ${formatMoney(reward.amount)}!`
       modal.appendChild(message)
 
       // Только кнопка "Забрать"
@@ -267,7 +181,7 @@ async function openLootBoxAnimation(container: HTMLElement): Promise<void> {
 
         const message = document.createElement('div')
         message.className = 'lootbox-result'
-        message.textContent = `Вы получили ${formatMoney(cashAmount)} монет!`
+        message.textContent = `Вы получили ${formatMoney(cashAmount)}!`
         modal.appendChild(message)
 
         const btnTake = document.createElement('button')

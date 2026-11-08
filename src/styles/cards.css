@@ -1572,6 +1572,14 @@
   color: #ff4444;
 }
 
+.news-card-coin {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
 .news-empty {
   display: flex;
   align-items: center;

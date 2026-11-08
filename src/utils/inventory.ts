@@ -60,7 +60,7 @@ function createInventoryButtons(
   sellBtn.textContent = sellLabel
   sellBtn.addEventListener('click', (e) => {
     e.stopPropagation()
-    playSound('buy')
+    playSound('click')
     onSell()
   })
 

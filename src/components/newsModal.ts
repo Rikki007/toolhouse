@@ -1,6 +1,7 @@
 import type { NewsItem } from '../types/index.ts'
 import { getState } from '../state/state.ts'
 import { formatMoney } from '../utils/format.ts'
+import coinImage from '../assets/coin/1.png'
 
 /** Карточка одной новости: заголовок, текст и изменение баланса */
 function createNewsCard(item: NewsItem): HTMLElement {
@@ -21,7 +22,12 @@ function createNewsCard(item: NewsItem): HTMLElement {
 
   const amount = document.createElement('div')
   amount.className = `news-card-amount ${isIncome ? 'news-card-positive' : 'news-card-negative'}`
-  amount.textContent = `${isIncome ? '+' : '−'}${formatMoney(Math.abs(item.amount))} 🪙`
+  amount.textContent = `${isIncome ? '+' : '−'}${formatMoney(Math.abs(item.amount))} `
+  const coin = document.createElement('img')
+  coin.className = 'news-card-coin'
+  coin.src = coinImage
+  coin.alt = ''
+  amount.appendChild(coin)
   card.appendChild(amount)
 
   return card

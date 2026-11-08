@@ -1,5 +1,5 @@
 import { getState } from '../state/state.ts'
-import { createModal } from '../utils/modalFactory.ts'
+import { createModal, showConfirmModal } from '../utils/modalFactory.ts'
 import { createInventoryCard, type InventoryCardUpgrade } from '../utils/inventory.ts'
 import { getItemById, getRiggingById, getStaffById } from '../utils/itemLookup.ts'
 import { sellItem, removeStaffFromInventory, sellRiggingItem, upgradeStaff } from '../state/inventoryStore.ts'
@@ -256,11 +256,15 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
             openShiftSelector(pickerId, 'picker')
           },
           () => {
-            // Продать — перемещаем в shop и возвращаем деньги
-            sellItem(pickerId)
-            // Перерисовываем модальное окно
-            onClose()
-            openInventoryModal(container)
+            // Продажа требует подтверждения — сумма возврата зависит от состояния shop
+            showConfirmModal(container, `Вы точно хотите продать "${item.name}"?`, () => {
+              playSound('buy')
+              // Продать — перемещаем в shop и возвращаем деньги
+              sellItem(pickerId)
+              // Перерисовываем модальное окно
+              onClose()
+              openInventoryModal(container)
+            })
           },
           buildStaffUpgrade(pickerId, container, onClose)
         )
@@ -301,11 +305,15 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
             openShiftSelector(driverId, 'forklift')
           },
           () => {
-            // Продать — перемещаем в shop и возвращаем деньги
-            sellItem(driverId)
-            // Перерисовываем модальное окно
-            onClose()
-            openInventoryModal(container)
+            // Продажа требует подтверждения — сумма возврата зависит от состояния shop
+            showConfirmModal(container, `Вы точно хотите продать "${item.name}"?`, () => {
+              playSound('buy')
+              // Продать — перемещаем в shop и возвращаем деньги
+              sellItem(driverId)
+              // Перерисовываем модальное окно
+              onClose()
+              openInventoryModal(container)
+            })
           },
           buildStaffUpgrade(driverId, container, onClose)
         )

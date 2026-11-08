@@ -100,3 +100,54 @@ export function showErrorModal(
     },
   })
 }
+
+/**
+ * Показывает модальное окно подтверждения с кнопками «Да» и «Нет».
+ * «Да» вызывает onYes; «Нет» и клик по фону просто закрывают окно.
+ */
+export function showConfirmModal(
+  container: HTMLElement,
+  message: string,
+  onYes: () => void
+): ModalHandle {
+  playSound('message')
+
+  return createModal(container, {
+    overlayClass: 'confirm-modal-overlay',
+    renderContent: (onClose) => {
+      const modal = document.createElement('div')
+      modal.className = 'confirm-modal'
+
+      const messageEl = document.createElement('p')
+      messageEl.className = 'confirm-modal-message'
+      messageEl.textContent = message
+      modal.appendChild(messageEl)
+
+      const actions = document.createElement('div')
+      actions.className = 'confirm-modal-actions'
+
+      const noBtn = document.createElement('button')
+      noBtn.type = 'button'
+      noBtn.className = 'confirm-modal-btn confirm-modal-btn-no'
+      noBtn.textContent = 'Нет'
+      noBtn.addEventListener('click', () => {
+        playSound('click')
+        onClose()
+      })
+      actions.appendChild(noBtn)
+
+      const yesBtn = document.createElement('button')
+      yesBtn.type = 'button'
+      yesBtn.className = 'confirm-modal-btn confirm-modal-btn-yes'
+      yesBtn.textContent = 'Да'
+      yesBtn.addEventListener('click', () => {
+        onClose()
+        onYes()
+      })
+      actions.appendChild(yesBtn)
+
+      modal.appendChild(actions)
+      return modal
+    },
+  })
+}
