@@ -13,6 +13,7 @@ export const orderPickersList: Equipment[] = [
     image: 'picker_slow',
     price: 100000,
     speed: 3,
+    factor: 1.1,
   },
   {
     id: 'orderpicker_2',
@@ -20,6 +21,7 @@ export const orderPickersList: Equipment[] = [
     image: 'picker_medium',
     price: 250000,
     speed: 5,
+    factor: 1.2,
   },
   {
     id: 'orderpicker_3',
@@ -27,6 +29,7 @@ export const orderPickersList: Equipment[] = [
     image: 'picker_fast',
     price: 500000,
     speed: 7,
+    factor: 1.3,
   },
 ]
 
@@ -37,6 +40,7 @@ export const reachTrucksList: Equipment[] = [
     image: 'reachtruck_slow',
     price: 250000,
     speed: 2,
+    factor: 1.05,
   },
   {
     id: 'reachtruck_eq_2',
@@ -44,6 +48,7 @@ export const reachTrucksList: Equipment[] = [
     image: 'reachtruck_medium',
     price: 350000,
     speed: 3,
+    factor: 1.1,
   },
   {
     id: 'reachtruck_eq_3',
@@ -51,6 +56,7 @@ export const reachTrucksList: Equipment[] = [
     image: 'reachtruck_fast',
     price: 550000,
     speed: 4,
+    factor: 1.15,
   },
   {
     id: 'reachtruck_eq_4',
@@ -58,6 +64,7 @@ export const reachTrucksList: Equipment[] = [
     image: 'reachtruck_tall_slow',
     price: 650000,
     speed: 5,
+    factor: 1.2,
   },
   {
     id: 'reachtruck_eq_5',
@@ -65,6 +72,7 @@ export const reachTrucksList: Equipment[] = [
     image: 'reachtruck_tall_medium',
     price: 750000,
     speed: 6,
+    factor: 1.25,
   },
   {
     id: 'reachtruck_eq_6',
@@ -72,6 +80,7 @@ export const reachTrucksList: Equipment[] = [
     image: 'reachtruck_tall_fast',
     price: 850000,
     speed: 7,
+    factor: 1.3,
   },
 ]
 

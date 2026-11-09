@@ -3,6 +3,7 @@ import type { InventoryItem, InventoryState } from '../types/index.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { formatMoney } from './format.ts'
 import { playSound } from '../state/audioManager.ts'
+import { QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
 
 // ===== Утилиты миграции =====
 
@@ -103,9 +104,9 @@ function createStaffButtons(
 
 /** Данные для кнопки прокачки квалификации на карточке сотрудника */
 export interface InventoryCardUpgrade {
-  /** Текущий уровень квалификации (0 = без прокачки) */
+  /** Текущий уровень квалификации = итоговая скорость сотрудника (3–10) */
   level: number
-  /** Максимальный уровень квалификации */
+  /** Максимальный уровень квалификации (потолок скорости) */
   maxLevel: number
   /** Стоимость следующей прокачки */
   cost: number
@@ -194,9 +195,8 @@ export function createInventoryCard(
     card.appendChild(speed)
   }
 
-  // Уровень квалификации сотрудника
+  // Уровень квалификации сотрудника (upgrade.level = итоговая скорость/уровень)
   if (upgrade) {
-    const QUALIFICATION_NAMES = ['Новичок', 'Опытный', 'Матёрый', 'Рвач']
     const badge = document.createElement('div')
     badge.className = 'inventory-card-qualification'
     badge.textContent = QUALIFICATION_NAMES[upgrade.level] ?? ''
@@ -206,9 +206,9 @@ export function createInventoryCard(
     card.appendChild(badge)
   }
 
-  // Кликабельные карточки: персонал (назначить/продать) и снаряжение (только продать)
+  // Кликабельные карточки: персонал (назначить/продать), снаряжение и техника (только продать)
   const expandable = (item.type === 'staff' && onAssign && onSell)
-    || (item.type === 'rigging' && onSell)
+    || ((item.type === 'rigging' || item.type === 'equipment') && onSell)
 
   if (expandable) {
     const buttons = item.type === 'staff'

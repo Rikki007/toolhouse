@@ -78,9 +78,9 @@ function migrateShopToIds(inventory: Partial<InventoryState>): ShopState {
 // ==================== КОНФИГУРАЦИЯ СМЕН ====================
 
 export const SHIFT_CONFIGS: ShiftConfig[] = [
-  { id: 1, label: '1-я смена', price: 5000, incomeMultiplier: 1 },
-  { id: 2, label: '2-я смена', price: 100000, incomeMultiplier: 1.2 },
-  { id: 3, label: '3-я смена', price: 500000, incomeMultiplier: 1.5 },
+  { id: 1, label: '1-я смена', price: 5000, incomeMultiplier: 1, requiredLevel: 1 },
+  { id: 2, label: '2-я смена', price: 10_000_000, incomeMultiplier: 1.2, requiredLevel: 10 },
+  { id: 3, label: '3-я смена', price: 1_000_000_000, incomeMultiplier: 1.5, requiredLevel: 20 },
 ]
 
 const DEFAULT_SHIFTS: ShiftsState = {
@@ -100,7 +100,7 @@ const DEFAULT_SHIFTS: ShiftsState = {
       reachTruckDrivers: [],
       pickers: [],
     },
-    cost: 100000,
+    cost: 10_000_000,
   },
   third: {
     isActive: false,
@@ -109,7 +109,7 @@ const DEFAULT_SHIFTS: ShiftsState = {
       reachTruckDrivers: [],
       pickers: [],
     },
-    cost: 500000,
+    cost: 1_000_000_000,
   },
 }
 
@@ -209,12 +209,39 @@ function loadFromOldKeys(): Partial<AppState> {
   return result
 }
 
+/** Удаляет старые ключи localStorage после миграции в единый ключ */
 function migrateFromOldKeys(): void {
   for (const key of OLD_KEYS) {
     try {
       localStorage.removeItem(key)
     } catch { /* ignore */ }
   }
+}
+
+/**
+ * Миграция: у ещё не купленных смен берём актуальную цену из SHIFT_CONFIGS.
+ * Без неё старый сейв позволил бы купить 2-ю/3-ю смену по устаревшей цене.
+ * Купленные смены не трогаем — там записано, сколько игрок реально заплатил
+ * (эта сумма влияет на стоимость прокачки мастера).
+ */
+function migrateShiftPrices(shifts: ShiftsState): ShiftsState {
+  const keysByShiftId: Record<number, 'first' | 'second' | 'third'> = {
+    1: 'first',
+    2: 'second',
+    3: 'third',
+  }
+
+  const result: ShiftsState = { ...shifts }
+
+  for (const config of SHIFT_CONFIGS) {
+    const key = keysByShiftId[config.id]
+    const shift = result[key]
+    if (shift && !shift.isActive && shift.cost !== config.price) {
+      result[key] = { ...shift, cost: config.price }
+    }
+  }
+
+  return result
 }
 
 /** Миграция старого формата shifts → новый формат */
@@ -227,7 +254,7 @@ function migrateShiftsToNewFormat(oldShifts: unknown): ShiftsState {
 
       // Преобразуем string[] в ShiftStaff[]
       const stringToShiftStaff = (ids: string[]): ShiftStaff[] =>
-        ids.map(id => ({ id, slots: { headdress: null, uniform: null, tool: null } }))
+        ids.map(id => ({ id, slots: { headdress: null, uniform: null, tool: null, technique: null } }))
 
       const reachTruckDrivers1: ShiftStaff[] = []
       const pickers1: ShiftStaff[] = []
@@ -290,7 +317,7 @@ function migrateShiftsToNewFormat(oldShifts: unknown): ShiftsState {
 /** Миграция: personnel в string[] → ShiftStaff[] (для данных после обновления) */
 function migratePersonnelToStringArrays(shifts: ShiftsState): ShiftsState {
   const stringToShiftStaff = (ids: string[]): ShiftStaff[] =>
-    ids.map(id => ({ id, slots: { headdress: null, uniform: null, tool: null } }))
+    ids.map(id => ({ id, slots: { headdress: null, uniform: null, tool: null, technique: null } }))
 
   const result: ShiftsState = {
     first: { isActive: false, personnel: { master: null, reachTruckDrivers: [], pickers: [] }, cost: 0 },
@@ -347,6 +374,31 @@ function migrateMasterFields(shifts: ShiftsState): ShiftsState {
   return result
 }
 
+/** Миграция: добавляем technique: null всем существующим ShiftStaff */
+function migrateAddTechniqueSlot(shifts: ShiftsState): ShiftsState {
+  const result: ShiftsState = { ...shifts }
+
+  for (const key of ['first', 'second', 'third'] as const) {
+    const shift = result[key]
+    const migrateStaff = (arr: ShiftStaff[]): ShiftStaff[] =>
+      arr.map(s => ({
+        ...s,
+        slots: { ...s.slots, technique: s.slots.technique ?? null },
+      }))
+
+    result[key] = {
+      ...shift,
+      personnel: {
+        ...shift.personnel,
+        reachTruckDrivers: migrateStaff(shift.personnel.reachTruckDrivers),
+        pickers: migrateStaff(shift.personnel.pickers),
+      },
+    }
+  }
+
+  return result
+}
+
 function loadState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -367,6 +419,12 @@ function loadState(): AppState {
 
       // Миграция: заполняем null master дефолтными значениями
       shifts = migrateMasterFields(shifts)
+
+      // Миграция: добавляем technique: null существующим ShiftStaff
+      shifts = migrateAddTechniqueSlot(shifts)
+
+      // Миграция: актуализируем цену ещё не купленных смен
+      shifts = migrateShiftPrices(shifts)
 
       // Каталог снаряжения: берём сохранённый список, выкидываем устаревшие/нешоповые ID,
       // и добираем те shop-предметы, которых в сейве нет (их добавили в данные позже).
@@ -389,8 +447,12 @@ function loadState(): AppState {
       const staffUpgradesState = parsed.staffUpgrades ?? {}
       const branchChoicesState: SkillBranchChoices = parsed.branchChoices ?? {}
 
+      // Старые сейвы могли содержать переключатель музыки — поле удалено из настроек
+      const { music: _removedMusic, ...savedSettings } = (parsed.settings ?? {}) as Partial<Settings> & { music?: boolean }
+      const settingsState: Settings = { ...defaultSettings, ...savedSettings }
+
       return {
-        settings: { ...defaultSettings, ...(parsed.settings || {}) },
+        settings: settingsState,
         shop: shopState,
         inventory: inventoryState,
         money: parsed.money ?? 0,
@@ -414,7 +476,6 @@ function loadState(): AppState {
           shifts,
           staffUpgrades: staffUpgradesState,
           masterUpgrades: parsed.masterUpgrades ?? {},
-          inventory: inventoryState,
         })),
         timeToEvent: parsed.timeToEvent ?? Date.now(),
         allegiance: parsed.allegiance || { ...DEFAULT_ALLEGIANCE },
@@ -456,7 +517,6 @@ function loadState(): AppState {
           shifts: oldData.shifts || DEFAULT_SHIFTS,
           staffUpgrades: oldData.staffUpgrades ?? {},
           masterUpgrades: {},
-          inventory: { ...DEFAULT_INVENTORY },
         })
       ),
       timeToEvent: Date.now(),
@@ -496,7 +556,6 @@ function createDefaultState(): AppState {
       shifts: DEFAULT_SHIFTS,
       staffUpgrades: {},
       masterUpgrades: {},
-      inventory: DEFAULT_INVENTORY,
     })),
     timeToEvent: Date.now(),
     allegiance: { ...DEFAULT_ALLEGIANCE },

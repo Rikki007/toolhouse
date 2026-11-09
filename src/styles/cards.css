@@ -769,6 +769,12 @@
   font-style: italic;
 }
 
+.shifts-modal-item-level-req {
+  font-size: 13px;
+  color: #f87171;
+  margin-top: 4px;
+}
+
 .shifts-modal-buy-btn {
   padding: 8px 20px;
   background: rgba(74, 222, 128, 0.15);
@@ -1217,6 +1223,22 @@
 .staff-detail-equipment-slot-image {
   width: 48px;
   height: 48px;
+  object-fit: contain;
+}
+
+/* Слот техники — крупнее трёх слотов снаряжения */
+.staff-detail-equipment-slot-technique {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+.staff-detail-equipment-slot-technique .staff-detail-equipment-slot-image {
+  width: 180px;
+  height: 180px;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
 }
 

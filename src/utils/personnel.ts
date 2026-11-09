@@ -1,8 +1,8 @@
 import type { PersonnelSlot } from '../types/shifts.ts'
 import type { Staff, ShiftStaff, Rigging } from '../types/equipment.ts'
-import { getShiftPersonnel, removeStaffFromShift, setStaffEquipmentSlot } from '../state/shiftsStore.ts'
-import { getStaffById, getRiggingById } from '../utils/itemLookup.ts'
-import { getRiggingImage } from '../utils/assets.ts'
+import { getShiftPersonnel, removeStaffFromShift, setStaffEquipmentSlot, setStaffTechniqueSlot } from '../state/shiftsStore.ts'
+import { getStaffById, getRiggingById, getEquipmentById } from '../utils/itemLookup.ts'
+import { getRiggingImage, getEquipmentImage } from '../utils/assets.ts'
 import { pickerImages, richDriversImages, mastersImages } from '../assets/assetLoader.ts'
 import { getState } from '../state/state.ts'
 import { createModal } from '../utils/modalFactory.ts'
@@ -175,6 +175,49 @@ function renderStaffDetailModal(
   }
 
   body.appendChild(equipmentGrid)
+
+  // ===== СЕКЦИЯ ТЕХНИКИ =====
+  const techniqueTitle = document.createElement('div')
+  techniqueTitle.className = 'staff-detail-equipment-title'
+  techniqueTitle.textContent = 'Техника'
+  body.appendChild(techniqueTitle)
+
+  const techniqueSlot = document.createElement('div')
+  techniqueSlot.className = 'staff-detail-equipment-slot staff-detail-equipment-slot-technique'
+
+  const techniqueId = shiftStaff.slots.technique
+  if (techniqueId) {
+    const equip = getEquipmentById(techniqueId)
+    if (equip) {
+      const img = document.createElement('img')
+      img.className = 'staff-detail-equipment-slot-image'
+      img.src = getEquipmentImage(equip.image)
+      img.alt = equip.name
+      img.onerror = () => { img.style.display = 'none' }
+      techniqueSlot.appendChild(img)
+      techniqueSlot.classList.add('staff-detail-equipment-slot-filled')
+    } else {
+      techniqueSlot.textContent = 'Техника'
+    }
+  } else {
+    techniqueSlot.textContent = 'Техника'
+  }
+
+  techniqueSlot.dataset.riggingId = techniqueId ?? ''
+
+  techniqueSlot.addEventListener('click', () => {
+    playSound('click')
+    openTechniqueSelectorModal(
+      container,
+      techniqueId,
+      shiftId,
+      role,
+      slotIndex,
+      () => rerenderStaffDetail(container, staffInfo.id, shiftId, role, slotIndex, onClose)
+    )
+  })
+
+  body.appendChild(techniqueSlot)
   modal.appendChild(body)
   return modal
 }
@@ -199,7 +242,7 @@ function rerenderStaffDetail(
     ? personnel.reachTruckDrivers[slotIndex]
     : personnel.pickers[slotIndex]
   const newShiftStaff: ShiftStaff = typeof currentStaff === 'string'
-    ? { id: currentStaff, slots: { headdress: null, uniform: null, tool: null } }
+    ? { id: currentStaff, slots: { headdress: null, uniform: null, tool: null, technique: null } }
     : currentStaff
 
   // Создаем новую модалку
@@ -339,6 +382,114 @@ function openEquipmentSelectorModal(
   })
 }
 
+/** Открыть модальное окно выбора техники */
+function openTechniqueSelectorModal(
+  container: HTMLElement,
+  currentTechniqueId: string | null,
+  shiftId: number,
+  role: 'forklift' | 'picker',
+  slotIndex: number,
+  onRerender: () => void
+): void {
+  const state = getState()
+
+  // Получаем технику из inventory по роли
+  const techIds = role === 'picker'
+    ? state.inventory.equipment.orderPickers
+    : state.inventory.equipment.reachTrucks
+
+  const availableTechnique = techIds
+    .map(id => getEquipmentById(id))
+    .filter((item): item is NonNullable<typeof item> => item !== undefined)
+
+  createModal(container, {
+    overlayClass: 'equipment-selector-overlay',
+    renderContent: (onCloseModal) => {
+      const modal = document.createElement('div')
+      modal.className = 'equipment-selector-modal'
+
+      // Заголовок
+      const header = document.createElement('div')
+      header.className = 'equipment-selector-modal-header'
+
+      const title = document.createElement('h3')
+      title.className = 'equipment-selector-modal-title'
+      title.textContent = role === 'picker' ? 'Ордерпикеры' : 'Погрузчики и ричтраки'
+      header.appendChild(title)
+
+      const closeBtn = document.createElement('button')
+      closeBtn.type = 'button'
+      closeBtn.className = 'modal-close-btn equipment-selector-modal-close'
+      closeBtn.textContent = '×'
+      closeBtn.addEventListener('click', () => {
+        playSound('click')
+        onCloseModal()
+      })
+      header.appendChild(closeBtn)
+
+      modal.appendChild(header)
+
+      const body = document.createElement('div')
+      body.className = 'equipment-selector-modal-body'
+
+      // Кнопка "Снять" (если техника надета)
+      if (currentTechniqueId) {
+        const removeBtn = document.createElement('button')
+        removeBtn.type = 'button'
+        removeBtn.className = 'equipment-selector-remove-btn'
+        removeBtn.textContent = 'Снять технику'
+        removeBtn.addEventListener('click', () => {
+          playSound('click')
+          setStaffTechniqueSlot(shiftId, role, slotIndex, null)
+          onCloseModal()
+          onRerender()
+        })
+        body.appendChild(removeBtn)
+      }
+
+      // Список техники
+      if (availableTechnique.length === 0) {
+        const empty = document.createElement('div')
+        empty.className = 'equipment-selector-empty'
+        empty.textContent = 'Нет доступной техники'
+        body.appendChild(empty)
+      } else {
+        for (const equip of availableTechnique) {
+          const item = document.createElement('div')
+          item.className = 'equipment-selector-item'
+          if (equip.id === currentTechniqueId) {
+            item.classList.add('equipment-selector-item-selected')
+          }
+
+          const img = document.createElement('img')
+          img.className = 'equipment-selector-item-image'
+          img.src = getEquipmentImage(equip.image)
+          img.alt = equip.name
+          img.onerror = () => { img.style.display = 'none' }
+          item.appendChild(img)
+
+          const nameEl = document.createElement('div')
+          nameEl.className = 'equipment-selector-item-name'
+          nameEl.textContent = equip.name
+          item.appendChild(nameEl)
+
+          item.addEventListener('click', () => {
+            playSound('click')
+            setStaffTechniqueSlot(shiftId, role, slotIndex, equip.id)
+            onCloseModal()
+            onRerender()
+          })
+
+          body.appendChild(item)
+        }
+      }
+
+      modal.appendChild(body)
+      return modal
+    },
+  })
+}
+
  /**
    * Создаёт карточку сотрудника (похожую на shop-card).
    */
@@ -409,7 +560,7 @@ function openEquipmentSelectorModal(
         ? personnel.reachTruckDrivers[slotIndex]
         : personnel.pickers[slotIndex]
       const shiftStaff: ShiftStaff = typeof currentStaff === 'string'
-        ? { id: currentStaff, slots: { headdress: null, uniform: null, tool: null } }
+        ? { id: currentStaff, slots: { headdress: null, uniform: null, tool: null, technique: null } }
         : currentStaff
 
       createModal(container, {

@@ -70,6 +70,36 @@ export function sellRiggingItem(itemId: string): void {
   })
 }
 
+/** Продать технику из inventory — удаляет один предмет и возвращает деньги */
+export function sellTechniqueItem(itemId: string): void {
+  const item = getItemById(itemId)
+  if (!item) return
+
+  const inventory = getState().inventory
+  const money = getState().money
+
+  const equipCat = getTechniqueSlot(itemId)
+  if (!equipCat) return
+
+  const invEquip = [...(inventory.equipment[equipCat] ?? [])]
+  const idx = invEquip.indexOf(itemId)
+  if (idx !== -1) {
+    invEquip.splice(idx, 1)
+  }
+
+  // Доход не меняется: на него влияет только техника, закреплённая за сотрудником в смене
+  updateState({
+    inventory: {
+      ...inventory,
+      equipment: {
+        ...inventory.equipment,
+        [equipCat]: invEquip,
+      },
+    },
+    money: money + item.cost,
+  })
+}
+
 /** Убрать сотрудника из inventory (при назначении в смену) */
 export function removeStaffFromInventory(staffId: string): void {
   const inventory = getState().inventory
@@ -101,37 +131,23 @@ export function isItemPurchased(itemId: string): boolean {
 }
 
 /**
- * Купить технику. Слот техники один, поэтому прежний предмет магазина
- * возвращается в shop, а купленный кладётся в inventory.
+ * Купить технику — добавляет в inventory без удаления из shop.
+ * Техника покупается многократно, как снаряжение.
+ * На пассивный доход техника влияет только будучи закреплённой за сотрудником
+ * в смене, поэтому здесь достаточно обычного updateState.
  */
-export function replaceItemInShop(itemId: string): void {
-  const shop = getState().shop
+export function addTechniqueToInventory(itemId: string): void {
   const inventory = getState().inventory
 
   const equipCat = getTechniqueSlot(itemId)
   if (!equipCat) return
 
-  // Прежняя техника из этого слота снова идёт в продажу
-  const shopEquip = [...shop.equipment[equipCat]]
-  for (const oldId of inventory.equipment[equipCat]) {
-    if (!shopEquip.includes(oldId)) shopEquip.push(oldId)
-  }
-
-  // updateStateWithIncome, а не updateState: скорость купленной техники
-  // прибавляется к пассивному доходу, значит его нужно пересчитать.
-  updateStateWithIncome({
-    shop: {
-      ...shop,
-      equipment: {
-        ...shop.equipment,
-        [equipCat]: shopEquip.filter((id: string) => id !== itemId),
-      },
-    },
+  updateState({
     inventory: {
       ...inventory,
       equipment: {
         ...inventory.equipment,
-        [equipCat]: [itemId],
+        [equipCat]: [...inventory.equipment[equipCat], itemId],
       },
     },
   })
@@ -146,7 +162,7 @@ export function addItemToShop(itemId: string): void {
   const inventory = getState().inventory
 
   if (getTechniqueSlot(itemId)) {
-    replaceItemInShop(itemId)
+    addTechniqueToInventory(itemId)
     return
   }
 
@@ -348,20 +364,18 @@ export function sellItem(itemId: string): void {
   const riggingCat = getRiggingCategory(itemId)
 
   if (equipCat) {
-    // Техника — возвращаем в equipment shop; её скорость уходит из дохода
-    updateStateWithIncome({
-      shop: {
-        ...shop,
-        equipment: {
-          ...shop.equipment,
-          [equipCat]: [...shop.equipment[equipCat], itemId],
-        },
-      },
+    // Техника — удаляем один предмет из inventory, возвращаем деньги (как снаряжение).
+    // Доход не меняется: на него влияет только техника в слоте сотрудника в смене.
+    const invEquip = [...(inventory.equipment[equipCat] ?? [])]
+    const idx = invEquip.indexOf(itemId)
+    if (idx !== -1) invEquip.splice(idx, 1)
+
+    updateState({
       inventory: {
         ...inventory,
         equipment: {
           ...inventory.equipment,
-          [equipCat]: inventory.equipment[equipCat].filter((id: string) => id !== itemId),
+          [equipCat]: invEquip,
         },
       },
       money: money + item.cost,

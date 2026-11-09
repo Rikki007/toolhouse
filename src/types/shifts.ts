@@ -3,6 +3,7 @@ export interface ShiftConfig {
   label: string
   price: number
   incomeMultiplier: number // множитель дохода при активной смене
+  requiredLevel: number // минимальный уровень игрока для покупки
 }
 
 import type { ShiftStaff } from './equipment.ts'

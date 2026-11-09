@@ -7,7 +7,7 @@ import { showErrorModal } from '../utils/modalFactory.ts'
 import { createShopOverlay } from '../utils/shopModalFactory.ts'
 import coinImage from '../assets/coin/1.png'
 import { getState, updateState } from '../state/state.ts'
-import { replaceItemInShop, isItemPurchased, addItemToShop } from '../state/inventoryStore.ts'
+import { addItemToShop, isItemPurchased } from '../state/inventoryStore.ts'
 import { getEquipmentById, getStaffById, getRiggingById } from '../utils/itemLookup.ts'
 import { playSound } from '../state/audioManager.ts'
 
@@ -167,7 +167,7 @@ function createCard(item: Equipment | Staff | Rigging, categoryId: 'orderPickers
     if (categoryId === 'orderPickers' || categoryId === 'reachTrucks') {
       // ===== ЛОГИКА ПОКУПКИ ТЕХНИКИ =====
       updateState({ money: currentMoney - priceNum })
-      replaceItemInShop(item.id)
+      addItemToShop(item.id)
       openCategory(categoryId, container)
       updateMoneyDisplay(container)
       return
@@ -258,7 +258,6 @@ function openCategory(categoryId: 'orderPickers' | 'reachTrucks' | 'pickers' | '
     items = idList
       .map(id => getEquipmentById(id))
       .filter((item): item is NonNullable<typeof item> => item !== undefined)
-      .filter(item => !isItemPurchased(item.id))
   }
 
   createShopOverlay(container, (onClose) => {

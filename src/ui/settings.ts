@@ -1,6 +1,6 @@
 import type { Theme } from '../types/index.ts'
 import { subscribe } from '../state/state.ts'
-import { toggleSound, toggleMusic, setTheme, getSettings } from '../state/settingsStore.ts'
+import { toggleSound, setTheme, getSettings } from '../state/settingsStore.ts'
 import { createBackButton, createToggleRow, createSelectRow } from '../utils/domFactory.ts'
 
 export async function renderSettings(container: HTMLElement, onBack: () => void): Promise<{ cleanup: () => void }> {
@@ -19,7 +19,6 @@ export async function renderSettings(container: HTMLElement, onBack: () => void)
   card.appendChild(title)
 
   let soundRow: HTMLDivElement
-  let musicRow: HTMLDivElement
   let themeRow: HTMLDivElement
 
   function render() {
@@ -35,19 +34,6 @@ export async function renderSettings(container: HTMLElement, onBack: () => void)
         toggle.setAttribute('aria-pressed', String(settings.sound))
         toggle.textContent = settings.sound ? 'Вкл' : 'Выкл'
         label.textContent = `Звук: ${settings.sound ? 'Вкл' : 'Выкл'}`
-      }
-    }
-
-    if (!musicRow) {
-      musicRow = createToggleRow('Музыка', settings.music, async () => toggleMusic())
-      card.appendChild(musicRow)
-    } else {
-      const toggle = musicRow.querySelector('.toggle-button') as HTMLButtonElement | null
-      const label = musicRow.querySelector('.settings-label') as HTMLSpanElement | null
-      if (toggle && label) {
-        toggle.setAttribute('aria-pressed', String(settings.music))
-        toggle.textContent = settings.music ? 'Вкл' : 'Выкл'
-        label.textContent = `Музыка: ${settings.music ? 'Вкл' : 'Выкл'}`
       }
     }
 

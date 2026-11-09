@@ -1,25 +1,23 @@
 import type { Staff } from '../types/equipment.ts'
 import { getState } from '../state/state.ts'
 import { upgradeStaff } from '../state/inventoryStore.ts'
-import { getUpgradeCount, getNextUpgrade } from '../utils/staffUpgrades.ts'
+import { getStaffSpeed, getNextUpgrade } from '../utils/staffUpgrades.ts'
 import { createCreditIcon } from '../utils/creditIcon.ts'
-import { MAX_STAFF_UPGRADES } from '../types/staffUpgrades.ts'
+import { MAX_STAFF_SPEED, QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
 import { playSound } from '../state/audioManager.ts'
 import { formatMoney } from '../utils/format.ts'
 
-/** Названия квалификации по уровню */
-const QUALIFICATION_NAMES = ['Новичок', 'Опытный', 'Матёрый', 'Рвач']
-
 /**
- * Строка «Новичок» / «Опытный» / «Матёрый» / «Рвач» под шкалой скорости.
+ * Строка «Новичок» / «Вникающий» / … / «Лучший» под шкалой скорости.
+ * Название берётся по итоговой скорости сотрудника (текущему уровню).
  */
 export function createQualificationRow(staff: Staff): HTMLElement {
-  const level = getUpgradeCount(getState().staffUpgrades, staff.id)
+  const level = getStaffSpeed(staff, getState().staffUpgrades)
 
   const row = document.createElement('div')
   row.className = 'staff-qualification'
   row.textContent = QUALIFICATION_NAMES[level] ?? ''
-  if (level >= MAX_STAFF_UPGRADES) {
+  if (level >= MAX_STAFF_SPEED) {
     row.classList.add('staff-qualification-max')
   }
   return row

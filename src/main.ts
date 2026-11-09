@@ -19,7 +19,7 @@ import { getState } from './state/state.ts'
 import { setTheme } from './state/settingsStore.ts'
 import { initEquipmentImages, initSkillsImages } from './assets/assetLoader.ts'
 import { showPreloader, hidePreloader } from './components/preloader.ts'
-import { playMusic, initAudioFromSettings } from './state/audioManager.ts'
+import { initAudioFromSettings } from './state/audioManager.ts'
 
 // Инициализация изображений техники
 initEquipmentImages()
@@ -76,7 +76,6 @@ export async function showMenu(): Promise<void> {
   app.innerHTML = ''
   const menuCleanup = await renderMenu(app, { onPlay: showGame, onTutorial: showTutorial, onSettings: showSettings, onAbout: showAbout, onShare: showShare })
   currentCleanup = menuCleanup.cleanup
-  playMusic('mainMenu')
 }
 
 export async function showGame(): Promise<void> {
@@ -85,7 +84,6 @@ export async function showGame(): Promise<void> {
   app.innerHTML = ''
   const gameCleanup = await renderGameScreen(app, showMenu, showSettings, showGame)
   currentCleanup = gameCleanup
-  playMusic('game')
   // Показываем прелоадер минимум 2 секунды
   await showPreloaderWithMinDuration(2000)
 }

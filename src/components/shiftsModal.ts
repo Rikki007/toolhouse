@@ -7,6 +7,7 @@ import { isShiftFullyStaffed } from '../utils/passiveIncome.ts'
 import { interfaceIconImages, coinFrames } from '../assets/assetLoader.ts'
 import { playSound } from '../state/audioManager.ts'
 import { formatMoney } from '../utils/format.ts'
+import { playerLevel } from '../utils/skillProgress.ts'
 
 /**
  * Рендерит кнопку «Смены» в тулбаре
@@ -87,6 +88,8 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
     const config = shiftConfigs.find(c => c.id === shiftInfo.id)
     const isActive = shift.isActive
     const isNext = !isActive && isPreviousShiftActive(shiftInfo.id)
+    // Смена открывается для покупки только с определённого уровня игрока
+    const levelOk = !config || playerLevel(state) >= config.requiredLevel
 
     const item = document.createElement('div')
     item.className = 'shifts-modal-item'
@@ -105,6 +108,9 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
     if (isActive) {
       statusLabel.textContent = 'Активна'
       statusLabel.classList.add('status-active')
+    } else if (isNext && config && !levelOk) {
+      statusLabel.textContent = `🔒 Нужен ${config.requiredLevel} уровень`
+      statusLabel.classList.add('status-locked')
     } else if (isNext) {
       statusLabel.textContent = 'Доступна'
       statusLabel.classList.add('status-unlocked')
@@ -160,6 +166,18 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
       buyBtn.className = 'shifts-modal-buy-btn'
       buyBtn.textContent = 'Купить'
       buyBtn.dataset.cost = String(shift.cost)
+      buyBtn.dataset.requiredLevel = String(config.requiredLevel)
+
+      // Подпись требования уровня, если игрок ещё не достиг нужного уровня
+      if (!levelOk) {
+        const req = document.createElement('span')
+        req.className = 'shifts-modal-item-level-req'
+        req.dataset.requiredLevel = String(config.requiredLevel)
+        req.textContent = `Откроется на ${config.requiredLevel} уровне`
+        itemFooter.appendChild(req)
+      }
+
+      itemFooter.appendChild(buyBtn)
       updateBuyButtonsAvailability()
 
       buyBtn.addEventListener('click', (e) => {
@@ -178,7 +196,6 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
           alert(result.error ?? 'Не удалось купить')
         }
       })
-      itemFooter.appendChild(buyBtn)
     } else {
       // Закрыта — показываем, что нужно купить предыдущую
       const locked = document.createElement('span')
@@ -210,13 +227,21 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
   return result
 }
 
-/** Обновляет доступность всех кнопок покупки в зависимости от текущего количества денег */
+/** Обновляет доступность всех кнопок покупки в зависимости от денег и уровня */
 function updateBuyButtonsAvailability(): void {
-  const money = getState().money
+  const state = getState()
+  const level = playerLevel(state)
   const buttons = document.querySelectorAll<HTMLButtonElement>('.shifts-modal-buy-btn')
   for (const btn of buttons) {
     const cost = Number(btn.dataset.cost ?? 0)
-    btn.disabled = money < cost
+    const requiredLevel = Number(btn.dataset.requiredLevel ?? 0)
+    btn.disabled = state.money < cost || level < requiredLevel
+  }
+
+  // Подписи требования уровня прячем, как только уровень достигнут
+  const reqs = document.querySelectorAll<HTMLElement>('.shifts-modal-item-level-req')
+  for (const req of reqs) {
+    req.hidden = level >= Number(req.dataset.requiredLevel ?? 0)
   }
 }
 

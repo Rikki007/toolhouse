@@ -2,9 +2,9 @@ import { getState } from '../state/state.ts'
 import { createModal, showConfirmModal } from '../utils/modalFactory.ts'
 import { createInventoryCard, type InventoryCardUpgrade } from '../utils/inventory.ts'
 import { getItemById, getRiggingById, getStaffById } from '../utils/itemLookup.ts'
-import { sellItem, removeStaffFromInventory, sellRiggingItem, upgradeStaff } from '../state/inventoryStore.ts'
-import { MAX_STAFF_UPGRADES } from '../types/index.ts'
-import { getUpgradeCount, getNextUpgrade } from '../utils/staffUpgrades.ts'
+import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem, upgradeStaff } from '../state/inventoryStore.ts'
+import { MAX_STAFF_SPEED } from '../data/staffUpgrades.ts'
+import { getStaffSpeed, getNextUpgrade } from '../utils/staffUpgrades.ts'
 import { assignStaffToShift, getActiveShifts, getShiftSlotAvailability } from '../state/shiftsStore.ts'
 import { playSound } from '../state/audioManager.ts'
 
@@ -134,8 +134,8 @@ function buildStaffUpgrade(
   const next = getNextUpgrade(staff, state.staffUpgrades)
 
   return {
-    level: getUpgradeCount(state.staffUpgrades, staffId),
-    maxLevel: MAX_STAFF_UPGRADES,
+    level: getStaffSpeed(staff, state.staffUpgrades),
+    maxLevel: MAX_STAFF_SPEED,
     cost: next?.cost ?? 0,
     affordable: next ? state.money >= next.cost : false,
     onUpgrade: () => {
@@ -190,38 +190,36 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
   const transportGrid = document.createElement('div')
   transportGrid.className = 'inventory-grid'
 
-  // Ордерпикеры
-  const orderPickerId = inventory.equipment.orderPickers[0]
-  if (orderPickerId) {
-    const item = getItemById(orderPickerId)
-    if (item) {
-      const card = createInventoryCard(item)
-      card.dataset.itemId = 'orderpickers'
-      transportGrid.appendChild(card)
-    }
-  } else {
-    const emptySlot = document.createElement('div')
-    emptySlot.className = 'inventory-empty-card'
-    emptySlot.dataset.itemId = 'orderpickers'
-    emptySlot.textContent = 'Ордерпикер'
-    transportGrid.appendChild(emptySlot)
-  }
+  // Собираем все ID техники
+  const allTechIds = [
+    ...inventory.equipment.orderPickers,
+    ...inventory.equipment.reachTrucks,
+  ]
 
-  // Ричтраки
-  const reachTruckId = inventory.equipment.reachTrucks[0]
-  if (reachTruckId) {
-    const item = getItemById(reachTruckId)
-    if (item) {
-      const card = createInventoryCard(item)
-      card.dataset.itemId = 'reachtrucks'
-      transportGrid.appendChild(card)
-    }
-  } else {
+  if (allTechIds.length === 0) {
     const emptySlot = document.createElement('div')
     emptySlot.className = 'inventory-empty-card'
-    emptySlot.dataset.itemId = 'reachtrucks'
-    emptySlot.textContent = 'Погрузчик/ричтрак'
+    emptySlot.textContent = 'Пусто'
     transportGrid.appendChild(emptySlot)
+  } else {
+    for (const techId of allTechIds) {
+      const item = getItemById(techId)
+      if (item) {
+        const card = createInventoryCard(
+          item,
+          undefined,
+          () => {
+            showConfirmModal(container, `Вы точно хотите продать "${item.name}"?`, () => {
+              playSound('buy')
+              sellTechniqueItem(techId)
+              onClose()
+              openInventoryModal(container)
+            })
+          }
+        )
+        transportGrid.appendChild(card)
+      }
+    }
   }
 
   transportSection.appendChild(transportGrid)

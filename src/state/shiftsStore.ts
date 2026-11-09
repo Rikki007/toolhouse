@@ -2,14 +2,15 @@ import type { ShiftConfig, ShiftsState, ShiftStaff } from '../types/index.ts'
 import type { AppState } from './state.ts'
 import { getState, updateState, SHIFT_CONFIGS } from './state.ts'
 import { calculatePassiveIncome, calculateShiftsMultiplier, getIncomeSources } from '../utils/passiveIncome.ts'
+import { playerLevel } from '../utils/skillProgress.ts'
 
 export { SHIFT_CONFIGS as shiftConfigs }
 
 /**
  * Обновляет стейт с пересчётом пассивного дохода.
  * На доход влияют навыки, персонал активных смен, его снаряжение,
- * прокачка квалификации и купленная техника — поэтому любое изменение
- * этих ключей должно проходить через эту функцию (аналогично покупке навыков).
+ * прокачка квалификации и закреплённая за сотрудниками техника — поэтому любое
+ * изменение этих ключей должно проходить через эту функцию (аналогично покупке навыков).
  */
 export function updateStateWithIncome(changes: Partial<AppState>): void {
   const state = getState()
@@ -21,14 +22,13 @@ export function updateStateWithIncome(changes: Partial<AppState>): void {
       shifts: changes.shifts ?? state.shifts,
       staffUpgrades: changes.staffUpgrades ?? state.staffUpgrades,
       masterUpgrades: changes.masterUpgrades ?? state.masterUpgrades,
-      inventory: changes.inventory ?? state.inventory,
     })),
   })
 }
 
 /** Создать пустого сотрудника со слотами */
 function createEmptyStaff(id: string): ShiftStaff {
-  return { id, slots: { headdress: null, uniform: null, tool: null } }
+  return { id, slots: { headdress: null, uniform: null, tool: null, technique: null } }
 }
 
 /** Получить ключ смены по ID */
@@ -66,6 +66,12 @@ export function buyShift(shiftId: number): { success: boolean; error?: string } 
   // Если уже активна
   if (shift.isActive) {
     return { success: false, error: 'Эта смена уже активна' }
+  }
+
+  // Проверяем уровень игрока: смена открывается для покупки только с нужного уровня
+  const level = playerLevel(state)
+  if (level < config.requiredLevel) {
+    return { success: false, error: `Нужен ${config.requiredLevel}-й уровень (сейчас ${level})` }
   }
 
   // Проверяем деньги
@@ -211,14 +217,29 @@ export function removeStaffFromShift(
   
   // Извлекаем ID снаряжения для возврата в инвентарь
   const riggingIds: string[] = []
+  let techniqueId: string | null = null
   if (typeof staffObj !== 'string') {
     if (staffObj.slots.headdress) riggingIds.push(staffObj.slots.headdress)
     if (staffObj.slots.uniform) riggingIds.push(staffObj.slots.uniform)
     if (staffObj.slots.tool) riggingIds.push(staffObj.slots.tool)
+    techniqueId = staffObj.slots.technique ?? null
   }
   
   // Удаляем сотрудника со слота
   currentArray.splice(slotIndex, 1)
+
+  // Возвращаем технику в нужный массив inventory.equipment
+  const invEquip = {
+    reachTrucks: [...state.inventory.equipment.reachTrucks],
+    orderPickers: [...state.inventory.equipment.orderPickers],
+  }
+  if (techniqueId) {
+    if (techniqueId.startsWith('orderpicker_')) {
+      invEquip.orderPickers.push(techniqueId)
+    } else if (techniqueId.startsWith('reachtruck_eq_')) {
+      invEquip.reachTrucks.push(techniqueId)
+    }
+  }
 
   updateStateWithIncome({
     shifts: {
@@ -238,6 +259,7 @@ export function removeStaffFromShift(
         [personnelKey]: [...state.inventory.staff[personnelKey], staffId],
       },
       rigging: [...state.inventory.rigging, ...riggingIds],
+      equipment: invEquip,
     },
   })
 }
@@ -434,4 +456,78 @@ export function setStaffEquipmentSlot(
       },
     })
   }
+}
+
+/**
+ * Установить технику в слот сотруднику в смене.
+ * @param techniqueId ID техники (null для снятия)
+ */
+export function setStaffTechniqueSlot(
+  shiftId: number,
+  role: 'forklift' | 'picker',
+  slotIndex: number,
+  techniqueId: string | null
+): void {
+  const state = getState()
+  const shiftKey = getShiftKeyById(shiftId)
+  const shift = state.shifts[shiftKey]
+
+  const personnelKey = role === 'forklift' ? 'reachTruckDrivers' as const : 'pickers' as const
+  const currentArray = [...shift.personnel[personnelKey]]
+
+  if (slotIndex < 0 || slotIndex >= currentArray.length) return
+
+  const staffObj = currentArray[slotIndex]
+  const staff: ShiftStaff = typeof staffObj === 'string'
+    ? createEmptyStaff(staffObj)
+    : { ...staffObj, slots: { ...staffObj.slots } }
+
+  const oldTechniqueId = staff.slots.technique
+
+  // Возвращаем старую технику в inventory.equipment
+  const invEquip = {
+    reachTrucks: [...state.inventory.equipment.reachTrucks],
+    orderPickers: [...state.inventory.equipment.orderPickers],
+  }
+  if (oldTechniqueId) {
+    if (oldTechniqueId.startsWith('orderpicker_')) {
+      invEquip.orderPickers.push(oldTechniqueId)
+    } else if (oldTechniqueId.startsWith('reachtruck_eq_')) {
+      invEquip.reachTrucks.push(oldTechniqueId)
+    }
+  }
+
+  // Удаляем новую технику из inventory.equipment
+  if (techniqueId) {
+    if (techniqueId.startsWith('orderpicker_')) {
+      const idx = invEquip.orderPickers.indexOf(techniqueId)
+      if (idx !== -1) invEquip.orderPickers.splice(idx, 1)
+    } else if (techniqueId.startsWith('reachtruck_eq_')) {
+      const idx = invEquip.reachTrucks.indexOf(techniqueId)
+      if (idx !== -1) invEquip.reachTrucks.splice(idx, 1)
+    }
+  }
+
+  staff.slots.technique = techniqueId
+
+  updateStateWithIncome({
+    shifts: {
+      ...state.shifts,
+      [shiftKey]: {
+        ...shift,
+        personnel: {
+          ...shift.personnel,
+          [personnelKey]: [
+            ...currentArray.slice(0, slotIndex),
+            staff,
+            ...currentArray.slice(slotIndex + 1),
+          ],
+        },
+      },
+    },
+    inventory: {
+      ...state.inventory,
+      equipment: invEquip,
+    },
+  })
 }

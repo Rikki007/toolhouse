@@ -1,7 +1,7 @@
 import { skills } from '../data/skills.ts'
 import { MASTER_UPGRADE_LEVELS } from '../data/masterUpgrades.ts'
 import type { SkillId, SkillLevel, SkillPath, SkillBranchChoices, BranchChoiceKey } from '../types/skills.ts'
-import type { Shift, ShiftStaff, ShiftsState, StaffUpgrades, ShopState, MasterUpgrades } from '../types/index.ts'
+import type { Shift, ShiftStaff, ShiftsState, StaffUpgrades, MasterUpgrades } from '../types/index.ts'
 import { getStaffById, getRiggingById, getEquipmentById } from './itemLookup.ts'
 import { getStaffSpeed } from './staffUpgrades.ts'
 import { formatMoney } from './format.ts'
@@ -38,9 +38,6 @@ function getMasterFactorForShift(shift: Shift, masterUpgrades?: MasterUpgrades):
   return MASTER_UPGRADE_LEVELS[level]?.factor ?? 1.0
 }
 
-/** Техника, лежащая в инвентаре: слоты ордерпикеров и ричтраков */
-export type InventoryEquipment = ShopState['equipment']
-
 /**
  * Всё, что влияет на пассивный доход.
  * Все поля обязательны: новый источник дохода нельзя «забыть» в вызове,
@@ -52,7 +49,6 @@ export interface IncomeSources {
   shifts: ShiftsState
   staffUpgrades: StaffUpgrades
   masterUpgrades: MasterUpgrades
-  equipment: InventoryEquipment
 }
 
 /** Минимальный срез состояния, из которого считаются источники дохода */
@@ -62,7 +58,6 @@ export interface IncomeStateSlice {
   shifts: ShiftsState
   staffUpgrades: StaffUpgrades
   masterUpgrades: MasterUpgrades
-  inventory: ShopState
 }
 
 /** Собирает источники дохода из состояния игры */
@@ -73,7 +68,6 @@ export function getIncomeSources(state: IncomeStateSlice): IncomeSources {
     shifts: state.shifts,
     staffUpgrades: state.staffUpgrades,
     masterUpgrades: state.masterUpgrades,
-    equipment: state.inventory.equipment,
   }
 }
 
@@ -99,8 +93,21 @@ export function calculateStaffKpi(staff: ShiftStaff, upgrades?: StaffUpgrades): 
 }
 
 /**
+ * Доход от техники, закреплённой за сотрудником: speed × EQUIPMENT_INCOME_MULTIPLIER.
+ * Пустой слот или неизвестный ID не вкладывают ничего.
+ *
+ * Само поле speed в данных — это шкала 0–10 для отрисовки звёздочек
+ * и прогресс-баров в UI, поэтому в расчёт оно идёт с множителем.
+ */
+export function calculateTechniqueIncome(techniqueId: string | null): number {
+  if (!techniqueId) return 0
+  return (getEquipmentById(techniqueId)?.speed ?? 0) * EQUIPMENT_INCOME_MULTIPLIER
+}
+
+/**
  * Суммарный доход в секунду от персонала всех активных смен.
- * Считается как сумма KPI сотрудников (скорость × снаряжение).
+ * Считается как сумма KPI сотрудников (скорость × снаряжение)
+ * и дохода закреплённой за ними техники (speed × 10).
  * Если смена полностью укомплектована (все водители и сборщики),
  * доход от этой смены умножается на FULLY_STAFFED_MULTIPLIER.
  * Доход каждой смены дополнительно умножается на множитель её мастера.
@@ -116,7 +123,7 @@ export function calculateShiftStaffIncome(
     if (!shift.isActive) continue
     let shiftIncome = 0
     for (const staff of [...shift.personnel.reachTruckDrivers, ...shift.personnel.pickers]) {
-      shiftIncome += calculateStaffKpi(staff, upgrades)
+      shiftIncome += calculateStaffKpi(staff, upgrades) + calculateTechniqueIncome(staff.slots.technique)
     }
     // Бонус за полную укомплектованность смены
     if (isShiftFullyStaffed(shift)) {
@@ -139,25 +146,6 @@ export function calculateShiftsMultiplier(shifts: ShiftsState): number {
   if (shifts.second.isActive) multiplier = Math.max(multiplier, 1.2)
   if (shifts.third.isActive) multiplier = Math.max(multiplier, 1.5)
   return multiplier
-}
-
-/**
- * Доход в секунду от купленной техники: сумма speed всех предметов
- * в слотах инвентаря, умноженная на EQUIPMENT_INCOME_MULTIPLIER.
- * Неизвестный ID не вкладывает ничего.
- *
- * Само поле speed в данных — это шкала 0–10 для отрисовки звёздочек
- * и прогресс-баров в UI, поэтому в расчёт оно идёт с множителем.
- */
-export function calculateEquipmentIncome(equipment?: InventoryEquipment): number {
-  if (!equipment) return 0
-
-  let income = 0
-  for (const id of [...(equipment.orderPickers ?? []), ...(equipment.reachTrucks ?? [])]) {
-    income += (getEquipmentById(id)?.speed ?? 0) * EQUIPMENT_INCOME_MULTIPLIER
-  }
-
-  return income
 }
 
 /**
@@ -198,17 +186,16 @@ function calculateSkillsMultiplier(
 /**
  * Рассчитывает текущий пассивный доход через мультипликативный метод.
  * Каждый открытый уровень навыка умножает доход на свой factor.
- * Персонал активных смен прибавляет свой KPI, техника — свою скорость × 10.
+ * Персонал активных смен прибавляет свой KPI и доход закреплённой техники (скорость × 10).
  * Открытые смены умножают весь итог (вторая — ×1.2, третья — ×1.5).
  */
 export function calculatePassiveIncome(sources: IncomeSources): number {
   const skillsMultiplier = calculateSkillsMultiplier(sources.skills, sources.branchChoices)
   const staffIncome = calculateShiftStaffIncome(sources.shifts, sources.staffUpgrades, sources.masterUpgrades)
-  const equipmentIncome = calculateEquipmentIncome(sources.equipment)
   const shiftsMultiplier = calculateShiftsMultiplier(sources.shifts)
 
   return roundToCents(
-    (BASE_PASSIVE_INCOME * skillsMultiplier + staffIncome + equipmentIncome) * shiftsMultiplier,
+    (BASE_PASSIVE_INCOME * skillsMultiplier + staffIncome) * shiftsMultiplier,
   )
 }
 

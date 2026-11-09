@@ -15,12 +15,6 @@ import helmetSound from '../assets/music/helmet.mp3'
 import closesSound from '../assets/music/closes.mp3'
 import terminalSound from '../assets/music/terminal.mp3'
 
-// Фоновая музыка — строковые пути (файлы в public/assets/music/)
-const musicFiles: Record<string, string> = {
-  mainMenu: 'assets/music/mainMenu.mp3',
-  game: 'assets/music/game.mp3',
-}
-
 // Звуковые эффекты — Vite-импорты (файлы в src/assets/music/)
 const soundFiles: Record<string, string> = {
   lootbox: lootboxSound,
@@ -44,38 +38,14 @@ const minigVariations: string[] = [
   minigSound06,
 ]
 
-const audioMap: Map<string, HTMLAudioElement> = new Map()
-
-let musicEnabled = true
 let soundEnabled = true
-
-export function setMusicEnabled(enabled: boolean): void {
-  musicEnabled = enabled
-  if (!enabled) {
-    stopAllMusic()
-  }
-}
 
 export function setSoundEnabled(enabled: boolean): void {
   soundEnabled = enabled
 }
 
-function isMusicEnabled(): boolean {
-  return musicEnabled
-}
-
 function isSoundEnabled(): boolean {
   return soundEnabled
-}
-
-function getAudio(trackName: string): HTMLAudioElement {
-  if (!audioMap.has(trackName)) {
-    const audio = new Audio(musicFiles[trackName])
-    audio.loop = true
-    audio.volume = 0.5
-    audioMap.set(trackName, audio)
-  }
-  return audioMap.get(trackName)!
 }
 
 /**
@@ -86,7 +56,6 @@ function getAudio(trackName: string): HTMLAudioElement {
  *
  * Каждый вызов playSound создаёт новый Audio-элемент — так не возникает
  * AbortError при быстрых повторных кликах на один и тот же звук.
- * Кэширование в audioMap оставлено только для фоновой музыки (loop).
  */
 const soundVariations: Record<string, string[]> = {
   minig: minigVariations,
@@ -116,18 +85,6 @@ function pickVariationIndex(groupName: string, group: string[]): number {
   return index
 }
 
-export function playMusic(trackName: string): void {
-  if (!isMusicEnabled()) return
-
-  const audio = getAudio(trackName)
-  // Останавливаем другие треки
-  stopAllMusicExcept(trackName)
-  audio.play().catch(() => {
-    // Автоплей может быть заблокирован браузером
-    console.warn(`Не удалось воспроизвести трек: ${trackName}`)
-  })
-}
-
 export function playSound(soundName: string): void {
   if (!isSoundEnabled()) return
 
@@ -155,37 +112,6 @@ export function playSound(soundName: string): void {
   })
 }
 
-export function stopMusic(trackName: string): void {
-  const audio = audioMap.get(trackName)
-  if (audio) {
-    audio.pause()
-    audio.currentTime = 0
-  }
-}
-
-export function stopAllMusicExcept(except: string): void {
-  for (const name of Object.keys(musicFiles)) {
-    if (name === except) continue
-    const audio = audioMap.get(name)
-    if (audio) {
-      audio.pause()
-      audio.currentTime = 0
-    }
-  }
-}
-
-export function stopAllMusic(): void {
-  for (const name of Object.keys(musicFiles)) {
-    const audio = audioMap.get(name)
-    if (audio) {
-      audio.pause()
-      audio.currentTime = 0
-    }
-  }
-}
-
 export function initAudioFromSettings(): void {
-  const settings = getState().settings
-  setMusicEnabled(settings.music)
-  setSoundEnabled(settings.sound)
+  setSoundEnabled(getState().settings.sound)
 }

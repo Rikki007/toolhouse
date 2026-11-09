@@ -10,6 +10,7 @@ export interface Equipment {
   image: string
   price: number
   speed: number // 0-100
+  factor: number
 }
 
 export interface EquipmentCategoryConfig {
@@ -57,6 +58,7 @@ export interface ShiftStaff {
     headdress: string | null
     uniform: string | null
     tool: string | null
+    technique: string | null
   }
 }
 

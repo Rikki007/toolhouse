@@ -2,9 +2,11 @@
 const NUM_SUFFIXES = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc']
 
 /**
- * Сокращает большие числа: 1 234 → «1.23K», 1 000 000 → «1M».
- * При ≥1000 в текущем суффиксе — автоматически переходит к следующему (999.999K → «1M»).
+ * Сокращает большие числа: 1 234 → «1.23 K», 1 000 000 → «1.00 M».
+ * При ≥1000 в текущем суффиксе — автоматически переходит к следующему (999.999K → «1.00 M»).
  * За пределами массива суффиксов — экспоненциальная запись.
+ * Дробная часть всегда с двумя цифрами: ширина строки внутри разряда постоянна,
+ * поэтому иконка монеты не «прыгает» при каждом изменении баланса.
  */
 function formatShortNumber(n: number, suffixIdx = 0): string {
   if (Math.abs(n) < 1000) return Math.abs(n).toLocaleString('ru-RU')
@@ -17,15 +19,14 @@ function formatShortNumber(n: number, suffixIdx = 0): string {
 
   const divisor = Math.pow(10, (suffixIdx + 1) * 3)
   const val = n / divisor
-  // Убираем только «хвостовые» нули дробной части: 1.20 → 1.2, 1.00 → 1, но 100 остаётся 100
-  let formatted = val.toFixed(2).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
+  const formatted = val.toFixed(2)
 
   // Если округление дало ≥1000 — переходим к следующему суффиксу
   if (Math.abs(parseFloat(formatted)) >= 1000) {
     return formatShortNumber(n, nextIdx)
   }
 
-  return formatted + NUM_SUFFIXES[nextIdx]
+  return `${formatted} ${NUM_SUFFIXES[nextIdx]}`
 }
 
 /** Форматирует число с пробелами */

@@ -1,8 +1,8 @@
 import type { Staff, StaffUpgrades } from '../types/index.ts'
-import { MAX_STAFF_UPGRADES } from '../types/index.ts'
 import { pickersList, reachTruckDriversList } from '../data/staff.ts'
 import {
   MAX_STAFF_SPEED,
+  QUALIFICATION_NAMES,
   UPGRADE_COST_RATIO,
   UPGRADE_PRICE_MULTIPLIER,
   UPGRADE_SPEED_BONUS,
@@ -30,12 +30,22 @@ export function getStaffSpeed(staff: Staff, upgrades?: StaffUpgrades): number {
   return Math.min(MAX_STAFF_SPEED, staff.baseSpeed + UPGRADE_SPEED_BONUS * count)
 }
 
-/** Достигнут либо потолок скорости, либо лимит повышений */
+/**
+ * Прокачка завершена: достигнут максимальный уровень скорости (10).
+ * Лимита на число повышений больше нет — сколько бы ни было baseSpeed,
+ * доводим до 10 (например, с baseSpeed 7 нужно 3 повышения, с 3 — 7).
+ */
 export function isStaffMaxedOut(staff: Staff, upgrades?: StaffUpgrades): boolean {
-  return (
-    getUpgradeCount(upgrades, staff.id) >= MAX_STAFF_UPGRADES ||
-    getStaffSpeed(staff, upgrades) >= MAX_STAFF_SPEED
-  )
+  return getStaffSpeed(staff, upgrades) >= MAX_STAFF_SPEED
+}
+
+/**
+ * Название квалификации по текущему уровню (скорости) сотрудника.
+ * Пустая строка для уровней без названия (1–2).
+ */
+export function getQualificationName(staff: Staff, upgrades?: StaffUpgrades): string {
+  const speed = getStaffSpeed(staff, upgrades)
+  return QUALIFICATION_NAMES[speed] ?? ''
 }
 
 /**
