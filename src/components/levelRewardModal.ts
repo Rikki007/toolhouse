@@ -49,7 +49,12 @@ export function showLevelRewardModal(
         body.appendChild(note)
       }
 
-      if (reward.type === 'money') {
+      if (reward.type === 'none') {
+        const note = document.createElement('div')
+        note.className = 'lootbox-result'
+        note.textContent = 'Награда не выпала'
+        body.appendChild(note)
+      } else if (reward.type === 'money') {
         const amount = document.createElement('div')
         amount.className = 'lootbox-result'
         amount.textContent = `Вы получили ${formatMoney(reward.amount)}!`
@@ -79,9 +84,9 @@ export function showLevelRewardModal(
       const btnTake = document.createElement('button')
       btnTake.type = 'button'
       btnTake.className = 'lootbox-modal-close'
-      btnTake.textContent = 'Забрать'
+      btnTake.textContent = reward.type === 'none' ? 'Понятно' : 'Забрать'
       btnTake.addEventListener('click', () => {
-        playSound('buy')
+        playSound(reward.type === 'none' ? 'message' : 'buy')
         finish(() => applyLevelReward(reward))
       })
       buttons.appendChild(btnTake)

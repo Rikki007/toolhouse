@@ -11,6 +11,8 @@ import { addItemToShop, isItemPurchased } from '../state/inventoryStore.ts'
 import { getEquipmentById, getStaffById, getRiggingById } from '../utils/itemLookup.ts'
 import { playSound } from '../state/audioManager.ts'
 
+type ShopCategoryId = 'orderPickers' | 'reachTrucks' | 'pickers' | 'reachTruckDrivers' | 'rigging'
+
 const SHOP_CATEGORIES = [
   { id: 'orderPickers', label: 'Ордерпикеры', icon: interfaceIconImages['orderpickers'] },
   { id: 'reachTrucks', label: 'Ричтраки', icon: interfaceIconImages['forclifts'] },
@@ -26,10 +28,38 @@ function updateMoneyDisplay(container: HTMLElement): void {
   }
 }
 
+/** Карточка-заглушка, когда в категории не осталось товаров */
+function createEmptyCard(categoryId: ShopCategoryId): HTMLElement {
+  const emptyCard = document.createElement('div')
+  emptyCard.className = 'shop-card'
+  emptyCard.style.textAlign = 'center'
+  emptyCard.style.padding = '2rem'
+  emptyCard.style.opacity = '0.5'
+  emptyCard.style.color = '#999'
+  emptyCard.textContent = categoryId === 'rigging'
+    ? 'Нет доступного снаряжения'
+    : categoryId === 'pickers' || categoryId === 'reachTruckDrivers'
+      ? 'Нет доступного персонала'
+      : 'Нет доступной техники'
+  return emptyCard
+}
+
+/**
+ * Убирает карточку купленного сотрудника из сетки без её полной перерисовки,
+ * чтобы прокрутка магазина сохранилась.
+ */
+function removePurchasedCard(card: HTMLElement, categoryId: ShopCategoryId): void {
+  const grid = card.parentElement
+  card.remove()
+  if (grid && grid.children.length === 0) {
+    grid.appendChild(createEmptyCard(categoryId))
+  }
+}
+
 /**
  * Создаёт карточку товара магазина.
  */
-function createCard(item: Equipment | Staff | Rigging, categoryId: 'orderPickers' | 'reachTrucks' | 'pickers' | 'reachTruckDrivers' | 'rigging', container: HTMLElement): HTMLElement {
+function createCard(item: Equipment | Staff | Rigging, categoryId: ShopCategoryId, container: HTMLElement): HTMLElement {
   const card = document.createElement('div')
   card.className = 'shop-card'
 
@@ -163,31 +193,18 @@ function createCard(item: Equipment | Staff | Rigging, categoryId: 'orderPickers
 
     // Звук покупки — деньги есть, покупка состоится
     playSound('buy')
-    
-    if (categoryId === 'orderPickers' || categoryId === 'reachTrucks') {
-      // ===== ЛОГИКА ПОКУПКИ ТЕХНИКИ =====
-      updateState({ money: currentMoney - priceNum })
-      addItemToShop(item.id)
-      openCategory(categoryId, container)
-      updateMoneyDisplay(container)
-      return
-    }
-    
-    if (categoryId === 'rigging') {
-      // ===== ЛОГИКА ПОКУПКИ СНАРЯЖЕНИЯ =====
-      updateState({ money: currentMoney - priceNum })
-      addItemToShop(item.id)
-      openCategory(categoryId, container)
-      updateMoneyDisplay(container)
-      return
-    }
-    
-    // ===== ЛОГИКА ПОКУПКИ ПЕРСОНАЛА =====
-    const staffItem = item as Staff
+
     updateState({ money: currentMoney - priceNum })
-    addItemToShop(staffItem.id)
-    openCategory(categoryId, container)
+    addItemToShop(item.id)
     updateMoneyDisplay(container)
+
+    // Техника и снаряжение покупаются многократно и остаются в каталоге,
+    // поэтому сетку не перерисовываем: пересоздание оверлея сбрасывало
+    // прокрутку магазина в начало.
+    // Персонал после покупки из каталога исчезает — убираем только его карточку.
+    if (categoryId === 'pickers' || categoryId === 'reachTruckDrivers') {
+      removePurchasedCard(card, categoryId)
+    }
   })
   card.appendChild(buyBtn)
   
@@ -213,7 +230,7 @@ export function renderShopModal(container: HTMLElement): HTMLElement {
     btn.appendChild(labelEl)
     btn.addEventListener('click', () => {
       playSound('click')
-      openCategory(cat.id as 'orderPickers' | 'reachTrucks' | 'pickers' | 'reachTruckDrivers' | 'rigging', container)
+      openCategory(cat.id as ShopCategoryId, container)
     })
     content.appendChild(btn)
   }
@@ -221,7 +238,7 @@ export function renderShopModal(container: HTMLElement): HTMLElement {
   return content
 }
 
-function openCategory(categoryId: 'orderPickers' | 'reachTrucks' | 'pickers' | 'reachTruckDrivers' | 'rigging', container: HTMLElement): void {
+function openCategory(categoryId: ShopCategoryId, container: HTMLElement): void {
   // Берём ID из state.shop
   const shop = getState().shop
   let idList: string[] = []
@@ -288,18 +305,7 @@ function openCategory(categoryId: 'orderPickers' | 'reachTrucks' | 'pickers' | '
     itemsGrid.className = 'shop-items-grid'
 
     if (items.length === 0) {
-      const emptyCard = document.createElement('div')
-      emptyCard.className = 'shop-card'
-      emptyCard.style.textAlign = 'center'
-      emptyCard.style.padding = '2rem'
-      emptyCard.style.opacity = '0.5'
-      emptyCard.style.color = '#999'
-      emptyCard.textContent = categoryId === 'rigging' 
-        ? 'Нет доступного снаряжения' 
-        : categoryId === 'pickers' || categoryId === 'reachTruckDrivers' 
-          ? 'Нет доступного персонала' 
-          : 'Нет доступной техники'
-      itemsGrid.appendChild(emptyCard)
+      itemsGrid.appendChild(createEmptyCard(categoryId))
     } else {
       for (const item of items) {
         const card = createCard(item, categoryId, container)

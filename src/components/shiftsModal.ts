@@ -168,15 +168,6 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
       buyBtn.dataset.cost = String(shift.cost)
       buyBtn.dataset.requiredLevel = String(config.requiredLevel)
 
-      // Подпись требования уровня, если игрок ещё не достиг нужного уровня
-      if (!levelOk) {
-        const req = document.createElement('span')
-        req.className = 'shifts-modal-item-level-req'
-        req.dataset.requiredLevel = String(config.requiredLevel)
-        req.textContent = `Откроется на ${config.requiredLevel} уровне`
-        itemFooter.appendChild(req)
-      }
-
       itemFooter.appendChild(buyBtn)
       updateBuyButtonsAvailability()
 

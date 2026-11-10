@@ -1,5 +1,5 @@
 import type { LootBoxReward, StaffReward, RiggingReward } from '../data/lootBoxRewards.ts'
-import { getRandomLootBoxReward } from '../data/lootBoxRewards.ts'
+import { getRandomLevelReward } from '../data/lootBoxRewards.ts'
 import { getState, updateState } from '../state/state.ts'
 import { getAllStaffIds, addLootboxReward } from '../state/inventoryStore.ts'
 import { getStaffById } from '../utils/itemLookup.ts'
@@ -16,11 +16,12 @@ export interface LevelRewardResult {
 
 /**
  * Выбрать награду для уровня.
+ * Берётся из LEVEL_DROPS (без денег), поэтому сама награда не повышает уровень.
  * Проверяет дубликаты персонала — если сотрудник уже в инвентаре или смене,
  * заменяет награду на его стоимость в деньгах (как в лутбоксах).
  */
 export function pickLevelReward(): LevelRewardResult {
-  const reward = getRandomLootBoxReward()
+  const reward = getRandomLevelReward()
 
   if (reward.type === 'staff') {
     const allStaffIds = getAllStaffIds()
@@ -41,8 +42,14 @@ export function pickLevelReward(): LevelRewardResult {
 
 /**
  * Применить награду за уровень: деньги на счёт, сотрудник/снаряжение в инвентарь.
+ * Награда типа «none» — ничего не делает.
  */
 export function applyLevelReward(reward: LootBoxReward): void {
+  if (reward.type === 'none') {
+    // Пусто — ничего не начисляем
+    return
+  }
+
   if (reward.type === 'money') {
     updateState({ money: getState().money + reward.amount })
   } else if (reward.type === 'staff') {

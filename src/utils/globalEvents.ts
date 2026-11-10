@@ -12,10 +12,10 @@ import { formatMoney } from './format.ts'
 import { playSound } from '../state/audioManager.ts'
 
 /** Минимальная пауза между событиями — 2 минуты */
-const EVENT_MIN_INTERVAL = 20 * 60 * 1000
+const EVENT_MIN_INTERVAL = 5 * 60 * 1000
 
 /** Максимальная пауза между событиями — 4 минуты */
-const EVENT_MAX_INTERVAL = 40 * 60 * 1000
+const EVENT_MAX_INTERVAL = 10 * 60 * 1000
 
 /** Как часто наблюдатель проверяет, пора ли запускать событие */
 const OBSERVER_TICK = 1000
@@ -24,7 +24,7 @@ const OBSERVER_TICK = 1000
  * Порядок чередования событий: локальное, глобальное, локальное и выбор.
  * Индекс сдвигается после каждого сработавшего события.
  */
-const EVENT_SEQUENCE = ['locale', 'global', 'choice', 'choice', 'choice'] as const
+const EVENT_SEQUENCE = ['locale', 'choice', 'global', 'choice',] as const
 
 type EventType = (typeof EVENT_SEQUENCE)[number]
 
