@@ -446,7 +446,7 @@ function openTechniqueSelectorModal(
         removeBtn.className = 'equipment-selector-remove-btn'
         removeBtn.textContent = 'Снять технику'
         removeBtn.addEventListener('click', () => {
-          playSound('click')
+          playSound('forklift')
           setStaffTechniqueSlot(shiftId, role, slotIndex, null)
           onCloseModal()
           onRerender()
@@ -481,7 +481,7 @@ function openTechniqueSelectorModal(
           item.appendChild(nameEl)
 
           item.addEventListener('click', () => {
-            playSound('click')
+            playSound('forklift')
             setStaffTechniqueSlot(shiftId, role, slotIndex, equip.id)
             onCloseModal()
             onRerender()

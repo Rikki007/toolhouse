@@ -14,6 +14,7 @@ import clickSound from '../assets/music/click.mp3'
 import helmetSound from '../assets/music/helmet.mp3'
 import closesSound from '../assets/music/closes.mp3'
 import terminalSound from '../assets/music/terminal.mp3'
+import forkliftSound from '../assets/music/forklift.mp3'
 
 // Звуковые эффекты — Vite-импорты (файлы в src/assets/music/)
 const soundFiles: Record<string, string> = {
@@ -25,6 +26,7 @@ const soundFiles: Record<string, string> = {
   helmet: helmetSound,
   closes: closesSound,
   terminal: terminalSound,
+  forklift: forkliftSound,
 }
 
 /** Варианты звука майнинга (бывший одиночный minig.mp3) */
