@@ -15,12 +15,14 @@
   transition: all 0.25s ease;
 }
 
-.menu-button:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
-  color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .menu-button:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
 }
 
 .menu-button:focus-visible {
@@ -48,10 +50,12 @@
   transition: all 0.2s ease;
 }
 
-.back-btn:hover {
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-  color: var(--accent);
+@media (hover: hover) {
+  .back-btn:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
 }
 
 /* Settings button (game) */
@@ -70,10 +74,12 @@
   transition: all 0.2s ease;
 }
 
-.game-settings-btn:hover {
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-  color: var(--accent);
+@media (hover: hover) {
+  .game-settings-btn:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
 }
 
 /* Tab buttons */
@@ -91,9 +97,11 @@
   border-radius: 8px;
 }
 
-.game-tab-btn:hover {
-  background: var(--accent-bg);
-  color: var(--accent);
+@media (hover: hover) {
+  .game-tab-btn:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
 }
 
 .game-tab-btn.active {
@@ -122,8 +130,10 @@
   color: var(--accent);
 }
 
-.toggle-button:hover {
-  border-color: var(--accent-border);
+@media (hover: hover) {
+  .toggle-button:hover {
+    border-color: var(--accent-border);
+  }
 }
 
 .toggle-button:focus-visible {
@@ -151,11 +161,13 @@
   transition: all 0.2s ease;
 }
 
-.modal-close-btn:hover,
-.shop-modal-close:hover {
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-  color: var(--accent);
+@media (hover: hover) {
+  .modal-close-btn:hover,
+  .shop-modal-close:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
 }
 
 .shifts-personnel-card-remove {
@@ -178,10 +190,12 @@
   text-align: left;
 }
 
-.shop-category-btn:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
-  transform: translateX(4px);
+@media (hover: hover) {
+  .shop-category-btn:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    transform: translateX(4px);
+  }
 }
 
 /* Minigame button */
@@ -200,10 +214,12 @@
   transition: all 0.2s ease;
 }
 
-.minigame-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .minigame-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
 }
 
 /* Buy button */
@@ -219,10 +235,12 @@
   transition: all 0.2s ease;
 }
 
-.shop-expanded-buy:hover {
-  background: var(--accent-border);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .shop-expanded-buy:hover {
+    background: var(--accent-border);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
 }
 
 /* Lootbox button */
@@ -238,10 +256,12 @@
   transition: all 0.2s ease;
 }
 
-.lootbox-modal-close:hover {
-  background: var(--accent-border);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .lootbox-modal-close:hover {
+    background: var(--accent-border);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
 }
 
 /* Skill level / global event action button */
@@ -258,8 +278,10 @@
   transition: all 0.2s ease;
 }
 
-.skill-level-buy-btn:hover {
-  background: var(--accent-border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .skill-level-buy-btn:hover {
+    background: var(--accent-border);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
 }

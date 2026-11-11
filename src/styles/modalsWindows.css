@@ -304,11 +304,13 @@
   overflow: hidden;
 }
 
-.lootbox-item:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .lootbox-item:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: var(--shadow);
+  }
 }
 
 .lootbox-item-image {

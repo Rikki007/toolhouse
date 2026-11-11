@@ -7,10 +7,6 @@ function getPlayerLevel(state: AppState): number {
   return state.lastPlayerLevel
 }
 
-// ==================== Аллегианс ====================
-const ALLEGIANCE_PARAGON_THRESHOLD = 20
-const ALLEGIANCE_RENEGADE_THRESHOLD = 80
-
 // ==================== Режим (liberal vs totalitarian) ====================
 const REGIME_BRANCH_LEVELS: BranchChoiceKey[] = [
   'hr-3', 'hr-5', 'hr-7', 'hr-9', 'hr-10',
@@ -386,31 +382,6 @@ export const achievements: AchievementDef[] = [
     description: 'Достигнут двадцать пятый уровень.',
     imageKey: 'achievements/level_5',
     check: (state) => getPlayerLevel(state) >= 25,
-  },
-
-  // ===== АЛЛЕГИАНС (лояльность коллектива) =====
-  {
-    id: 'allegiance_paragon',
-    title: 'Приятный парень',
-    description: 'Всегда становитесь на сторону сотрудников. Ваш девиз - доверие.',
-    imageKey: 'achievements/allegiance_paragon',
-    check: (state) => state.allegiance.agression < ALLEGIANCE_PARAGON_THRESHOLD,
-  },
-  {
-    id: 'allegiance_balanced',
-    title: 'Сбалансированный',
-    description: 'Непредвзятость в принятии решений - ваша натура.',
-    imageKey: 'achievements/allegiance_balanced',
-    check: (state) =>
-      state.allegiance.agression >= ALLEGIANCE_PARAGON_THRESHOLD &&
-      state.allegiance.agression < ALLEGIANCE_RENEGADE_THRESHOLD,
-  },
-  {
-    id: 'allegiance_renegade',
-    title: 'Бессердечный',
-    description: 'Никогда не прощаете ошибки сотрудников. Ваше кредо - порядок.',
-    imageKey: 'achievements/allegiance_renegade',
-    check: (state) => state.allegiance.agression >= ALLEGIANCE_RENEGADE_THRESHOLD,
   },
 
   // ===== РЕЖИМ (liberal vs totalitarian) =====

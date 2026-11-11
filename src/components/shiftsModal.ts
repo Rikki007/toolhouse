@@ -1,8 +1,7 @@
 import { getCurrentShiftConfig, buyShift, shiftConfigs } from '../state/shiftsStore.ts'
 import { createModal } from '../utils/modalFactory.ts'
-import { createPersonnelCard, createMasterCard, FORKLIFT_SLOTS, ASSEMBLER_SLOTS } from '../utils/personnel.ts'
+import { createPersonnelCard, createMasterCard, FORKLIFT_SLOTS, ASSEMBLER_SLOTS, updateMasterCardUI } from '../utils/personnel.ts'
 import { getState, subscribe } from '../state/state.ts'
-import { getMasterUpgradeLevel, getMasterUpgradeCost } from '../state/masterUpgradeStore.ts'
 import { isShiftFullyStaffed } from '../utils/passiveIncome.ts'
 import { interfaceIconImages, coinFrames } from '../assets/assetLoader.ts'
 import { playSound } from '../state/audioManager.ts'
@@ -304,22 +303,25 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   /** Ключ смены в стейте */
   const shiftKey = shiftId === 1 ? 'first' : shiftId === 2 ? 'second' : 'third'
 
-  // Подпись отрендеренного блока: перерисовываем только когда реально
-  // поменялись мастер, его уровень, цена или доступность покупки
-  let renderedSignature = ''
+  /**
+   * Обновляет блок мастера: если карточка этого мастера уже отрисована —
+   * обновляем её элементы на месте, без пересоздания DOM и сброса скролла.
+   */
+  let renderedMasterId = ''
 
   const refreshMasterCard = (): void => {
     const state = getState()
     const shift = state.shifts[shiftKey]
     const masterId = shift.personnel.master ?? 'master_01'
-    const level = getMasterUpgradeLevel(masterId)
-    const cost = getMasterUpgradeCost(masterId, shift.cost)
-    const affordable = cost === null || state.money >= cost
-    const signature = `${masterId}|${level}|${cost}|${affordable}`
-    if (signature === renderedSignature) return
 
-    renderedSignature = signature
-    masterSection.querySelector('.shifts-master-card')?.remove()
+    const existingCard = masterSection.querySelector('.shifts-master-card') as HTMLElement | null
+    if (existingCard && masterId === renderedMasterId) {
+      updateMasterCardUI(existingCard, masterId, shift.cost)
+      return
+    }
+
+    renderedMasterId = masterId
+    existingCard?.remove()
     masterSection.appendChild(createMasterCard(masterId, shift.cost))
   }
 

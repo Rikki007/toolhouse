@@ -114,10 +114,12 @@
   transition: all 0.2s ease;
 }
 
-.shop-card:hover {
-  border-color: var(--accent-border);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .shop-card:hover {
+    border-color: var(--accent-border);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
 }
 
 .shop-card-image {
@@ -406,10 +408,12 @@
   text-align: left;
 }
 
-.shop-staff-category-btn:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
-  transform: translateX(4px);
+@media (hover: hover) {
+  .shop-staff-category-btn:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    transform: translateX(4px);
+  }
 }
 
 .shop-staff-category-icon {
@@ -455,9 +459,11 @@
     border-color 0.2s;
 }
 
-.toolbar-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.25);
+@media (hover: hover) {
+  .toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
 }
 
 .toolbar-btn-icon {
@@ -496,9 +502,11 @@
     border-color 0.2s;
 }
 
-.shifts-toolbar-btn:hover {
-  background: rgba(99, 102, 241, 0.25);
-  border-color: rgba(99, 102, 241, 0.5);
+@media (hover: hover) {
+  .shifts-toolbar-btn:hover {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.5);
+  }
 }
 
 .shifts-toolbar-btn[data-shifts="1"] {
@@ -690,9 +698,11 @@
   cursor: pointer;
 }
 
-.shifts-modal-item:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(99, 102, 241, 0.3);
+@media (hover: hover) {
+  .shifts-modal-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
 }
 
 .shifts-modal-item-header {
@@ -789,9 +799,11 @@
     border-color 0.2s;
 }
 
-.shifts-modal-buy-btn:not(:disabled):hover {
-  background: rgba(74, 222, 128, 0.25);
-  border-color: rgba(74, 222, 128, 0.5);
+@media (hover: hover) {
+  .shifts-modal-buy-btn:not(:disabled):hover {
+    background: rgba(74, 222, 128, 0.25);
+    border-color: rgba(74, 222, 128, 0.5);
+  }
 }
 
 .shifts-modal-buy-btn:disabled {
@@ -865,8 +877,10 @@
   transition: background 0.2s;
 }
 
-.shifts-personnel-modal-close:hover {
-  background: rgba(255, 255, 255, 0.15);
+@media (hover: hover) {
+  .shifts-personnel-modal-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
 }
 
 .shifts-personnel-modal-body {
@@ -965,9 +979,11 @@
     border-color 0.15s;
 }
 
-.master-upgrade-btn:hover:not(:disabled) {
-  background: rgba(170, 59, 255, 0.32);
-  border-color: rgba(170, 59, 255, 0.7);
+@media (hover: hover) {
+  .master-upgrade-btn:hover:not(:disabled) {
+    background: rgba(170, 59, 255, 0.32);
+    border-color: rgba(170, 59, 255, 0.7);
+  }
 }
 
 .master-upgrade-btn:disabled {
@@ -1004,10 +1020,12 @@
   position: relative;
 }
 
-.shifts-personnel-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .shifts-personnel-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
 }
 
 .shifts-personnel-card.shifts-personnel-card-selected {
@@ -1208,9 +1226,11 @@
   cursor: pointer;
 }
 
-.staff-detail-equipment-slot:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.25);
+@media (hover: hover) {
+  .staff-detail-equipment-slot:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
 }
 
 .staff-detail-equipment-slot-filled {
@@ -1410,9 +1430,11 @@
   transition: all 0.2s ease;
 }
 
-.equipment-selector-remove-btn:hover {
-  background: rgba(255, 68, 68, 0.25);
-  border-color: rgba(255, 68, 68, 0.5);
+@media (hover: hover) {
+  .equipment-selector-remove-btn:hover {
+    background: rgba(255, 68, 68, 0.25);
+    border-color: rgba(255, 68, 68, 0.5);
+  }
 }
 
 .equipment-selector-empty {
@@ -1434,9 +1456,11 @@
   transition: all 0.2s ease;
 }
 
-.equipment-selector-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
+@media (hover: hover) {
+  .equipment-selector-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
 }
 
 .equipment-selector-item-selected {
@@ -1464,9 +1488,11 @@
   box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
 }
 
-.lootbox-reward-card:hover {
-  border-color: rgba(251, 191, 36, 0.6);
-  box-shadow: 0 0 30px rgba(251, 191, 36, 0.25);
+@media (hover: hover) {
+  .lootbox-reward-card:hover {
+    border-color: rgba(251, 191, 36, 0.6);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.25);
+  }
 }
 
 .lootbox-result {

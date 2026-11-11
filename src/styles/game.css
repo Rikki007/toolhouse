@@ -129,10 +129,12 @@
   transition: all 0.2s ease;
 }
 
-.error-modal-close:hover {
-  background: var(--accent-border);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .error-modal-close:hover {
+    background: var(--accent-border);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
 }
 
 /* Confirm modal */
@@ -186,9 +188,11 @@
   border: 1px solid var(--border);
 }
 
-.confirm-modal-btn-no:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--text);
+@media (hover: hover) {
+  .confirm-modal-btn-no:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--text);
+  }
 }
 
 .confirm-modal-btn-yes {
@@ -196,10 +200,12 @@
   color: var(--bg);
 }
 
-.confirm-modal-btn-yes:hover {
-  background: var(--accent-border);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .confirm-modal-btn-yes:hover {
+    background: var(--accent-border);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
 }
 
 /* Inventory cards */
@@ -217,18 +223,24 @@
   transition: all 0.2s ease;
 }
 
-.inventory-card:hover {
-  border-color: var(--accent-border);
+@media (hover: hover) {
+  .inventory-card:hover {
+    border-color: var(--accent-border);
+  }
 }
 
 /* Карточки техники — некликабельны, без hover-эффекта */
-.inventory-card-static:hover {
-  border-color: var(--border);
+@media (hover: hover) {
+  .inventory-card-static:hover {
+    border-color: var(--border);
+  }
 }
 
 /* Карточки техники — некликабельны, без hover-эффекта */
-.inventory-card-static:hover {
-  border-color: var(--border);
+@media (hover: hover) {
+  .inventory-card-static:hover {
+    border-color: var(--border);
+  }
 }
 
 .inventory-card-image {
@@ -281,9 +293,11 @@
   transition: all 0.2s ease;
 }
 
-.inventory-card-remove:hover {
-  background: rgba(255, 0, 0, 0.2);
-  transform: scale(1.1);
+@media (hover: hover) {
+  .inventory-card-remove:hover {
+    background: rgba(255, 0, 0, 0.2);
+    transform: scale(1.1);
+  }
 }
 
 /* Expanded inventory card for staff */
@@ -318,9 +332,11 @@
   border-color: var(--accent-border);
 }
 
-.inventory-card-btn-assign:hover {
-  background: var(--accent);
-  color: white;
+@media (hover: hover) {
+  .inventory-card-btn-assign:hover {
+    background: var(--accent);
+    color: white;
+  }
 }
 
 .inventory-card-btn-sell {
@@ -329,8 +345,10 @@
   border-color: rgba(255, 0, 0, 0.3);
 }
 
-.inventory-card-btn-sell:hover {
-  background: rgba(255, 0, 0, 0.2);
+@media (hover: hover) {
+  .inventory-card-btn-sell:hover {
+    background: rgba(255, 0, 0, 0.2);
+  }
 }
 
 /* ===== Прокачка квалификации сотрудника ===== */
@@ -352,8 +370,10 @@
   border-color: rgba(217, 149, 10, 0.4);
 }
 
-.inventory-card-btn-upgrade:hover:not(:disabled) {
-  background: rgba(217, 149, 10, 0.28);
+@media (hover: hover) {
+  .inventory-card-btn-upgrade:hover:not(:disabled) {
+    background: rgba(217, 149, 10, 0.28);
+  }
 }
 
 .inventory-card-btn-upgrade:disabled {
@@ -402,8 +422,10 @@
   transition: all 0.2s ease;
 }
 
-.staff-upgrade-btn:hover:not(:disabled) {
-  background: rgba(217, 149, 10, 0.28);
+@media (hover: hover) {
+  .staff-upgrade-btn:hover:not(:disabled) {
+    background: rgba(217, 149, 10, 0.28);
+  }
 }
 
 .staff-upgrade-btn:disabled {
@@ -463,8 +485,10 @@
   transition: all 0.2s ease;
 }
 
-.shift-selector-close:hover {
-  background: rgba(255, 255, 255, 0.1);
+@media (hover: hover) {
+  .shift-selector-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .shift-selector-body {
@@ -491,10 +515,12 @@
   font-weight: 500;
 }
 
-.shift-selector-item:hover {
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .shift-selector-item:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    transform: translateY(-2px);
+  }
 }
 
 .shift-selector-item-full {
@@ -645,9 +671,11 @@
     box-shadow 0.12s;
 }
 
-.achievement-icon-unlocked:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 10px var(--accent-border);
+@media (hover: hover) {
+  .achievement-icon-unlocked:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 10px var(--accent-border);
+  }
 }
 
 .achievements-empty {
@@ -698,9 +726,11 @@
     box-shadow 0.12s;
 }
 
-.achievement-icon-unlocked:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 10px rgba(170, 59, 255, 0.35);
+@media (hover: hover) {
+  .achievement-icon-unlocked:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 10px rgba(170, 59, 255, 0.35);
+  }
 }
 
 .achievement-icon-unlocked .achievement-icon-image {
@@ -824,9 +854,11 @@
     box-shadow 0.12s;
 }
 
-.achievement-icon-unlocked:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 10px rgba(170, 59, 255, 0.35);
+@media (hover: hover) {
+  .achievement-icon-unlocked:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 10px rgba(170, 59, 255, 0.35);
+  }
 }
 
 .achievement-icon-image {
@@ -875,62 +907,6 @@
   color: var(--text-muted);
   text-align: center;
   line-height: 1.4;
-}
-
-/* ===== Глобальные события ===== */
-.global-event-modal-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  text-align: center;
-}
-
-.global-event-description {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.45;
-  color: var(--text-h);
-}
-
-.global-event-result {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.global-event-positive {
-  color: #2fa96d;
-}
-
-.global-event-negative {
-  color: #d9534f;
-}
-
-.global-event-ok-btn {
-  margin-top: 4px;
-}
-
-/* Кнопки решения по сотруднику */
-.global-event-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.global-event-actions .skill-level-buy-btn {
-  align-self: auto;
-  min-width: 120px;
-}
-
-.global-event-dismiss-btn {
-  background: #d9534f;
-}
-
-.global-event-dismiss-btn:hover {
-  background: #c9302c;
 }
 
 /* Preloader */
@@ -1005,9 +981,11 @@
   transition: all 0.2s ease;
 }
 
-.shop-category-btn:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
+@media (hover: hover) {
+  .shop-category-btn:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+  }
 }
 
 .shop-category-icon {
@@ -1087,9 +1065,11 @@
   transition: all 0.2s ease;
 }
 
-.shop-staff-category-btn:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
+@media (hover: hover) {
+  .shop-staff-category-btn:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+  }
 }
 
 .shop-staff-category-icon {
@@ -1123,9 +1103,11 @@
   transition: all 0.2s ease;
 }
 
-.shop-card:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-bg);
+@media (hover: hover) {
+  .shop-card:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+  }
 }
 
 .shop-card-image {
@@ -1212,10 +1194,12 @@
   transition: all 0.2s ease;
 }
 
-.shop-card-buy:hover {
-  background: var(--accent-border);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .shop-card-buy:hover {
+    background: var(--accent-border);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
 }
 
 /* Back button */
@@ -1230,7 +1214,9 @@
   transition: all 0.2s ease;
 }
 
-.back-btn:hover {
-  background: var(--accent-bg);
-  color: var(--accent);
+@media (hover: hover) {
+  .back-btn:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
 }

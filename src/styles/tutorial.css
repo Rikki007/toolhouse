@@ -50,8 +50,10 @@
   transition: border-color 0.25s ease;
 }
 
-.tutorial-accordion-item:hover {
-  border-color: var(--accent-border);
+@media (hover: hover) {
+  .tutorial-accordion-item:hover {
+    border-color: var(--accent-border);
+  }
 }
 
 .tutorial-accordion-item-open {
@@ -84,8 +86,10 @@
   }
 }
 
-.tutorial-accordion-header:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .tutorial-accordion-header:hover {
+    color: var(--accent);
+  }
 }
 
 .tutorial-accordion-header:focus-visible {

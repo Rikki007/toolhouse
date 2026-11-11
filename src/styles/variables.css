@@ -83,6 +83,32 @@
 /* ===== Base Elements ===== */
 body {
   margin: 0;
+  touch-action: manipulation;
+}
+
+/*
+ * Глобальный запрет выделения текста и картинок при долгом нажатии.
+ * -webkit-touch-callout не наследуется — нужен универсальный селектор,
+ * иначе на iOS долгое нажатие показывает меню копирования/сохранения.
+ */
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Картинки и иконки нельзя «вытащить» долгим нажатием/перетаскиванием */
+img {
+  -webkit-user-drag: none;
+}
+
+/* В текстовых полях выделение и вставка должны работать */
+input,
+textarea {
+  -webkit-touch-callout: default;
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 h1,
@@ -141,8 +167,10 @@ code {
   transition: border-color 0.3s;
   margin-bottom: 24px;
 
-  &:hover {
-    border-color: var(--accent-border);
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--accent-border);
+    }
   }
   &:focus-visible {
     outline: 2px solid var(--accent);
@@ -274,8 +302,10 @@ code {
     text-decoration: none;
     transition: box-shadow 0.3s;
 
-    &:hover {
-      box-shadow: var(--shadow);
+    @media (hover: hover) {
+      &:hover {
+        box-shadow: var(--shadow);
+      }
     }
     .button-icon {
       height: 18px;

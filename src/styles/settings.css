@@ -68,10 +68,15 @@
   -moz-appearance: none;
 }
 
-.settings-select:hover,
 .settings-select:focus {
   border-color: var(--accent-border);
   outline: none;
+}
+
+@media (hover: hover) {
+  .settings-select:hover {
+    border-color: var(--accent-border);
+  }
 }
 
 .settings-select option {

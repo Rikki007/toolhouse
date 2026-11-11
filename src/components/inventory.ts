@@ -5,6 +5,7 @@ import { getItemById, getRiggingById, getStaffById } from '../utils/itemLookup.t
 import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem, upgradeStaff } from '../state/inventoryStore.ts'
 import { MAX_STAFF_SPEED } from '../data/staffUpgrades.ts'
 import { getStaffSpeed, getNextUpgrade } from '../utils/staffUpgrades.ts'
+import { updateUpgradeCardUI } from '../utils/inventory.ts'
 import { assignStaffToShift, getActiveShifts, getShiftSlotAvailability } from '../state/shiftsStore.ts'
 import { playSound } from '../state/audioManager.ts'
 
@@ -124,8 +125,8 @@ function openShiftSelector(staffId: string, role: 'forklift' | 'picker'): void {
  */
 function buildStaffUpgrade(
   staffId: string,
-  container: HTMLElement,
-  onClose: () => void
+  _container: HTMLElement,
+  _onClose: () => void
 ): InventoryCardUpgrade | undefined {
   const staff = getStaffById(staffId)
   if (!staff) return undefined
@@ -138,11 +139,11 @@ function buildStaffUpgrade(
     maxLevel: MAX_STAFF_SPEED,
     cost: next?.cost ?? 0,
     affordable: next ? state.money >= next.cost : false,
+    staffId,
     onUpgrade: () => {
       if (!upgradeStaff(staffId)) return
-      // Перерисовываем модальное окно, чтобы обновить цену и звёзды
-      onClose()
-      openInventoryModal(container)
+      // Обновляем карточку на месте — скролл не сбрасывается
+      updateUpgradeCardUI(staffId)
     },
   }
 }

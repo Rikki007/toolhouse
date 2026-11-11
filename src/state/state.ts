@@ -1,4 +1,4 @@
-import type { Settings, SkillId, SkillBranchChoices, ShiftConfig, ShiftsState, ShopState, InventoryState, ShiftStaff, Allegiance, StaffUpgrades, NewsItem, AchievementId, MasterUpgrades } from '../types/index.ts'
+import type { Settings, SkillId, SkillBranchChoices, ShiftConfig, ShiftsState, ShopState, InventoryState, ShiftStaff, StaffUpgrades, NewsItem, AchievementId, MasterUpgrades } from '../types/index.ts'
 import { defaultSettings } from './settingsStore.ts'
 import { orderPickersList, reachTrucksList } from '../data/equipment.ts'
 import { pickersList, reachTruckDriversList } from '../data/staff.ts'
@@ -123,12 +123,6 @@ const DEFAULT_SKILLS: Record<SkillId, number> = {
   security: 0,
 }
 
-/** Пустое окно выборов руководителя: ни одного решения ещё не учтено */
-export const DEFAULT_ALLEGIANCE: Allegiance = {
-  current: 0,
-  agression: 0,
-}
-
 /** Пустой набор выборов веток */
 const DEFAULT_BRANCH_CHOICES: SkillBranchChoices = {}
 
@@ -158,7 +152,6 @@ export interface AppState {
   lastSaveTime: number // Unix-время последнего сохранения (мс)
   passiveIncomePerSecond: number // текущий пассивный доход в секунду
   timeToEvent: number // Unix-время срабатывания последнего глобального события (мс)
-  allegiance: Allegiance // лояльность коллектива: счётчик выборов и средняя агрессивность решений
   staffUpgrades: StaffUpgrades // купленные повышения квалификации: staffId → количество
   /** Получен ли бонус за приглашение друга (одноразово) */
   shareRewardClaimed: boolean
@@ -478,7 +471,6 @@ function loadState(): AppState {
           masterUpgrades: parsed.masterUpgrades ?? {},
         })),
         timeToEvent: parsed.timeToEvent ?? Date.now(),
-        allegiance: parsed.allegiance || { ...DEFAULT_ALLEGIANCE },
         staffUpgrades: staffUpgradesState,
         shareRewardClaimed: parsed.shareRewardClaimed ?? false,
         masterUpgrades: parsed.masterUpgrades ?? {},
@@ -520,7 +512,6 @@ function loadState(): AppState {
         })
       ),
       timeToEvent: Date.now(),
-      allegiance: { ...DEFAULT_ALLEGIANCE },
       staffUpgrades: oldData.staffUpgrades ?? {},
       shareRewardClaimed: false,
       masterUpgrades: {},
@@ -558,7 +549,6 @@ function createDefaultState(): AppState {
       masterUpgrades: {},
     })),
     timeToEvent: Date.now(),
-    allegiance: { ...DEFAULT_ALLEGIANCE },
     staffUpgrades: {},
     shareRewardClaimed: false,
     masterUpgrades: {},

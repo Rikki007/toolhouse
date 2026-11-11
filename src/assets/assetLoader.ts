@@ -116,7 +116,6 @@ import achievementsIcon from './interfaceIcon/achievements.png'
 // Иконки ссылок (экран «Поделиться»)
 import copyIcon from './links/copy.png'
 import telegramIcon from './links/telegram.png'
-import mailIcon from './links/mail.png'
 import gitHubIcon from './links/gitHub.png'
 
 
@@ -272,7 +271,6 @@ export const interfaceIconImages: Record<string, string> = {
 export const linkIconImages: Record<string, string> = {
   'copy': copyIcon,
   'telegram': telegramIcon,
-  'mail': mailIcon,
   'gitHub': gitHubIcon,
 }
 

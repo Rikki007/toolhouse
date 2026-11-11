@@ -3,7 +3,10 @@ import type { InventoryItem, InventoryState } from '../types/index.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { formatMoney } from './format.ts'
 import { playSound } from '../state/audioManager.ts'
-import { QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
+import { getStaffById } from './itemLookup.ts'
+import { getStaffSpeed, getNextUpgrade } from './staffUpgrades.ts'
+import { MAX_STAFF_SPEED, QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
+import { getState } from '../state/state.ts'
 
 // ===== Утилиты миграции =====
 
@@ -112,6 +115,8 @@ export interface InventoryCardUpgrade {
   cost: number
   /** Хватает ли денег на прокачку */
   affordable: boolean
+  /** ID сотрудника для обновления карточки на месте */
+  staffId: string
   /** Обработчик прокачки */
   onUpgrade: () => void
 }
@@ -143,6 +148,66 @@ function createUpgradeButton(upgrade: InventoryCardUpgrade): HTMLElement {
   })
 
   return btn
+}
+
+/**
+ * Обновляет DOM-элементы карточки инвентаря сотрудника после прокачки.
+ * Работает в-place: меняет бейдж квалификации, звёзды и кнопку, не закрывая модалку.
+ */
+export function updateUpgradeCardUI(staffId: string): void {
+  const card = document.querySelector(`.inventory-card[data-item-id="${staffId}"]`) as HTMLElement | null
+  if (!card) return
+
+  const state = getState()
+  const rawStaff = getStaffById(staffId)
+  if (!rawStaff) return
+
+  const level = getStaffSpeed(rawStaff, state.staffUpgrades)
+  const next = getNextUpgrade(rawStaff, state.staffUpgrades)
+  const cost = next?.cost ?? 0
+  const affordable = state.money >= cost
+
+  // Обновляем бейдж квалификации
+  const badge = card.querySelector('.inventory-card-qualification') as HTMLElement | null
+  if (badge) {
+    const isMax = level >= MAX_STAFF_SPEED
+    badge.textContent = QUALIFICATION_NAMES[level] ?? ''
+    if (isMax) {
+      badge.classList.add('inventory-card-qualification-max')
+    } else {
+      badge.classList.remove('inventory-card-qualification-max')
+    }
+  }
+
+  // Обновляем звёзды скорости
+  const speedEl = card.querySelector('.inventory-card-speed') as HTMLElement | null
+  if (speedEl) {
+    const stars = Math.max(0, Math.min(10, level))
+    speedEl.textContent = '⭐'.repeat(stars) + '☆'.repeat(10 - stars)
+  }
+
+  // Обновляем кнопку прокачки
+  const btn = card.querySelector('.inventory-card-btn-upgrade') as HTMLButtonElement | null
+  if (btn) {
+    const isMax = level >= MAX_STAFF_SPEED
+    if (isMax) {
+      btn.textContent = 'Макс. квалификация'
+      btn.disabled = true
+      btn.classList.add('inventory-card-btn-upgrade-max')
+      btn.classList.remove('inventory-card-btn-upgrade-expensive')
+    } else {
+      btn.innerHTML = ''
+      btn.append(`Прокачать · ${formatMoney(cost)}`, createCreditIcon(10))
+      btn.classList.remove('inventory-card-btn-upgrade-max')
+      if (!affordable) {
+        btn.disabled = true
+        btn.classList.add('inventory-card-btn-upgrade-expensive')
+      } else {
+        btn.disabled = false
+        btn.classList.remove('inventory-card-btn-upgrade-expensive')
+      }
+    }
+  }
 }
 
 /**

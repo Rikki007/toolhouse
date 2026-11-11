@@ -6,12 +6,17 @@ import { getRiggingImage, getEquipmentImage } from '../utils/assets.ts'
 import { pickerImages, richDriversImages, mastersImages } from '../assets/assetLoader.ts'
 import { getState } from '../state/state.ts'
 import { createModal } from '../utils/modalFactory.ts'
-import { getStaffSpeed } from './staffUpgrades.ts'
+import { getStaffSpeed, getNextUpgrade } from './staffUpgrades.ts'
 import { playSound } from '../state/audioManager.ts'
 import { createQualificationRow, createStaffUpgradeButton } from '../components/staffUpgradeButton.ts'
 import { createMasterUpgradeButton, getMasterTitle, getMasterLevelImageKey } from '../components/masterUpgradeButton.ts'
 import { shiftMasters } from '../data/staff.ts'
 import { masterLevelImages } from '../assets/assetLoader.ts'
+import { getMasterUpgradeLevel, getMasterUpgradeCost } from '../state/masterUpgradeStore.ts'
+import { MASTER_UPGRADE_LEVELS } from '../data/masterUpgrades.ts'
+import { MAX_STAFF_SPEED, QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
+import { formatMoney } from './format.ts'
+import { createCreditIcon } from './creditIcon.ts'
 
 export const FORKLIFT_SLOTS: PersonnelSlot[] = [
   { id: 'forklift-1', role: 'forklift', label: 'Водитель ричтрака 1' },
@@ -110,7 +115,9 @@ function renderStaffDetailModal(
   // Квалификация и кнопка прокачки
   body.appendChild(createQualificationRow(staffInfo))
   const upgradeBtn = createStaffUpgradeButton(staffInfo, () => {
-    rerenderStaffDetail(container, staffInfo.id, shiftId, role, slotIndex, onClose)
+    // Обновляем модалку деталей и карточку в сетке на месте — без пересоздания окон
+    updateStaffDetailUI(modal, staffInfo.id)
+    updatePersonnelCardSpeed(staffInfo.id)
   })
   if (upgradeBtn) body.appendChild(upgradeBtn)
 
@@ -705,7 +712,121 @@ export function createMasterCard(masterId: string, shiftCost: number): HTMLEleme
   }
 
   // Кнопка прокачки: блок перерисует подписка на стейт в shiftsModal
-  card.appendChild(createMasterUpgradeButton(masterId, shiftCost))
+  card.appendChild(createMasterUpgradeButton(masterId, shiftCost, () => updateMasterCardUI(card, masterId, shiftCost)))
 
   return card
+}
+
+/**
+ * Обновляет карточку мастера на месте после прокачки:
+ * иконку уровня, звание и кнопку. Не пересоздаёт DOM-элементы,
+ * поэтому скролл окна смены не сбрасывается.
+ */
+export function updateMasterCardUI(card: HTMLElement, masterId: string, shiftCost: number): void {
+  const level = getMasterUpgradeLevel(masterId)
+  const levelData = MASTER_UPGRADE_LEVELS[level]
+
+  // Иконка уровня
+  const levelImg = card.querySelector('.shifts-master-card-level') as HTMLImageElement | null
+  const levelImgSrc = masterLevelImages[levelData?.imageKey ?? 'first']
+  if (levelImg && levelImgSrc) levelImg.src = levelImgSrc
+
+  // Звание
+  const titleEl = card.querySelector('.shifts-master-card-title') as HTMLElement | null
+  if (titleEl) titleEl.textContent = levelData?.name ?? 'Новичок'
+
+  // Кнопка прокачки: текст, стоимость, доступность, состояние «МАКС»
+  const btn = card.querySelector('.master-upgrade-btn') as HTMLButtonElement | null
+  if (!btn) return
+
+  const maxedOut = level >= MASTER_UPGRADE_LEVELS.length - 1
+  if (maxedOut) {
+    btn.classList.add('maxed')
+    btn.disabled = true
+    btn.title = ''
+    btn.textContent = 'Максимальный уровень'
+    return
+  }
+
+  btn.classList.remove('maxed')
+  const cost = getMasterUpgradeCost(masterId, shiftCost) ?? 0
+  const nextLevel = MASTER_UPGRADE_LEVELS[level + 1]
+  btn.innerHTML = ''
+  btn.append(
+    `Прокачать: ${levelData?.name ?? ''} → ${nextLevel?.name ?? ''} · ${formatMoney(cost)}`,
+    createCreditIcon(),
+  )
+
+  if (getState().money < cost) {
+    btn.disabled = true
+    btn.title = 'Недостаточно средств'
+  } else {
+    btn.disabled = false
+    btn.title = ''
+  }
+}
+
+/**
+ * Обновляет звёзды скорости на карточке сотрудника в сетке смены.
+ * Вызывается после прокачки из модалки деталей, чтобы карточка осталась на месте.
+ */
+export function updatePersonnelCardSpeed(staffId: string): void {
+  const staff = getStaffById(staffId)
+  if (!staff) return
+
+  const cards = document.querySelectorAll<HTMLElement>(`.shifts-personnel-card[data-staff-id="${staffId}"]`)
+  const stars = '⭐'.repeat(getStaffSpeed(staff, getState().staffUpgrades)).padEnd(10, '☆')
+  for (const card of cards) {
+    const speedEl = card.querySelector('.shifts-personnel-card-speed') as HTMLElement | null
+    if (speedEl) speedEl.textContent = stars
+  }
+}
+
+/**
+ * Обновляет модалку деталей сотрудника на месте после прокачки:
+ * звёзды скорости, квалификацию и кнопку. Не пересоздаёт окно,
+ * поэтому скролл модалки не сбрасывается.
+ */
+export function updateStaffDetailUI(modal: HTMLElement, staffId: string): void {
+  const staff = getStaffById(staffId)
+  if (!staff) return
+
+  const state = getState()
+  const level = getStaffSpeed(staff, state.staffUpgrades)
+
+  // Звёзды скорости
+  const speedEl = modal.querySelector('.staff-detail-speed') as HTMLElement | null
+  if (speedEl) speedEl.textContent = '⭐'.repeat(level) + '☆'.repeat(10 - level)
+
+  // Квалификация
+  const qualEl = modal.querySelector('.staff-qualification') as HTMLElement | null
+  if (qualEl) {
+    qualEl.textContent = QUALIFICATION_NAMES[level] ?? ''
+    if (level >= MAX_STAFF_SPEED) {
+      qualEl.classList.add('staff-qualification-max')
+    } else {
+      qualEl.classList.remove('staff-qualification-max')
+    }
+  }
+
+  // Кнопка прокачки: при достижении потолка кнопка удаляется
+  const btn = modal.querySelector('.staff-upgrade-btn') as HTMLButtonElement | null
+  if (!btn) return
+
+  const next = getNextUpgrade(staff, state.staffUpgrades)
+  if (!next) {
+    btn.remove()
+    return
+  }
+
+  btn.innerHTML = ''
+  btn.append(`Прокачать ${next.from}★ → ${next.to}★ · ${formatMoney(next.cost)}`, createCreditIcon())
+
+  if (state.money < next.cost) {
+    btn.disabled = true
+    btn.title = 'Недостаточно средств'
+  } else {
+    btn.disabled = false
+    btn.title = ''
+  }
 }

@@ -118,10 +118,12 @@
   cursor: pointer;
 }
 
-.department-card:hover .department-icon,
-.department-card:hover .department-icon-fallback {
-  transform: scale(1.12);
-  box-shadow: 0 0 20px var(--accent-border);
+@media (hover: hover) {
+  .department-card:hover .department-icon,
+  .department-card:hover .department-icon-fallback {
+    transform: scale(1.12);
+    box-shadow: 0 0 20px var(--accent-border);
+  }
 }
 
 /* Контейнер иконки + бейдж */
@@ -302,9 +304,11 @@
   flex-shrink: 0;
 }
 
-.skill-node:hover {
-  transform: scale(1.12);
-  box-shadow: 0 0 16px var(--accent-border);
+@media (hover: hover) {
+  .skill-node:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 16px var(--accent-border);
+  }
 }
 
 .skill-node-image {
@@ -328,10 +332,12 @@
   cursor: pointer;
 }
 
-.skill-node-available:hover {
-  filter: brightness(1);
-  transform: scale(1.12);
-  box-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
+@media (hover: hover) {
+  .skill-node-available:hover {
+    filter: brightness(1);
+    transform: scale(1.12);
+    box-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
+  }
 }
 
 .skill-node-locked {
@@ -344,9 +350,11 @@
   filter: brightness(0.35) saturate(0.3);
 }
 
-.skill-node-locked:hover {
-  transform: none;
-  box-shadow: none;
+@media (hover: hover) {
+  .skill-node-locked:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 /* Индикатор доступности (зелёный пульсирующий) */
@@ -435,9 +443,11 @@
   transition: all 0.2s ease;
 }
 
-.skill-back-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent-border);
+@media (hover: hover) {
+  .skill-back-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent-border);
+  }
 }
 
 .skill-detail-title-group {
@@ -514,8 +524,10 @@
   transition: color 0.2s ease;
 }
 
-.skill-modal-close:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .skill-modal-close:hover {
+    color: var(--accent);
+  }
 }
 
 .skill-modal-body {
@@ -584,10 +596,12 @@
   transition: all 0.2s ease;
 }
 
-.skill-modal-buy-btn:hover {
-  background: var(--accent-border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .skill-modal-buy-btn:hover {
+    background: var(--accent-border);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
 }
 
 .skill-modal-buy-btn:disabled {
@@ -680,8 +694,10 @@
   transition: color 0.2s ease;
 }
 
-.skill-analysis-close:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .skill-analysis-close:hover {
+    color: var(--accent);
+  }
 }
 
 .skill-analysis-body {
@@ -833,10 +849,12 @@
   background: var(--accent);
 }
 
-.skill-analysis-btn-primary:hover {
-  background: var(--accent-border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+@media (hover: hover) {
+  .skill-analysis-btn-primary:hover {
+    background: var(--accent-border);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
 }
 
 .skill-analysis-btn-restart {
@@ -845,9 +863,11 @@
   border: 1px solid rgba(255, 107, 107, 0.5);
 }
 
-.skill-analysis-btn-restart:hover {
-  background: rgba(255, 107, 107, 0.12);
-  transform: translateY(-1px);
+@media (hover: hover) {
+  .skill-analysis-btn-restart:hover {
+    background: rgba(255, 107, 107, 0.12);
+    transform: translateY(-1px);
+  }
 }
 
 /* ===== Responsive ===== */
