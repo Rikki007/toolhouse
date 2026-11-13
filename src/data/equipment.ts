@@ -31,6 +31,15 @@ export const orderPickersList: Equipment[] = [
     speed: 7,
     factor: 1.3,
   },
+  {
+    id: 'orderpicker_4',
+    name: 'Премиум ордерпикер',
+    image: 'picker_prem',
+    price: 2000000,
+    speed: 10,
+    factor: 2,
+    unlockLevel: 17,
+  },
 ]
 
 export const reachTrucksList: Equipment[] = [
@@ -81,6 +90,15 @@ export const reachTrucksList: Equipment[] = [
     price: 1900000,
     speed: 7,
     factor: 1.3,
+  },
+  {
+    id: 'reachtruck_eq_7',
+    name: 'Премиальный ричтрак',
+    image: 'reachtruck_tall_prem',
+    price: 5000000,
+    speed: 10,
+    factor: 2,
+    unlockLevel: 19,
   },
 ]
 

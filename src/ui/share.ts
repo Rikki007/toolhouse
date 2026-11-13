@@ -21,15 +21,11 @@ export function renderShare(container: HTMLElement, onBack: () => void): { clean
   const card = document.createElement('div')
   card.className = 'share-card'
 
-  const title = document.createElement('h1')
-  title.textContent = 'Поделиться'
-  card.appendChild(title)
-
   const desc = document.createElement('p')
   desc.className = 'share-desc'
   desc.innerHTML =
     'Расскажи другу про <strong>ToolHouse</strong> — выбери удобный способ отправить ссылку. ' +
-    'За первое приглашение начисляем бонус на счёт склада.'
+    'За первое приглашение ты получишь бонус на счёт склада.'
   card.appendChild(desc)
 
   const reward = document.createElement('div')

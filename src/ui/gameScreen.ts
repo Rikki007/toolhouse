@@ -16,6 +16,8 @@ import { levelFromXp } from '../data/playerLevels.ts'
 import { setupClicker } from '../utils/clicker.ts'
 import { startGlobalEventsObserver } from '../utils/globalEvents.ts'
 import { startLevelRewardObserver } from '../components/levelRewardModal.ts'
+import { startEquipmentUnlockObserver } from '../components/equipmentUnlockModal.ts'
+import { startTierUnlockObserver } from '../components/tierUnlockModal.ts'
 import { interfaceIconImages } from '../assets/assetLoader.ts'
 import { playSound } from '../state/audioManager.ts'
 
@@ -79,6 +81,12 @@ export async function renderGameScreen(
     onRestart?.()
   })
 
+  // Уведомления о разблокировке новой техники в магазине
+  const stopEquipmentUnlocks = startEquipmentUnlockObserver(container)
+
+  // Уведомления о разблокировке новых тиров персонала
+  const stopTierUnlocks = startTierUnlockObserver(container)
+
   // Начисляем оффлайн-доход сразу и сообщаем о нём новостью
   if (offline.amount > 0) {
     applyOfflineIncome(offline.amount)
@@ -105,6 +113,8 @@ export async function renderGameScreen(
     clicker.cleanup()
     stopGlobalEvents()
     stopSkillAnalysis()
+    stopEquipmentUnlocks()
+    stopTierUnlocks()
     stopLevelRewards()
     bottomBar.cleanup()
     stopPassiveIncomeTracking()

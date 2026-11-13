@@ -2,6 +2,7 @@
 import pickerSlow from './orderPickers/pickerSlow.png'
 import pickerMedium from './orderPickers/pickerMedium.png'
 import pickerFast from './orderPickers/pickerFast.png'
+import pickerPremium from './orderPickers/pickerPremium.png'
 
 // Низкие ричтраки (для съёма товара с невысоких стеллажей)
 import reachtruckSlow from './forklifts/forkliftSlow.png'
@@ -12,6 +13,7 @@ import reachtruckFast from './forklifts/forkliftFast.png'
 import reachtruckTallSlow from './forklifts/heavySlow.png'
 import reachtruckTallMedium from './forklifts/heavyMedium.png'
 import reachtruckTallFast from './forklifts/heavyFast.png'
+import reachtruckTallPremium from './forklifts/heavyPremium.png'
 
 // Мастера смен
 import master01 from './masters/master01.png'
@@ -253,6 +255,7 @@ export const masterLevelImages: Record<string, string> = {}
 export const riggingImages: Record<string, string> = {}
 export const skillImages: Record<string, string> = {}
 export const skillLevelImages: Record<string, string> = {}
+export const tierImages: Record<string, string> = {}
 export const interfaceIconImages: Record<string, string> = {
   'lootbox': lootboxIcon,
   'inventory': inventoryIcon,
@@ -286,11 +289,13 @@ export function initEquipmentImages(): void {
   reachTruckImages['reachtruck_tall_slow'] = reachtruckTallSlow
   reachTruckImages['reachtruck_tall_medium'] = reachtruckTallMedium
   reachTruckImages['reachtruck_tall_fast'] = reachtruckTallFast
+  reachTruckImages['reachtruck_tall_prem'] = reachtruckTallPremium
 
   // Ордерпикеры 
   orderPickerImages['picker_slow'] = pickerSlow
   orderPickerImages['picker_medium'] = pickerMedium
   orderPickerImages['picker_fast'] = pickerFast
+  orderPickerImages['picker_prem'] = pickerPremium
 
   // Мастера смен 
   mastersImages['master_01'] = master01
@@ -377,6 +382,16 @@ export function initEquipmentImages(): void {
   riggingImages['ted_06'] = ted06
   riggingImages['ted_07'] = ted07
   riggingImages['ted_08'] = ted08
+
+  // Закладки тиров персонала
+  tierImages['tierOne'] = tierOneImg
+  tierImages['tierTwo'] = tierTwoImg
+  tierImages['tierThree'] = tierThreeImg
+  tierImages['tierFour'] = tierFourImg
+  tierImages['tierFive'] = tierFiveImg
+  tierImages['tierSix'] = tierSixImg
+  tierImages['tierSeven'] = tierSevenImg
+  tierImages['tierPrem'] = tierPremImg
 }
 
 export function initSkillsImages(): void {
@@ -519,6 +534,16 @@ import frame7 from './coin/7.png'
 import frame8 from './coin/8.png'
 import frame9 from './coin/9.png'
 import frame10 from './coin/10.png'
+
+// Импорты закладок тиров персонала
+import tierOneImg from './tier/tierOne.png'
+import tierTwoImg from './tier/tierTwo.png'
+import tierThreeImg from './tier/tierThree.png'
+import tierFourImg from './tier/tierFour.png'
+import tierFiveImg from './tier/tierFive.png'
+import tierSixImg from './tier/tierSix.png'
+import tierSevenImg from './tier/tierSeven.png'
+import tierPremImg from './tier/tierPrem.png'
 
 export const coinFrames = [
   frame1, frame2, frame3, frame4, frame5,

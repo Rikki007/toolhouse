@@ -319,3 +319,140 @@
   object-fit: cover;
   display: block;
 }
+
+/* ===== Equipment Unlock Modal ===== */
+.equipment-unlock-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 310;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.equipment-unlock-modal {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 420px;
+  width: 100%;
+  animation: equipment-unlock-pop 0.4s ease;
+}
+
+@keyframes equipment-unlock-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.equipment-unlock-title {
+  font-size: 22px;
+  margin: 0;
+  color: var(--text-h);
+  text-align: center;
+}
+
+.equipment-unlock-desc {
+  font-size: 16px;
+  margin: 0;
+  color: var(--text);
+  text-align: center;
+}
+
+.equipment-unlock-btn {
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.equipment-unlock-btn:hover {
+  opacity: 0.85;
+}
+
+/* ===== Tier Unlock Modal ===== */
+.tier-unlock-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 310;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.tier-unlock-modal {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 420px;
+  width: 100%;
+  animation: equipment-unlock-pop 0.4s ease;
+}
+
+.tier-unlock-title {
+  font-size: 22px;
+  margin: 0;
+  color: var(--text-h);
+  text-align: center;
+}
+
+.tier-unlock-bookmark {
+  width: 72px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: -8px;
+}
+
+.tier-unlock-desc {
+  font-size: 16px;
+  margin: 0;
+  color: var(--text);
+  text-align: center;
+}
+
+.tier-unlock-btn {
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.tier-unlock-btn:hover {
+  opacity: 0.85;
+}

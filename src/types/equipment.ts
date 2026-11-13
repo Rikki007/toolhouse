@@ -11,6 +11,8 @@ export interface Equipment {
   price: number
   speed: number // 0-100
   factor: number
+  /** Минимальный уровень игрока для появления в магазине */
+  unlockLevel?: number
 }
 
 export interface EquipmentCategoryConfig {

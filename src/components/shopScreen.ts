@@ -10,6 +10,7 @@ import { getState, updateState } from '../state/state.ts'
 import { addItemToShop, isItemPurchased } from '../state/inventoryStore.ts'
 import { getEquipmentById, getStaffById, getRiggingById } from '../utils/itemLookup.ts'
 import { playSound } from '../state/audioManager.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 type ShopCategoryId = 'orderPickers' | 'reachTrucks' | 'pickers' | 'reachTruckDrivers' | 'rigging'
 
@@ -272,9 +273,11 @@ function openCategory(categoryId: ShopCategoryId, container: HTMLElement): void 
         return (order[a.type] ?? 99) - (order[b.type] ?? 99)
       })
   } else {
+    const playerLevel = levelFromXp(getState().xpMoney)
     items = idList
       .map(id => getEquipmentById(id))
       .filter((item): item is NonNullable<typeof item> => item !== undefined)
+      .filter(item => !item.unlockLevel || playerLevel >= item.unlockLevel)
   }
 
   createShopOverlay(container, (onClose) => {

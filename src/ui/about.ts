@@ -13,10 +13,6 @@ export function renderAbout(container: HTMLElement, onBack: () => void): void {
   const card = document.createElement('div')
   card.className = 'about-card'
 
-  const title = document.createElement('h1')
-  title.textContent = 'О проекте'
-  card.appendChild(title)
-
   const desc = document.createElement('p')
   desc.className = 'about-desc'
   desc.innerHTML =

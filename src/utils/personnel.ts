@@ -3,20 +3,20 @@ import type { Staff, ShiftStaff, Rigging } from '../types/equipment.ts'
 import { getShiftPersonnel, removeStaffFromShift, setStaffEquipmentSlot, setStaffTechniqueSlot } from '../state/shiftsStore.ts'
 import { getStaffById, getRiggingById, getEquipmentById } from '../utils/itemLookup.ts'
 import { getRiggingImage, getEquipmentImage } from '../utils/assets.ts'
-import { pickerImages, richDriversImages, mastersImages } from '../assets/assetLoader.ts'
+import { pickerImages, richDriversImages, mastersImages, tierImages, masterLevelImages } from '../assets/assetLoader.ts'
 import { getState } from '../state/state.ts'
 import { createModal } from '../utils/modalFactory.ts'
-import { getStaffSpeed, getNextUpgrade } from './staffUpgrades.ts'
+import { getStaffTierProgress, getNextUpgrade, getStaffTierImageKey, getStaffTierName, getTierNameByNumber } from './staffUpgrades.ts'
 import { playSound } from '../state/audioManager.ts'
-import { createQualificationRow, createStaffUpgradeButton } from '../components/staffUpgradeButton.ts'
+import { createTierBookmark, createTierRow, createStaffUpgradeButton } from '../components/staffUpgradeButton.ts'
 import { createMasterUpgradeButton, getMasterTitle, getMasterLevelImageKey } from '../components/masterUpgradeButton.ts'
 import { shiftMasters } from '../data/staff.ts'
-import { masterLevelImages } from '../assets/assetLoader.ts'
 import { getMasterUpgradeLevel, getMasterUpgradeCost } from '../state/masterUpgradeStore.ts'
 import { MASTER_UPGRADE_LEVELS } from '../data/masterUpgrades.ts'
-import { MAX_STAFF_SPEED, QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
+import { MAX_TIER_LEVEL, STAFF_TIERS } from '../data/staffUpgrades.ts'
 import { formatMoney } from './format.ts'
 import { createCreditIcon } from './creditIcon.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 export const FORKLIFT_SLOTS: PersonnelSlot[] = [
   { id: 'forklift-1', role: 'forklift', label: 'Водитель ричтрака 1' },
@@ -70,6 +70,10 @@ function renderStaffDetailModal(
   const body = document.createElement('div')
   body.className = 'staff-detail-modal-body'
 
+  // Закладка тира
+  const bookmark = createTierBookmark(staffInfo)
+  if (bookmark) body.appendChild(bookmark)
+
   // Аватар
   const avatarKey = staffInfo.avatar
   const imageSrc = avatarKey ? (pickerImages[avatarKey] || richDriversImages[avatarKey]) : ''
@@ -105,15 +109,16 @@ function renderStaffDetailModal(
   positionEl.textContent = staffInfo.position
   body.appendChild(positionEl)
 
-  // Скорость
+  // Скорость (звёзды = уровень внутри тира)
   const speedEl = document.createElement('div')
   speedEl.className = 'staff-detail-speed'
-  const starsCount = getStaffSpeed(staffInfo, getState().staffUpgrades)
+  const progress = getStaffTierProgress(staffInfo, getState().staffUpgrades)
+  const starsCount = Math.max(0, Math.min(10, progress.level))
   speedEl.textContent = '⭐'.repeat(starsCount) + '☆'.repeat(10 - starsCount)
   body.appendChild(speedEl)
 
-  // Квалификация и кнопка прокачки
-  body.appendChild(createQualificationRow(staffInfo))
+  // Название тира
+  body.appendChild(createTierRow(staffInfo))
   const upgradeBtn = createStaffUpgradeButton(staffInfo, () => {
     // Обновляем модалку деталей и карточку в сетке на месте — без пересоздания окон
     updateStaffDetailUI(modal, staffInfo.id)
@@ -516,6 +521,18 @@ function openTechniqueSelectorModal(
     card.className = 'shifts-personnel-card'
     card.dataset.staffId = staffId
 
+    // Закладка тира
+    const tierKey = getStaffTierImageKey(staff, getState().staffUpgrades)
+    const tierSrc = tierImages[tierKey]
+    if (tierSrc) {
+      const bookmark = document.createElement('img')
+      bookmark.className = 'staff-tier-bookmark'
+      bookmark.src = tierSrc
+      bookmark.alt = getStaffTierName(staff)
+      bookmark.draggable = false
+      card.appendChild(bookmark)
+    }
+
    // Аватар
    const avatarKey = staff.avatar
    const imageSrc = avatarKey ? (pickerImages[avatarKey] || richDriversImages[avatarKey]) : ''
@@ -545,10 +562,11 @@ function openTechniqueSelectorModal(
    nameEl.textContent = staff.name
    card.appendChild(nameEl)
 
-   // Скорость
+   // Скорость (уровень внутри тира)
    const speedEl = document.createElement('div')
    speedEl.className = 'shifts-personnel-card-speed'
-   const starsCount = getStaffSpeed(staff, getState().staffUpgrades)
+   const progress = getStaffTierProgress(staff, getState().staffUpgrades)
+   const starsCount = Math.max(0, Math.min(10, progress.level))
    speedEl.textContent = '⭐'.repeat(starsCount) + '☆'.repeat(10 - starsCount)
    card.appendChild(speedEl)
 
@@ -775,16 +793,21 @@ export function updatePersonnelCardSpeed(staffId: string): void {
   if (!staff) return
 
   const cards = document.querySelectorAll<HTMLElement>(`.shifts-personnel-card[data-staff-id="${staffId}"]`)
-  const stars = '⭐'.repeat(getStaffSpeed(staff, getState().staffUpgrades)).padEnd(10, '☆')
+  const progress = getStaffTierProgress(staff, getState().staffUpgrades)
+  const stars = '⭐'.repeat(Math.min(10, progress.level)).padEnd(10, '☆')
   for (const card of cards) {
     const speedEl = card.querySelector('.shifts-personnel-card-speed') as HTMLElement | null
     if (speedEl) speedEl.textContent = stars
+    // Обновляем закладку тира
+    const bookmark = card.querySelector('.staff-tier-bookmark') as HTMLImageElement | null
+    const tierKey = getStaffTierImageKey(staff, getState().staffUpgrades)
+    if (bookmark && tierImages[tierKey]) bookmark.src = tierImages[tierKey]
   }
 }
 
 /**
  * Обновляет модалку деталей сотрудника на месте после прокачки:
- * звёзды скорости, квалификацию и кнопку. Не пересоздаёт окно,
+ * звёзды скорости, название тира и кнопку. Не пересоздаёт окно,
  * поэтому скролл модалки не сбрасывается.
  */
 export function updateStaffDetailUI(modal: HTMLElement, staffId: string): void {
@@ -792,20 +815,27 @@ export function updateStaffDetailUI(modal: HTMLElement, staffId: string): void {
   if (!staff) return
 
   const state = getState()
-  const level = getStaffSpeed(staff, state.staffUpgrades)
+  const playerLevel = levelFromXp(state.xpMoney)
+  const progress = getStaffTierProgress(staff, state.staffUpgrades)
 
-  // Звёзды скорости
+  // Звёзды скорости (уровень внутри тира)
   const speedEl = modal.querySelector('.staff-detail-speed') as HTMLElement | null
-  if (speedEl) speedEl.textContent = '⭐'.repeat(level) + '☆'.repeat(10 - level)
+  if (speedEl) speedEl.textContent = '⭐'.repeat(Math.min(10, progress.level)) + '☆'.repeat(10 - Math.min(10, progress.level))
 
-  // Квалификация
-  const qualEl = modal.querySelector('.staff-qualification') as HTMLElement | null
-  if (qualEl) {
-    qualEl.textContent = QUALIFICATION_NAMES[level] ?? ''
-    if (level >= MAX_STAFF_SPEED) {
-      qualEl.classList.add('staff-qualification-max')
-    } else {
-      qualEl.classList.remove('staff-qualification-max')
+  // Обновляем закладку тира
+  const bookmark = modal.querySelector('.staff-tier-bookmark') as HTMLImageElement | null
+  const tierKey = getStaffTierImageKey(staff, state.staffUpgrades)
+  if (bookmark && tierImages[tierKey]) bookmark.src = tierImages[tierKey]
+
+  // Обновляем строку лиги
+  const tierRow = modal.querySelector('.staff-tier-row') as HTMLElement | null
+  if (tierRow) {
+    const nextCfg = STAFF_TIERS[progress.tier]
+    tierRow.textContent = `${getStaffTierName(staff)} лига · ${progress.level}/${MAX_TIER_LEVEL}★`
+    if (progress.level >= MAX_TIER_LEVEL && nextCfg) {
+      tierRow.textContent += playerLevel >= nextCfg.unlockLevel
+        ? ` · доступна ${nextCfg.name.toLowerCase()} лига`
+        : ` · ${nextCfg.name.toLowerCase()} лига с ${nextCfg.unlockLevel} ур.`
     }
   }
 
@@ -813,14 +843,18 @@ export function updateStaffDetailUI(modal: HTMLElement, staffId: string): void {
   const btn = modal.querySelector('.staff-upgrade-btn') as HTMLButtonElement | null
   if (!btn) return
 
-  const next = getNextUpgrade(staff, state.staffUpgrades)
+  const next = getNextUpgrade(staff, state.staffUpgrades, playerLevel)
   if (!next) {
     btn.remove()
     return
   }
 
   btn.innerHTML = ''
-  btn.append(`Прокачать ${next.from}★ → ${next.to}★ · ${formatMoney(next.cost)}`, createCreditIcon())
+  if (progress.level >= MAX_TIER_LEVEL && next.nextTier !== progress.tier) {
+    btn.append(`Открыть ${getTierNameByNumber(next.nextTier)} лигу · ${formatMoney(next.cost)}`, createCreditIcon())
+  } else {
+    btn.append(`Прокачать ${next.from}★ → ${next.to}★ · ${formatMoney(next.cost)}`, createCreditIcon())
+  }
 
   if (state.money < next.cost) {
     btn.disabled = true

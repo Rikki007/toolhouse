@@ -3,11 +3,12 @@ import { createModal, showConfirmModal } from '../utils/modalFactory.ts'
 import { createInventoryCard, type InventoryCardUpgrade } from '../utils/inventory.ts'
 import { getItemById, getRiggingById, getStaffById } from '../utils/itemLookup.ts'
 import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem, upgradeStaff } from '../state/inventoryStore.ts'
-import { MAX_STAFF_SPEED } from '../data/staffUpgrades.ts'
-import { getStaffSpeed, getNextUpgrade } from '../utils/staffUpgrades.ts'
+import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
+import { getStaffTierProgress, getNextUpgrade } from '../utils/staffUpgrades.ts'
 import { updateUpgradeCardUI } from '../utils/inventory.ts'
 import { assignStaffToShift, getActiveShifts, getShiftSlotAvailability } from '../state/shiftsStore.ts'
 import { playSound } from '../state/audioManager.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 let inventoryModalHandle: ReturnType<typeof createModal> | null = null
 
@@ -132,11 +133,14 @@ function buildStaffUpgrade(
   if (!staff) return undefined
 
   const state = getState()
-  const next = getNextUpgrade(staff, state.staffUpgrades)
+  const playerLevel = levelFromXp(state.xpMoney)
+  const progress = getStaffTierProgress(staff, state.staffUpgrades)
+  const next = getNextUpgrade(staff, state.staffUpgrades, playerLevel)
 
   return {
-    level: getStaffSpeed(staff, state.staffUpgrades),
-    maxLevel: MAX_STAFF_SPEED,
+    level: progress.level,
+    maxLevel: MAX_TIER_LEVEL,
+    tier: progress.tier,
     cost: next?.cost ?? 0,
     affordable: next ? state.money >= next.cost : false,
     staffId,

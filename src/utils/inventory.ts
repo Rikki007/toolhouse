@@ -1,12 +1,13 @@
-import { orderPickerImages, reachTruckImages, pickerImages, richDriversImages, riggingImages } from '../assets/assetLoader.ts'
+import { orderPickerImages, reachTruckImages, pickerImages, richDriversImages, riggingImages, tierImages } from '../assets/assetLoader.ts'
 import type { InventoryItem, InventoryState } from '../types/index.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { formatMoney } from './format.ts'
 import { playSound } from '../state/audioManager.ts'
 import { getStaffById } from './itemLookup.ts'
-import { getStaffSpeed, getNextUpgrade } from './staffUpgrades.ts'
-import { MAX_STAFF_SPEED, QUALIFICATION_NAMES } from '../data/staffUpgrades.ts'
+import { getStaffTierProgress, getNextUpgrade, getStaffTierImageKey, getTierNameByNumber } from './staffUpgrades.ts'
+import { MAX_STAFF_TIER, MAX_TIER_LEVEL, STAFF_TIERS } from '../data/staffUpgrades.ts'
 import { getState } from '../state/state.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 // ===== Утилиты миграции =====
 
@@ -107,10 +108,12 @@ function createStaffButtons(
 
 /** Данные для кнопки прокачки квалификации на карточке сотрудника */
 export interface InventoryCardUpgrade {
-  /** Текущий уровень квалификации = итоговая скорость сотрудника (3–10) */
+  /** Текущий уровень внутри тира (0-10) */
   level: number
-  /** Максимальный уровень квалификации (потолок скорости) */
+  /** Максимальный уровень внутри тира */
   maxLevel: number
+  /** Текущий тир (1-8) */
+  tier: number
   /** Стоимость следующей прокачки */
   cost: number
   /** Хватает ли денег на прокачку */
@@ -127,7 +130,7 @@ function createUpgradeButton(upgrade: InventoryCardUpgrade): HTMLElement {
   btn.type = 'button'
   btn.className = 'inventory-card-btn inventory-card-btn-upgrade'
 
-  const isMax = upgrade.level >= upgrade.maxLevel
+  const isMax = upgrade.tier >= MAX_STAFF_TIER && upgrade.level >= upgrade.maxLevel
   if (isMax) {
     btn.textContent = 'Макс. квалификация'
     btn.disabled = true
@@ -135,8 +138,15 @@ function createUpgradeButton(upgrade: InventoryCardUpgrade): HTMLElement {
     return btn
   }
 
-  // Текст кнопки 12px — значок берём чуть меньше базового, чтобы не спорил с цифрами
-  btn.append(`Прокачать · ${formatMoney(upgrade.cost)}`, createCreditIcon(10))
+  // При переходе в новую лигу — особый текст
+  if (upgrade.level >= upgrade.maxLevel && upgrade.tier < MAX_STAFF_TIER) {
+    const label = getTierNameByNumber(upgrade.tier + 1)
+    btn.append(`Открыть ${label} лигу · ${formatMoney(upgrade.cost)}`, createCreditIcon(10))
+  } else {
+    // Текст кнопки 12px — значок берём чуть меньше базового, чтобы не спорил с цифрами
+    btn.append(`Прокачать · ${formatMoney(upgrade.cost)}`, createCreditIcon(10))
+  }
+
   if (!upgrade.affordable) {
     btn.disabled = true
     btn.classList.add('inventory-card-btn-upgrade-expensive')
@@ -152,7 +162,7 @@ function createUpgradeButton(upgrade: InventoryCardUpgrade): HTMLElement {
 
 /**
  * Обновляет DOM-элементы карточки инвентаря сотрудника после прокачки.
- * Работает в-place: меняет бейдж квалификации, звёзды и кнопку, не закрывая модалку.
+ * Работает в-place: меняет закладку тира, звёзды и кнопку, не закрывая модалку.
  */
 export function updateUpgradeCardUI(staffId: string): void {
   const card = document.querySelector(`.inventory-card[data-item-id="${staffId}"]`) as HTMLElement | null
@@ -162,42 +172,45 @@ export function updateUpgradeCardUI(staffId: string): void {
   const rawStaff = getStaffById(staffId)
   if (!rawStaff) return
 
-  const level = getStaffSpeed(rawStaff, state.staffUpgrades)
-  const next = getNextUpgrade(rawStaff, state.staffUpgrades)
+  const progress = getStaffTierProgress(rawStaff, state.staffUpgrades)
+  const next = getNextUpgrade(rawStaff, state.staffUpgrades, levelFromXp(state.xpMoney))
   const cost = next?.cost ?? 0
   const affordable = state.money >= cost
 
-  // Обновляем бейдж квалификации
-  const badge = card.querySelector('.inventory-card-qualification') as HTMLElement | null
-  if (badge) {
-    const isMax = level >= MAX_STAFF_SPEED
-    badge.textContent = QUALIFICATION_NAMES[level] ?? ''
-    if (isMax) {
-      badge.classList.add('inventory-card-qualification-max')
-    } else {
-      badge.classList.remove('inventory-card-qualification-max')
-    }
+  // Обновляем закладку тира
+  const bookmark = card.querySelector('.staff-tier-bookmark') as HTMLImageElement | null
+  const tierKey = getStaffTierImageKey(rawStaff, state.staffUpgrades)
+  if (bookmark && tierImages[tierKey]) {
+    bookmark.src = tierImages[tierKey]
+    const tierCfg = STAFF_TIERS[progress.tier - 1]
+    if (tierCfg) bookmark.alt = tierCfg.name
   }
 
-  // Обновляем звёзды скорости
+  // Обновляем звёзды скорости (level внутри тира, 0-10)
   const speedEl = card.querySelector('.inventory-card-speed') as HTMLElement | null
   if (speedEl) {
-    const stars = Math.max(0, Math.min(10, level))
+    const stars = Math.max(0, Math.min(10, progress.level))
     speedEl.textContent = '⭐'.repeat(stars) + '☆'.repeat(10 - stars)
   }
 
   // Обновляем кнопку прокачки
   const btn = card.querySelector('.inventory-card-btn-upgrade') as HTMLButtonElement | null
   if (btn) {
-    const isMax = level >= MAX_STAFF_SPEED
-    if (isMax) {
+    const isMax = progress.tier >= MAX_STAFF_TIER && progress.level >= MAX_TIER_LEVEL
+    if (isMax || !next) {
       btn.textContent = 'Макс. квалификация'
       btn.disabled = true
       btn.classList.add('inventory-card-btn-upgrade-max')
       btn.classList.remove('inventory-card-btn-upgrade-expensive')
     } else {
       btn.innerHTML = ''
-      btn.append(`Прокачать · ${formatMoney(cost)}`, createCreditIcon(10))
+      // Текст: при переходе в новую лигу — "Открыть X лигу", иначе — "Прокачать"
+      if (progress.level >= MAX_TIER_LEVEL && next.nextTier !== progress.tier) {
+        const label = getTierNameByNumber(next.nextTier)
+        btn.append(`Открыть ${label} лигу · ${formatMoney(cost)}`, createCreditIcon(10))
+      } else {
+        btn.append(`Прокачать · ${formatMoney(cost)}`, createCreditIcon(10))
+      }
       btn.classList.remove('inventory-card-btn-upgrade-max')
       if (!affordable) {
         btn.disabled = true
@@ -223,6 +236,23 @@ export function createInventoryCard(
   const card = document.createElement('div')
   card.className = 'inventory-card'
   card.dataset.itemId = item.id
+
+  // Закладка тира для персонала
+  if (item.type === 'staff') {
+    const rawStaff = getStaffById(item.id)
+    if (rawStaff) {
+      const tierKey = getStaffTierImageKey(rawStaff, getState().staffUpgrades)
+      const tierSrc = tierImages[tierKey]
+      if (tierSrc) {
+        const bookmark = document.createElement('img')
+        bookmark.className = 'staff-tier-bookmark'
+        bookmark.src = tierSrc
+        bookmark.alt = ''
+        bookmark.draggable = false
+        card.appendChild(bookmark)
+      }
+    }
+  }
 
   // Изображение
   let imageSrc = ''
@@ -251,24 +281,25 @@ export function createInventoryCard(
   nameEl.textContent = item.name
   card.appendChild(nameEl)
 
-  // Скорость (если есть) — отображаем звёздочками
+  // Скорость (если есть) — отображаем звёздочками (уровень внутри тира 0-10)
   if (item.speed !== undefined) {
     const speed = document.createElement('div')
     speed.className = 'inventory-card-speed'
-    const starsCount = Math.max(0, Math.min(10, item.speed))
+    // Для персонала показываем level внутри тира, а не total speed
+    let starsCount: number
+    if (item.type === 'staff') {
+      const rawStaff = getStaffById(item.id)
+      if (rawStaff) {
+        const progress = getStaffTierProgress(rawStaff, getState().staffUpgrades)
+        starsCount = Math.max(0, Math.min(10, progress.level))
+      } else {
+        starsCount = Math.max(0, Math.min(10, item.speed))
+      }
+    } else {
+      starsCount = Math.max(0, Math.min(10, item.speed))
+    }
     speed.textContent = '⭐'.repeat(starsCount) + '☆'.repeat(10 - starsCount)
     card.appendChild(speed)
-  }
-
-  // Уровень квалификации сотрудника (upgrade.level = итоговая скорость/уровень)
-  if (upgrade) {
-    const badge = document.createElement('div')
-    badge.className = 'inventory-card-qualification'
-    badge.textContent = QUALIFICATION_NAMES[upgrade.level] ?? ''
-    if (upgrade.level >= upgrade.maxLevel) {
-      badge.classList.add('inventory-card-qualification-max')
-    }
-    card.appendChild(badge)
   }
 
   // Кликабельные карточки: персонал (назначить/продать), снаряжение и техника (только продать)

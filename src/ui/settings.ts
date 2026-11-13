@@ -14,10 +14,6 @@ export async function renderSettings(container: HTMLElement, onBack: () => void)
   const card = document.createElement('div')
   card.className = 'settings-card'
 
-  const title = document.createElement('h1')
-  title.textContent = 'Настройки'
-  card.appendChild(title)
-
   let soundRow: HTMLDivElement
   let themeRow: HTMLDivElement
 

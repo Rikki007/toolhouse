@@ -3,6 +3,8 @@ import { getItemById, getStaffById, getRiggingById } from '../utils/itemLookup.t
 import { applyStaffUpgrade } from '../utils/staffUpgrades.ts'
 import { updateStateWithIncome } from './shiftsStore.ts'
 import type { StaffReward, RiggingReward } from '../data/lootBoxRewards.ts'
+import type { StaffUpgrades } from '../types/index.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 /** Определяет слот техники по ID предмета */
 export function getTechniqueSlot(itemId: string): 'orderPickers' | 'reachTrucks' | null {
@@ -34,9 +36,9 @@ export function getInventory() {
 
 /** Удаляет прогресс прокачки сотрудника (при продаже) */
 function withoutUpgrade(
-  upgrades: Record<string, number>,
+  upgrades: StaffUpgrades,
   itemId: string
-): Record<string, number> {
+): StaffUpgrades {
   if (!(itemId in upgrades)) return upgrades
   const { [itemId]: _removed, ...rest } = upgrades
   return rest
@@ -461,7 +463,8 @@ export function upgradeStaff(staffId: string): boolean {
   if (!staff) return false
 
   const state = getState()
-  const applied = applyStaffUpgrade(staff, state.staffUpgrades)
+  const playerLevel = levelFromXp(state.xpMoney)
+  const applied = applyStaffUpgrade(staff, state.staffUpgrades, playerLevel)
   if (!applied) return false
 
   if (state.money < applied.cost) return false

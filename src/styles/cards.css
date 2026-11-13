@@ -1071,6 +1071,42 @@
   margin-bottom: 4px;
 }
 
+/* Закладка тира персонала */
+.staff-tier-bookmark {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 24px;
+  height: 32px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Закладка в модалке деталей сотрудника */
+.staff-detail-modal-body {
+  position: relative;
+}
+
+.staff-detail-modal-body .staff-tier-bookmark {
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 42px;
+}
+
+/* Строка с названием лиги */
+.staff-tier-row {
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+  margin-top: 2px;
+}
+
+.staff-tier-row + .staff-upgrade-btn {
+  margin-top: 8px;
+}
+
 .shifts-personnel-card-avatar {
   width: 48px;
   height: 48px;

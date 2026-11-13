@@ -1,4 +1,4 @@
-import type { Settings, SkillId, SkillBranchChoices, ShiftConfig, ShiftsState, ShopState, InventoryState, ShiftStaff, StaffUpgrades, NewsItem, AchievementId, MasterUpgrades } from '../types/index.ts'
+import type { Settings, SkillId, SkillBranchChoices, ShiftConfig, ShiftsState, ShopState, InventoryState, ShiftStaff, StaffUpgrades, NewsItem, AchievementId, MasterUpgrades, StaffTier } from '../types/index.ts'
 import { defaultSettings } from './settingsStore.ts'
 import { orderPickersList, reachTrucksList } from '../data/equipment.ts'
 import { pickersList, reachTruckDriversList } from '../data/staff.ts'
@@ -157,6 +157,8 @@ export interface AppState {
   shareRewardClaimed: boolean
   /** Прокачка мастеров: masterId → уровень (0-4) */
   masterUpgrades: MasterUpgrades
+  /** Номера лиг персонала, об открытии которых игрок уже уведомлён */
+  tierUnlocksSeen: number[]
   /** Статус ачивок: id → 'locked' | 'unlocked' */
   achievements: Record<AchievementId, 'locked' | 'unlocked'>
 }
@@ -392,6 +394,34 @@ function migrateAddTechniqueSlot(shifts: ShiftsState): ShiftsState {
   return result
 }
 
+/**
+ * Миграция старого формата staffUpgrades (Record<string, number>)
+ * в новый (Record<string, { tier, level }>).
+ * Старое число = количество повышений на красном тире.
+ * Новый level = baseSpeed + count ( capped at 10 ).
+ */
+function migrateStaffUpgrades(raw: unknown): StaffUpgrades {
+  if (!raw || typeof raw !== 'object') return {}
+  const result: StaffUpgrades = {}
+  const allStaff = [...pickersList, ...reachTruckDriversList]
+
+  for (const [staffId, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (value && typeof value === 'object' && 'tier' in (value as Record<string, unknown>)) {
+      // Уже новый формат
+      result[staffId] = value as StaffUpgrades[string]
+      continue
+    }
+    // Старый формат: number
+    const oldCount = typeof value === 'number' ? value : 0
+    const staffData = allStaff.find(s => s.id === staffId)
+    const baseSpeed = staffData?.baseSpeed ?? 3
+    const newLevel = Math.min(10, baseSpeed + oldCount)
+    result[staffId] = { tier: 1 as StaffTier, level: newLevel }
+  }
+
+  return result
+}
+
 function loadState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -437,7 +467,7 @@ function loadState(): AppState {
 
       const inventoryState: ShopState = parsed.inventory || { ...DEFAULT_INVENTORY }
       const skillsState = parsed.skills || { ...DEFAULT_SKILLS }
-      const staffUpgradesState = parsed.staffUpgrades ?? {}
+      const staffUpgradesState = migrateStaffUpgrades(parsed.staffUpgrades)
       const branchChoicesState: SkillBranchChoices = parsed.branchChoices ?? {}
 
       // Старые сейвы могли содержать переключатель музыки — поле удалено из настроек
@@ -474,6 +504,7 @@ function loadState(): AppState {
         staffUpgrades: staffUpgradesState,
         shareRewardClaimed: parsed.shareRewardClaimed ?? false,
         masterUpgrades: parsed.masterUpgrades ?? {},
+        tierUnlocksSeen: parsed.tierUnlocksSeen ?? [],
         achievements: parsed.achievements ?? {},
       }
     }
@@ -515,6 +546,7 @@ function loadState(): AppState {
       staffUpgrades: oldData.staffUpgrades ?? {},
       shareRewardClaimed: false,
       masterUpgrades: {},
+      tierUnlocksSeen: [],
       achievements: {},
     }
   }
@@ -552,6 +584,7 @@ function createDefaultState(): AppState {
     staffUpgrades: {},
     shareRewardClaimed: false,
     masterUpgrades: {},
+    tierUnlocksSeen: [],
     achievements: {},
   }
 }
