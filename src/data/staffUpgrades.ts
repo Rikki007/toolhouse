@@ -40,19 +40,19 @@ export interface StaffTierConfig {
 
 /**
  * Таблица лиг:
- * красная (1×), зелёная (5×), жёлтая (10×), серебряная (15×),
- * рубиновая (20×), изумрудная (25×), алмазная (30×), премиум (35×).
+ * красная (1×), зелёная (10×), жёлтая (20×), серебряная (40×),
+ * рубиновая (80×), изумрудная (160×), алмазная (320×), премиум (640×).
  * baseSpeed — сумма максимальной скорости всех предыдущих лиг (10 уровней × speedBonus).
  */
 export const STAFF_TIERS: StaffTierConfig[] = [
-  { name: 'Красная',    imageKey: 'tierOne',   speedBonus: 1,  unlockLevel: 1,  baseSpeed: 0 },
-  { name: 'Зелёная',    imageKey: 'tierTwo',   speedBonus: 5,  unlockLevel: 5,  baseSpeed: 10 },
-  { name: 'Жёлтая',     imageKey: 'tierThree', speedBonus: 10, unlockLevel: 10, baseSpeed: 60 },
-  { name: 'Серебряная', imageKey: 'tierFour',  speedBonus: 15, unlockLevel: 15, baseSpeed: 160 },
-  { name: 'Рубиновая',  imageKey: 'tierFive',  speedBonus: 20, unlockLevel: 20, baseSpeed: 310 },
-  { name: 'Изумрудная', imageKey: 'tierSix',   speedBonus: 25, unlockLevel: 25, baseSpeed: 510 },
-  { name: 'Алмазная',   imageKey: 'tierSeven', speedBonus: 30, unlockLevel: 30, baseSpeed: 760 },
-  { name: 'Премиум',    imageKey: 'tierPrem',  speedBonus: 35, unlockLevel: 35, baseSpeed: 1060 },
+  { name: 'Красная',    imageKey: 'tierOne',   speedBonus: 1,   unlockLevel: 1,  baseSpeed: 0 },
+  { name: 'Зелёная',    imageKey: 'tierTwo',   speedBonus: 10,  unlockLevel: 5,  baseSpeed: 10 },
+  { name: 'Жёлтая',     imageKey: 'tierThree', speedBonus: 20,  unlockLevel: 10, baseSpeed: 110 },
+  { name: 'Серебряная', imageKey: 'tierFour',  speedBonus: 40,  unlockLevel: 15, baseSpeed: 310 },
+  { name: 'Рубиновая',  imageKey: 'tierFive',  speedBonus: 80,  unlockLevel: 20, baseSpeed: 710 },
+  { name: 'Изумрудная', imageKey: 'tierSix',   speedBonus: 160, unlockLevel: 25, baseSpeed: 1510 },
+  { name: 'Алмазная',   imageKey: 'tierSeven', speedBonus: 320, unlockLevel: 30, baseSpeed: 3110 },
+  { name: 'Премиум',    imageKey: 'tierPrem',  speedBonus: 640, unlockLevel: 35, baseSpeed: 6310 },
 ]
 
 /** Последний тир (номер последней лиги) */

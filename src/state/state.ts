@@ -159,6 +159,8 @@ export interface AppState {
   masterUpgrades: MasterUpgrades
   /** Номера лиг персонала, об открытии которых игрок уже уведомлён */
   tierUnlocksSeen: number[]
+  /** ID техники, о разблокировке которой игрок уже уведомлён (однократные модалки) */
+  equipmentUnlocksSeen: string[]
   /** Статус ачивок: id → 'locked' | 'unlocked' */
   achievements: Record<AchievementId, 'locked' | 'unlocked'>
 }
@@ -505,6 +507,7 @@ function loadState(): AppState {
         shareRewardClaimed: parsed.shareRewardClaimed ?? false,
         masterUpgrades: parsed.masterUpgrades ?? {},
         tierUnlocksSeen: parsed.tierUnlocksSeen ?? [],
+        equipmentUnlocksSeen: parsed.equipmentUnlocksSeen ?? [],
         achievements: parsed.achievements ?? {},
       }
     }
@@ -547,6 +550,7 @@ function loadState(): AppState {
       shareRewardClaimed: false,
       masterUpgrades: {},
       tierUnlocksSeen: [],
+      equipmentUnlocksSeen: [],
       achievements: {},
     }
   }
@@ -585,6 +589,7 @@ function createDefaultState(): AppState {
     shareRewardClaimed: false,
     masterUpgrades: {},
     tierUnlocksSeen: [],
+    equipmentUnlocksSeen: [],
     achievements: {},
   }
 }

@@ -30,27 +30,6 @@ export function createTierBookmark(staff: Staff): HTMLElement | null {
 }
 
 /**
- * Строка с названием лиги (вместо квалификации).
- * Если текущая лига прокачана до конца, подсказывает, что дальше.
- */
-export function createTierRow(staff: Staff): HTMLElement {
-  const state = getState()
-  const progress = getStaffTierProgress(staff, state.staffUpgrades)
-  const row = document.createElement('div')
-  row.className = 'staff-tier-row'
-  row.textContent = `${getStaffTierName(staff)} лига · ${progress.level}/${MAX_TIER_LEVEL}★`
-
-  if (progress.level >= MAX_TIER_LEVEL && progress.tier < MAX_STAFF_TIER) {
-    const nextCfg = STAFF_TIERS[progress.tier]
-    const playerLevel = levelFromXp(state.xpMoney)
-    row.textContent += playerLevel >= nextCfg.unlockLevel
-      ? ` · доступна ${nextCfg.name.toLowerCase()} лига`
-      : ` · ${nextCfg.name.toLowerCase()} лига с ${nextCfg.unlockLevel} ур.`
-  }
-  return row
-}
-
-/**
  * Кнопка прокачки квалификации сотрудника.
  * Не рендерится (null), если сотрудник уже на потолке — тогда прокачивать нечего.
  * @param onUpgraded — вызывается после успешной покупки, чтобы перерисовать экран

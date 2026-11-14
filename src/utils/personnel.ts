@@ -8,12 +8,12 @@ import { getState } from '../state/state.ts'
 import { createModal } from '../utils/modalFactory.ts'
 import { getStaffTierProgress, getNextUpgrade, getStaffTierImageKey, getStaffTierName, getTierNameByNumber } from './staffUpgrades.ts'
 import { playSound } from '../state/audioManager.ts'
-import { createTierBookmark, createTierRow, createStaffUpgradeButton } from '../components/staffUpgradeButton.ts'
+import { createTierBookmark, createStaffUpgradeButton } from '../components/staffUpgradeButton.ts'
 import { createMasterUpgradeButton, getMasterTitle, getMasterLevelImageKey } from '../components/masterUpgradeButton.ts'
 import { shiftMasters } from '../data/staff.ts'
 import { getMasterUpgradeLevel, getMasterUpgradeCost } from '../state/masterUpgradeStore.ts'
 import { MASTER_UPGRADE_LEVELS } from '../data/masterUpgrades.ts'
-import { MAX_TIER_LEVEL, STAFF_TIERS } from '../data/staffUpgrades.ts'
+import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
 import { formatMoney } from './format.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
@@ -117,8 +117,6 @@ function renderStaffDetailModal(
   speedEl.textContent = '⭐'.repeat(starsCount) + '☆'.repeat(10 - starsCount)
   body.appendChild(speedEl)
 
-  // Название тира
-  body.appendChild(createTierRow(staffInfo))
   const upgradeBtn = createStaffUpgradeButton(staffInfo, () => {
     // Обновляем модалку деталей и карточку в сетке на месте — без пересоздания окон
     updateStaffDetailUI(modal, staffInfo.id)
@@ -807,7 +805,7 @@ export function updatePersonnelCardSpeed(staffId: string): void {
 
 /**
  * Обновляет модалку деталей сотрудника на месте после прокачки:
- * звёзды скорости, название тира и кнопку. Не пересоздаёт окно,
+ * звёзды скорости и кнопку. Не пересоздаёт окно,
  * поэтому скролл модалки не сбрасывается.
  */
 export function updateStaffDetailUI(modal: HTMLElement, staffId: string): void {
@@ -826,18 +824,6 @@ export function updateStaffDetailUI(modal: HTMLElement, staffId: string): void {
   const bookmark = modal.querySelector('.staff-tier-bookmark') as HTMLImageElement | null
   const tierKey = getStaffTierImageKey(staff, state.staffUpgrades)
   if (bookmark && tierImages[tierKey]) bookmark.src = tierImages[tierKey]
-
-  // Обновляем строку лиги
-  const tierRow = modal.querySelector('.staff-tier-row') as HTMLElement | null
-  if (tierRow) {
-    const nextCfg = STAFF_TIERS[progress.tier]
-    tierRow.textContent = `${getStaffTierName(staff)} лига · ${progress.level}/${MAX_TIER_LEVEL}★`
-    if (progress.level >= MAX_TIER_LEVEL && nextCfg) {
-      tierRow.textContent += playerLevel >= nextCfg.unlockLevel
-        ? ` · доступна ${nextCfg.name.toLowerCase()} лига`
-        : ` · ${nextCfg.name.toLowerCase()} лига с ${nextCfg.unlockLevel} ур.`
-    }
-  }
 
   // Кнопка прокачки: при достижении потолка кнопка удаляется
   const btn = modal.querySelector('.staff-upgrade-btn') as HTMLButtonElement | null

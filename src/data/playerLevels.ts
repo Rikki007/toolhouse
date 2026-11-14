@@ -53,9 +53,14 @@ export function levelFromXp(xpMoney: number): number {
   // За пределами таблицы — экспоненциальный хвост
   let level = XP_THRESHOLDS.length
   let threshold = XP_THRESHOLDS[XP_THRESHOLDS.length - 1]
-  while (xpMoney >= threshold) {
-    threshold = Math.floor(threshold * XP_GROWTH_FACTOR)
-    level++
+  while (true) {
+    const nextThreshold = Math.floor(threshold * XP_GROWTH_FACTOR)
+    if (xpMoney >= nextThreshold) {
+      threshold = nextThreshold
+      level++
+    } else {
+      break
+    }
   }
   return level
 }
