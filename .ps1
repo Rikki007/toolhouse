@@ -1,1 +1,0 @@
-PS> New-Item -ItemType Directory -Force -Path src/styles, src/store, src/ui, src/game
