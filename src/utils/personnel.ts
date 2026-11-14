@@ -18,20 +18,52 @@ import { formatMoney } from './format.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 
-export const FORKLIFT_SLOTS: PersonnelSlot[] = [
-  { id: 'forklift-1', role: 'forklift', label: 'Водитель ричтрака 1' },
-  { id: 'forklift-2', role: 'forklift', label: 'Водитель ричтрака 2' },
-  { id: 'forklift-3', role: 'forklift', label: 'Водитель ричтрака 3' },
-  { id: 'forklift-4', role: 'forklift', label: 'Водитель ричтрака 4' },
-]
+/** Начальное количество слотов */
+const BASE_FORKLIFT_SLOTS = 4
+const BASE_PICKER_SLOTS = 5
 
-export const ASSEMBLER_SLOTS: PersonnelSlot[] = [
-  { id: 'picker-1', role: 'picker', label: 'Сборщик 1' },
-  { id: 'picker-2', role: 'picker', label: 'Сборщик 2' },
-  { id: 'picker-3', role: 'picker', label: 'Сборщик 3' },
-  { id: 'picker-4', role: 'picker', label: 'Сборщик 4' },
-  { id: 'picker-5', role: 'picker', label: 'Сборщик 5' },
-]
+/** Уровни, на которых добавляется по одному слоту водителя и сборщика */
+const SHIFT_EXPANSION_LEVELS = [22, 27, 32, 37]
+
+/**
+ * Количество слотов для роли на текущем уровне игрока.
+ * На уровнях 22, 27, 32, 37 добавляется +1 слот водителя и +1 слот сборщика.
+ */
+export function getMaxSlotsForLevel(playerLevel: number, role: 'forklift' | 'picker'): number {
+  const base = role === 'forklift' ? BASE_FORKLIFT_SLOTS : BASE_PICKER_SLOTS
+  const expansions = SHIFT_EXPANSION_LEVELS.filter((l) => l <= playerLevel).length
+  return base + expansions
+}
+
+/**
+ * Создаёт массив слотов заданного количества.
+ */
+function createSlotsArray(base: number, role: 'forklift' | 'picker'): PersonnelSlot[] {
+  const label = role === 'forklift' ? 'Водитель ричтрака' : 'Сборщик'
+  return Array.from({ length: base }, (_, i) => ({
+    id: `${role === 'forklift' ? 'forklift' : 'picker'}-${i + 1}`,
+    role,
+    label: `${label} ${i + 1}`,
+  }))
+}
+
+/**
+ * Текущие слоты водителя ричтраков (динамически, зависит от уровня игрока).
+ */
+export function getForkliftSlots(): PersonnelSlot[] {
+  const state = getState()
+  const playerLevel = levelFromXp(state.xpMoney)
+  return createSlotsArray(getMaxSlotsForLevel(playerLevel, 'forklift'), 'forklift')
+}
+
+/**
+ * Текущие слоты сборщиков (динамически, зависит от уровня игрока).
+ */
+export function getAssemblerSlots(): PersonnelSlot[] {
+  const state = getState()
+  const playerLevel = levelFromXp(state.xpMoney)
+  return createSlotsArray(getMaxSlotsForLevel(playerLevel, 'picker'), 'picker')
+}
 
 /**
   * Рендерит модальное окно с деталями сотрудника и слотами снаряжения.
@@ -606,7 +638,7 @@ function openTechniqueSelectorModal(
     const grid = card.closest('.shifts-personnel-grid')
     if (grid) {
       grid.innerHTML = ''
-      const slots = role === 'forklift' ? FORKLIFT_SLOTS : ASSEMBLER_SLOTS
+      const slots = role === 'forklift' ? getForkliftSlots() : getAssemblerSlots()
       for (let i = 0; i < slots.length; i++) {
         grid.appendChild(createPersonnelCard(slots[i], shiftId, i))
       }

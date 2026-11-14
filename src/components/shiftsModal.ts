@@ -1,6 +1,6 @@
 import { getCurrentShiftConfig, buyShift, shiftConfigs } from '../state/shiftsStore.ts'
 import { createModal } from '../utils/modalFactory.ts'
-import { createPersonnelCard, createMasterCard, FORKLIFT_SLOTS, ASSEMBLER_SLOTS, updateMasterCardUI } from '../utils/personnel.ts'
+import { createPersonnelCard, createMasterCard, getForkliftSlots, getAssemblerSlots, updateMasterCardUI } from '../utils/personnel.ts'
 import { getState, subscribe } from '../state/state.ts'
 import { isShiftFullyStaffed } from '../utils/passiveIncome.ts'
 import { interfaceIconImages, coinFrames } from '../assets/assetLoader.ts'
@@ -342,8 +342,9 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   const forkliftGrid = document.createElement('div')
   forkliftGrid.className = 'shifts-personnel-grid'
 
-  for (const slot of FORKLIFT_SLOTS) {
-    forkliftGrid.appendChild(createPersonnelCard(slot, shiftId, FORKLIFT_SLOTS.indexOf(slot)))
+  const forkliftSlots = getForkliftSlots()
+  for (let i = 0; i < forkliftSlots.length; i++) {
+    forkliftGrid.appendChild(createPersonnelCard(forkliftSlots[i], shiftId, i))
   }
 
   forkliftSection.appendChild(forkliftGrid)
@@ -361,8 +362,9 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   const assemblerGrid = document.createElement('div')
   assemblerGrid.className = 'shifts-personnel-grid'
 
-  for (const slot of ASSEMBLER_SLOTS) {
-    assemblerGrid.appendChild(createPersonnelCard(slot, shiftId, ASSEMBLER_SLOTS.indexOf(slot)))
+  const assemblerSlots = getAssemblerSlots()
+  for (let i = 0; i < assemblerSlots.length; i++) {
+    assemblerGrid.appendChild(createPersonnelCard(assemblerSlots[i], shiftId, i))
   }
 
   assemblerSection.appendChild(assemblerGrid)

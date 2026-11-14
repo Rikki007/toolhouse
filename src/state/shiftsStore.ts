@@ -2,7 +2,9 @@ import type { ShiftConfig, ShiftsState, ShiftStaff } from '../types/index.ts'
 import type { AppState } from './state.ts'
 import { getState, updateState, SHIFT_CONFIGS } from './state.ts'
 import { calculatePassiveIncome, calculateShiftsMultiplier, getIncomeSources } from '../utils/passiveIncome.ts'
-import { playerLevel } from '../utils/skillProgress.ts'
+import { playerLevel as getPlayerLevel } from '../utils/skillProgress.ts'
+import { getMaxSlotsForLevel } from '../utils/personnel.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 export { SHIFT_CONFIGS as shiftConfigs }
 
@@ -69,7 +71,7 @@ export function buyShift(shiftId: number): { success: boolean; error?: string } 
   }
 
   // Проверяем уровень игрока: смена открывается для покупки только с нужного уровня
-  const level = playerLevel(state)
+  const level = getPlayerLevel(state)
   if (level < config.requiredLevel) {
     return { success: false, error: `Нужен ${config.requiredLevel}-й уровень (сейчас ${level})` }
   }
@@ -299,8 +301,8 @@ export function getActiveShifts(): Array<{ id: number; label: string }> {
  */
 export function getShiftSlotAvailability(role: 'forklift' | 'picker'): Array<{ shiftId: number; availableSlots: number }> {
   const state = getState()
-  
-  const maxSlots = role === 'forklift' ? 4 : 5
+  const level = levelFromXp(state.xpMoney)
+  const maxSlots = getMaxSlotsForLevel(level, role)
   
   return [
     { shiftId: 1, availableSlots: maxSlots - state.shifts.first.personnel[role === 'forklift' ? 'reachTruckDrivers' : 'pickers'].length },
@@ -334,7 +336,8 @@ export function assignStaffToShift(
   const currentArray = [...shift.personnel[personnelKey]]
   
   // Проверяем, есть ли свободные слоты
-  const maxSlots = role === 'forklift' ? 4 : 5
+  const level = getPlayerLevel(state)
+  const maxSlots = getMaxSlotsForLevel(level, role)
   if (currentArray.length >= maxSlots) {
     return false
   }

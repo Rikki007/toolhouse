@@ -5,13 +5,12 @@ import type { Shift, ShiftStaff, ShiftsState, StaffUpgrades, MasterUpgrades } fr
 import { getStaffById, getRiggingById, getEquipmentById } from './itemLookup.ts'
 import { getStaffSpeed } from './staffUpgrades.ts'
 import { formatMoney } from './format.ts'
+import { getMaxSlotsForLevel } from './personnel.ts'
+import { getState } from '../state/state.ts'
+import { levelFromXp } from '../data/playerLevels.ts'
 
 /** Базовый пассивный доход: 1 монета в секунду */
 const BASE_PASSIVE_INCOME = 1
-
-/** Сколько водителей ричтрака и сборщиков нужно, чтобы смена считалась укомплектованной */
-const FULL_FORKLIFT_SLOTS = 4
-const FULL_PICKER_SLOTS = 5
 
 /** Множитель дохода полностью укомплектованной смены */
 const FULLY_STAFFED_MULTIPLIER = 1.5
@@ -24,9 +23,12 @@ const EQUIPMENT_INCOME_MULTIPLIER = 10
 
 /** Смена укомплектована, если заняты все слоты водителей и сборщиков */
 export function isShiftFullyStaffed(shift: Shift): boolean {
+  const playerLevel = levelFromXp(getState().xpMoney)
+  const maxForklifts = getMaxSlotsForLevel(playerLevel, 'forklift')
+  const maxPickers = getMaxSlotsForLevel(playerLevel, 'picker')
   return (
-    shift.personnel.reachTruckDrivers.length >= FULL_FORKLIFT_SLOTS &&
-    shift.personnel.pickers.length >= FULL_PICKER_SLOTS
+    shift.personnel.reachTruckDrivers.length >= maxForklifts &&
+    shift.personnel.pickers.length >= maxPickers
   )
 }
 

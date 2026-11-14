@@ -18,6 +18,7 @@ import { startGlobalEventsObserver } from '../utils/globalEvents.ts'
 import { startLevelRewardObserver } from '../components/levelRewardModal.ts'
 import { startEquipmentUnlockObserver } from '../components/equipmentUnlockModal.ts'
 import { startTierUnlockObserver } from '../components/tierUnlockModal.ts'
+import { startShiftExpansionObserver } from '../components/shiftExpansionModal.ts'
 import { interfaceIconImages } from '../assets/assetLoader.ts'
 import { playSound } from '../state/audioManager.ts'
 
@@ -87,6 +88,9 @@ export async function renderGameScreen(
   // Уведомления о разблокировке новых тиров персонала
   const stopTierUnlocks = startTierUnlockObserver(container)
 
+  // Уведомления о расширении смен
+  const stopShiftExpansions = startShiftExpansionObserver(container)
+
   // Начисляем оффлайн-доход сразу и сообщаем о нём новостью
   if (offline.amount > 0) {
     applyOfflineIncome(offline.amount)
@@ -115,6 +119,7 @@ export async function renderGameScreen(
     stopSkillAnalysis()
     stopEquipmentUnlocks()
     stopTierUnlocks()
+    stopShiftExpansions()
     stopLevelRewards()
     bottomBar.cleanup()
     stopPassiveIncomeTracking()
