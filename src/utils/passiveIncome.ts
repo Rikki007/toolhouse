@@ -5,8 +5,7 @@ import type { Shift, ShiftStaff, ShiftsState, StaffUpgrades, MasterUpgrades } fr
 import { getStaffById, getRiggingById, getEquipmentById } from './itemLookup.ts'
 import { getStaffSpeed } from './staffUpgrades.ts'
 import { formatMoney } from './format.ts'
-import { getMaxSlotsForLevel } from './personnel.ts'
-import { getState } from '../state/state.ts'
+import { getMaxSlotsForLevel } from '../data/shiftSlots.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 
 /** Базовый пассивный доход: 1 монета в секунду */
@@ -21,9 +20,11 @@ const FULLY_STAFFED_MULTIPLIER = 1.5
  */
 const EQUIPMENT_INCOME_MULTIPLIER = 10
 
-/** Смена укомплектована, если заняты все слоты водителей и сборщиков */
-export function isShiftFullyStaffed(shift: Shift): boolean {
-  const playerLevel = levelFromXp(getState().xpMoney)
+/**
+ * Смена укомплектована, если заняты все доступные на текущем уровне слоты.
+ * @param playerLevel — уровень игрока (от него зависит количество слотов в смене)
+ */
+export function isShiftFullyStaffed(shift: Shift, playerLevel: number): boolean {
   const maxForklifts = getMaxSlotsForLevel(playerLevel, 'forklift')
   const maxPickers = getMaxSlotsForLevel(playerLevel, 'picker')
   return (
@@ -51,6 +52,8 @@ export interface IncomeSources {
   shifts: ShiftsState
   staffUpgrades: StaffUpgrades
   masterUpgrades: MasterUpgrades
+  /** Суммарный заработок — из него вычисляется уровень игрока (влияет на число слотов в смене) */
+  xpMoney: number
 }
 
 /** Минимальный срез состояния, из которого считаются источники дохода */
@@ -60,6 +63,7 @@ export interface IncomeStateSlice {
   shifts: ShiftsState
   staffUpgrades: StaffUpgrades
   masterUpgrades: MasterUpgrades
+  xpMoney: number
 }
 
 /** Собирает источники дохода из состояния игры */
@@ -70,6 +74,7 @@ export function getIncomeSources(state: IncomeStateSlice): IncomeSources {
     shifts: state.shifts,
     staffUpgrades: state.staffUpgrades,
     masterUpgrades: state.masterUpgrades,
+    xpMoney: state.xpMoney,
   }
 }
 
@@ -117,9 +122,11 @@ export function calculateTechniqueIncome(techniqueId: string | null): number {
 export function calculateShiftStaffIncome(
   shifts: ShiftsState,
   upgrades?: StaffUpgrades,
-  masterUpgrades?: MasterUpgrades
+  masterUpgrades?: MasterUpgrades,
+  playerLevel?: number,
 ): number {
   let income = 0
+  const level = playerLevel ?? levelFromXp(0)
 
   for (const shift of Object.values(shifts)) {
     if (!shift.isActive) continue
@@ -128,7 +135,7 @@ export function calculateShiftStaffIncome(
       shiftIncome += calculateStaffKpi(staff, upgrades) + calculateTechniqueIncome(staff.slots.technique)
     }
     // Бонус за полную укомплектованность смены
-    if (isShiftFullyStaffed(shift)) {
+    if (isShiftFullyStaffed(shift, level)) {
       shiftIncome *= FULLY_STAFFED_MULTIPLIER
     }
     // Множитель мастера смены
@@ -193,7 +200,13 @@ function calculateSkillsMultiplier(
  */
 export function calculatePassiveIncome(sources: IncomeSources): number {
   const skillsMultiplier = calculateSkillsMultiplier(sources.skills, sources.branchChoices)
-  const staffIncome = calculateShiftStaffIncome(sources.shifts, sources.staffUpgrades, sources.masterUpgrades)
+  const playerLevel = levelFromXp(sources.xpMoney)
+  const staffIncome = calculateShiftStaffIncome(
+    sources.shifts,
+    sources.staffUpgrades,
+    sources.masterUpgrades,
+    playerLevel,
+  )
   const shiftsMultiplier = calculateShiftsMultiplier(sources.shifts)
 
   return roundToCents(

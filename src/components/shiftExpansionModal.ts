@@ -3,6 +3,7 @@ import { getState, updateState, subscribe } from '../state/state.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 import { playSound } from '../state/audioManager.ts'
 import { interfaceIconImages } from '../assets/assetLoader.ts'
+import { BASE_FORKLIFT_SLOTS, BASE_PICKER_SLOTS, SHIFT_EXPANSION_LEVELS } from '../data/shiftSlots.ts'
 
 /** Запись о расширении смены */
 interface ShiftExpansion {
@@ -12,13 +13,13 @@ interface ShiftExpansion {
   totalPickers: number
 }
 
-/** Список расширений смен: 4→5→6→7→8 водителей, 5→6→7→8→9 сборщиков */
-const SHIFT_EXPANSIONS: ShiftExpansion[] = [
-  { id: 'shift_exp_1', level: 22, totalForklifts: 5, totalPickers: 6 },
-  { id: 'shift_exp_2', level: 27, totalForklifts: 6, totalPickers: 7 },
-  { id: 'shift_exp_3', level: 32, totalForklifts: 7, totalPickers: 8 },
-  { id: 'shift_exp_4', level: 37, totalForklifts: 8, totalPickers: 9 },
-]
+/** Список расширений смен: на каждом шаге +1 водитель и +1 сборщик */
+const SHIFT_EXPANSIONS: ShiftExpansion[] = SHIFT_EXPANSION_LEVELS.map((level, index) => ({
+  id: `shift_exp_${index + 1}`,
+  level,
+  totalForklifts: BASE_FORKLIFT_SLOTS + index + 1,
+  totalPickers: BASE_PICKER_SLOTS + index + 1,
+}))
 
 /**
  * Наблюдатель за расширением смен.

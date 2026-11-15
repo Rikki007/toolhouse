@@ -503,6 +503,7 @@ function loadState(): AppState {
           shifts,
           staffUpgrades: staffUpgradesState,
           masterUpgrades: parsed.masterUpgrades ?? {},
+          xpMoney: parsed.xpMoney ?? 0,
         })),
         timeToEvent: parsed.timeToEvent ?? Date.now(),
         staffUpgrades: staffUpgradesState,
@@ -514,8 +515,9 @@ function loadState(): AppState {
         achievements: parsed.achievements ?? {},
       }
     }
-  } catch {
-    // ignore
+  } catch (error) {
+    // Не глушим ошибку молча: иначе сломанный сейв выглядит как «сброс прогресса»
+    console.error('Не удалось загрузить сохранение — создано новое состояние', error)
   }
 
   // Миграция из старых ключей
@@ -546,6 +548,7 @@ function loadState(): AppState {
           shifts: oldData.shifts || DEFAULT_SHIFTS,
           staffUpgrades: oldData.staffUpgrades ?? {},
           masterUpgrades: {},
+          xpMoney: oldData.money ?? 0,
         })
       ),
       timeToEvent: Date.now(),
@@ -587,6 +590,7 @@ function createDefaultState(): AppState {
       shifts: DEFAULT_SHIFTS,
       staffUpgrades: {},
       masterUpgrades: {},
+      xpMoney: 0,
     })),
     timeToEvent: Date.now(),
     staffUpgrades: {},

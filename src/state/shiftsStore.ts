@@ -3,7 +3,7 @@ import type { AppState } from './state.ts'
 import { getState, updateState, SHIFT_CONFIGS } from './state.ts'
 import { calculatePassiveIncome, calculateShiftsMultiplier, getIncomeSources } from '../utils/passiveIncome.ts'
 import { playerLevel as getPlayerLevel } from '../utils/skillProgress.ts'
-import { getMaxSlotsForLevel } from '../utils/personnel.ts'
+import { getMaxSlotsForLevel } from '../data/shiftSlots.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 
 export { SHIFT_CONFIGS as shiftConfigs }
@@ -24,6 +24,7 @@ export function updateStateWithIncome(changes: Partial<AppState>): void {
       shifts: changes.shifts ?? state.shifts,
       staffUpgrades: changes.staffUpgrades ?? state.staffUpgrades,
       masterUpgrades: changes.masterUpgrades ?? state.masterUpgrades,
+      xpMoney: changes.xpMoney ?? state.xpMoney,
     })),
   })
 }

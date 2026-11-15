@@ -134,7 +134,7 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
       itemFooter.appendChild(mult)
 
       // Бонус за полную укомплектованность смены
-      if (isShiftFullyStaffed(shift)) {
+      if (isShiftFullyStaffed(shift, playerLevel(state))) {
         // Множитель и бонус stack'ом друг под другом
         itemFooter.classList.add('shifts-modal-item-footer-stacked')
         const bonus = document.createElement('span')

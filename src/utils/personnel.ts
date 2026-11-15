@@ -17,23 +17,7 @@ import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
 import { formatMoney } from './format.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
-
-/** Начальное количество слотов */
-const BASE_FORKLIFT_SLOTS = 4
-const BASE_PICKER_SLOTS = 5
-
-/** Уровни, на которых добавляется по одному слоту водителя и сборщика */
-const SHIFT_EXPANSION_LEVELS = [22, 27, 32, 37]
-
-/**
- * Количество слотов для роли на текущем уровне игрока.
- * На уровнях 22, 27, 32, 37 добавляется +1 слот водителя и +1 слот сборщика.
- */
-export function getMaxSlotsForLevel(playerLevel: number, role: 'forklift' | 'picker'): number {
-  const base = role === 'forklift' ? BASE_FORKLIFT_SLOTS : BASE_PICKER_SLOTS
-  const expansions = SHIFT_EXPANSION_LEVELS.filter((l) => l <= playerLevel).length
-  return base + expansions
-}
+import { getMaxSlotsForLevel } from '../data/shiftSlots.ts'
 
 /**
  * Создаёт массив слотов заданного количества.
