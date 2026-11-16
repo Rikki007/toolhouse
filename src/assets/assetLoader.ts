@@ -39,31 +39,47 @@ import beaverMir from './richAva/beaver08.png'
 import beaverKos from './richAva/beaver09.png'
 import beaverVorob from './richAva/beaver10.png'
 import beaverVors from './richAva/beaver11.png'
+import beaverBoy from './richAva/beaver12.png'
 import beaverMak from './richAva/beaver13.png'
-import beaverJuk1 from './richAva/beaver15.png'
-import beaverVoron1 from './richAva/beaver16.png'
-import beaverJur1 from './richAva/beaver19.png'
-import beaverMir1 from './richAva/beaver17.png'
-import beaverKos1 from './richAva/beaver18.png'
+import beaverBon from './richAva/beaver14.png'
+import beaverBoj from './richAva/beaver15.png'
+import beaverHal from './richAva/beaver16.png'
+import beaverAbch from './richAva/beaver17.png'
+import beaverStr from './richAva/strelok.png'
+import beaverIsa from './richAva/isaak.png'
+import beaverGor from './richAva/gordon.png'
+import beaverChi from './richAva/john117.png'
+import beaverDoo from './richAva/doom.png'
+import beaverShep from './richAva/shepard.png'
+import beaverTerm from './richAva/terminator.png'
+
 
 // Сборщики
 import picker01 from './pickerAva/picker01.png'
 import picker02 from './pickerAva/picker02.png'
 import picker03 from './pickerAva/picker03.png'
+import picker04 from './pickerAva/picker04.png'
 import picker05 from './pickerAva/picker05.png'
 import picker06 from './pickerAva/picker06.png'
 import picker07 from './pickerAva/picker07.png'
 import picker08 from './pickerAva/picker08.png'
 import picker09 from './pickerAva/picker09.png'
+import picker10 from './pickerAva/picker10.png'
 import picker11 from './pickerAva/picker11.png'
+import picker12 from './pickerAva/picker12.png'
+import picker13 from './pickerAva/picker13.png'
 import picker14 from './pickerAva/picker14.png'
 import picker15 from './pickerAva/picker15.png'
+import picker16 from './pickerAva/picker16.png'
 import picker17 from './pickerAva/picker17.png'
 import picker18 from './pickerAva/picker18.png'
 import picker19 from './pickerAva/picker19.png'
 import picker20 from './pickerAva/picker20.png'
+import picker21 from './pickerAva/picker21.png'
 import picker22 from './pickerAva/picker22.png'
-import picker23 from './pickerAva/picker23.png'
+import picker23 from './pickerAva/witcher.png'
+import picker24 from './pickerAva/kratos.png'
+import picker25 from './pickerAva/predator.png'
 
 // Снаряжение
 import helmet01 from './rigging/helmet01.png'
@@ -322,30 +338,45 @@ export function initEquipmentImages(): void {
   richDriversImages['beaver_vorob'] = beaverVorob
   richDriversImages['beaver_vors'] = beaverVors
   richDriversImages['beaver_mak'] = beaverMak
-  richDriversImages['beaver_juk1'] = beaverJuk1
-  richDriversImages['beaver_voron1'] = beaverVoron1
-  richDriversImages['beaver_jur1'] = beaverJur1
-  richDriversImages['beaver_mir1'] = beaverMir1
-  richDriversImages['beaver_kos1'] = beaverKos1
+  richDriversImages['beaver_boy'] = beaverBoy
+  richDriversImages['beaver_bon'] = beaverBon
+  richDriversImages['beaver_boj'] = beaverBoj
+  richDriversImages['beaver_hal'] = beaverHal
+  richDriversImages['beaver_abch'] = beaverAbch
+  richDriversImages['beaver_str'] = beaverStr
+  richDriversImages['beaver_isa'] = beaverIsa
+  richDriversImages['beaver_gor'] = beaverGor
+  richDriversImages['beaver_chi'] = beaverChi
+  richDriversImages['beaver_doo'] = beaverDoo
+  richDriversImages['beaver_shep'] = beaverShep
+  richDriversImages['beaver_term'] = beaverTerm
 
   // Сборщики
   pickerImages['picker_01'] = picker01
   pickerImages['picker_02'] = picker02
   pickerImages['picker_03'] = picker03
+  pickerImages['picker_04'] = picker04
   pickerImages['picker_05'] = picker05
   pickerImages['picker_06'] = picker06
   pickerImages['picker_07'] = picker07
   pickerImages['picker_08'] = picker08
   pickerImages['picker_09'] = picker09
+  pickerImages['picker_10'] = picker10
   pickerImages['picker_11'] = picker11
+  pickerImages['picker_12'] = picker12
+  pickerImages['picker_13'] = picker13
   pickerImages['picker_14'] = picker14
   pickerImages['picker_15'] = picker15
+  pickerImages['picker_16'] = picker16
   pickerImages['picker_17'] = picker17
   pickerImages['picker_18'] = picker18
   pickerImages['picker_19'] = picker19
   pickerImages['picker_20'] = picker20
+  pickerImages['picker_21'] = picker21
   pickerImages['picker_22'] = picker22
   pickerImages['picker_23'] = picker23
+  pickerImages['picker_24'] = picker24
+  pickerImages['picker_25'] = picker25
 
   // Снаряжение
   riggingImages['helmet_01'] = helmet01

@@ -26,8 +26,8 @@ export interface RiggingReward {
 }
 
 /**
- * Награда: пусто. Нужна для наград за уровень: без неё в таблице остались бы
- * только предметы, и предмет выпадал бы на КАЖДОМ уровне.
+ * Награда: пусто. Не выпадает ни из одной таблицы, оставлена как аварийный
+ * вариант: на неё опирается отрисовка модалки, если таблица оказалась пустой.
  */
 export interface NoneReward {
   type: 'none'
@@ -42,7 +42,10 @@ export interface LootBoxDropConfig {
   weight: number // чем больше число, тем выше шанс выпадения
 }
 
-/** Список всех возможных наград с весами */
+/**
+ * Единая таблица всех наград с весами.
+ * Используется и лутбоксами, и наградами за уровень (см. LEVEL_DROPS ниже).
+ */
 export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   // --- Деньги (лёгкие награды) ---
   { reward: { type: 'money', amount: 5000 }, weight: 30 },
@@ -70,110 +73,69 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'money', amount: 1000000 }, weight: 2 },
   { reward: { type: 'money', amount: 1500000 }, weight: 1 },
 
-  // --- Персонал сборщики ---
-  { reward: { type: 'staff', id: 'picker_03' }, weight: 27 },
-  { reward: { type: 'staff', id: 'picker_19' }, weight: 3 },
-  { reward: { type: 'staff', id: 'picker_20' }, weight: 3 },
-  { reward: { type: 'staff', id: 'picker_22' }, weight: 2 },
-  { reward: { type: 'staff', id: 'picker_23' }, weight: 4 },
+  // --- Персонал сборщики: обычные ---
+  { reward: { type: 'staff', id: 'picker_19' }, weight: 6 },
 
-  // --- Персонал водители ---
+  // --- Персонал сборщики: легендарные (500000, 10★) ---
+  { reward: { type: 'staff', id: 'picker_23' }, weight: 2 },
+  { reward: { type: 'staff', id: 'picker_24' }, weight: 2 },
+  { reward: { type: 'staff', id: 'picker_25' }, weight: 2 },
+
+  // --- Персонал водители: обычный ---
   { reward: { type: 'staff', id: 'reachtruck_07' }, weight: 10 },
-  { reward: { type: 'staff', id: 'reachtruck_10' }, weight: 10 },
-  { reward: { type: 'staff', id: 'reachtruck_15' }, weight: 4 },
-  { reward: { type: 'staff', id: 'reachtruck_16' }, weight: 4 },
-  { reward: { type: 'staff', id: 'reachtruck_17' }, weight: 4 },
-  { reward: { type: 'staff', id: 'reachtruck_18' }, weight: 3 },
-  { reward: { type: 'staff', id: 'reachtruck_19' }, weight: 2 },
 
-  // --- снаряжение ---
-  { reward: { type: 'rigging', id: 'helmet_04' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'helmet_05' }, weight: 4 },
+  // --- Персонал водители: легендарные (500000, 10★) ---
+  { reward: { type: 'staff', id: 'reachtruck_18' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_19' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_20' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_21' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_22' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_23' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_24' }, weight: 2 },
+
+  // --- Снаряжение: веса по редкости (слабое падает чаще, сильное — реже) ---
+  // Каски: factor 1.25–1.3 обычные, 1.5 — золотая
+  { reward: { type: 'rigging', id: 'helmet_04' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_05' }, weight: 3 },
   { reward: { type: 'rigging', id: 'helmet_06' }, weight: 2 },
   { reward: { type: 'rigging', id: 'helmet_07' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_08' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'helmet_09' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'helmet_08' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_09' }, weight: 3 },
   { reward: { type: 'rigging', id: 'helmet_10' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_11' }, weight: 2 },
-  { reward: { type: 'rigging', id: 'helmet_12' }, weight: 2 },
+  { reward: { type: 'rigging', id: 'helmet_11' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_12' }, weight: 3 },
 
+  // Одежда: жилеты слабые (частые), куртки крепкие, золотая — редкая
   { reward: { type: 'rigging', id: 'closes_04' }, weight: 2 },
   { reward: { type: 'rigging', id: 'closes_05' }, weight: 3 },
   { reward: { type: 'rigging', id: 'closes_06' }, weight: 3 },
   { reward: { type: 'rigging', id: 'closes_07' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'closes_08' }, weight: 25 },
-  { reward: { type: 'rigging', id: 'closes_09' }, weight: 20 },
-  { reward: { type: 'rigging', id: 'closes_10' }, weight: 15 },
-  { reward: { type: 'rigging', id: 'closes_11' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'closes_12' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'closes_08' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'closes_09' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'closes_10' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'closes_11' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_12' }, weight: 3 },
 
-  { reward: { type: 'rigging', id: 'ted_04' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'ted_05' }, weight: 20 },
-  { reward: { type: 'rigging', id: 'ted_06' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'ted_07' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'ted_08' }, weight: 2 },
+  // Терминалы: самые дорогие и сильные предметы — падают реже всего
+  { reward: { type: 'rigging', id: 'ted_04' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_05' }, weight: 2 },
+  { reward: { type: 'rigging', id: 'ted_06' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_07' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_08' }, weight: 1 },
 
 ]
 
 /**
- * Дропы для наград за уровень.
+ * Награды за уровень берутся из той же таблицы LOOTBOX_DROPS, но без денег.
  *
- * Отдельно от лутбоксов, чтобы разорвать каскад: деньги из наград попадают
- * в xpMoney и повышают уровень, а новый уровень снова даёт награду. Поэтому
- * здесь нет денег — только персонал, снаряжение и «пусто».
- *
- * Веса нормированы на 1000: предмет выпадает в 20% случаев (staff 70 +
- * rigging 130), остальное — промах (none 800).
+ * Деньги из награды попадают в xpMoney и повышают уровень, а новый уровень
+ * снова даёт награду — получался бы каскад. Предметы уровень не двигают,
+ * поэтому за уровень всегда выдаётся предмет: «пусто» из таблицы исключено,
+ * и шанс не получить ничего исчез.
  */
-export const LEVEL_DROPS: LootBoxDropConfig[] = [
-  // --- Пусто: основной исход, не даёт ничего и не разгоняет уровни ---
-  { reward: { type: 'none' }, weight: 800 },
-
-  // --- Персонал сборщики ---
-  { reward: { type: 'staff', id: 'picker_03' }, weight: 20 },
-  { reward: { type: 'staff', id: 'picker_19' }, weight: 4 },
-  { reward: { type: 'staff', id: 'picker_20' }, weight: 4 },
-  { reward: { type: 'staff', id: 'picker_22' }, weight: 2 },
-  { reward: { type: 'staff', id: 'picker_23' }, weight: 5 },
-
-  // --- Персонал водители ---
-  { reward: { type: 'staff', id: 'reachtruck_07' }, weight: 10 },
-  { reward: { type: 'staff', id: 'reachtruck_10' }, weight: 10 },
-  { reward: { type: 'staff', id: 'reachtruck_15' }, weight: 4 },
-  { reward: { type: 'staff', id: 'reachtruck_16' }, weight: 4 },
-  { reward: { type: 'staff', id: 'reachtruck_17' }, weight: 4 },
-  { reward: { type: 'staff', id: 'reachtruck_18' }, weight: 2 },
-  { reward: { type: 'staff', id: 'reachtruck_19' }, weight: 1 },
-
-  // --- снаряжение: каски ---
-  { reward: { type: 'rigging', id: 'helmet_04' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'helmet_05' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'helmet_06' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_07' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'helmet_08' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'helmet_09' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'helmet_10' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'helmet_11' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_12' }, weight: 2 },
-
-  // --- снаряжение: одежда ---
-  { reward: { type: 'rigging', id: 'closes_04' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'closes_05' }, weight: 5 },
-  { reward: { type: 'rigging', id: 'closes_06' }, weight: 5 },
-  { reward: { type: 'rigging', id: 'closes_07' }, weight: 5 },
-  { reward: { type: 'rigging', id: 'closes_08' }, weight: 14 },
-  { reward: { type: 'rigging', id: 'closes_09' }, weight: 11 },
-  { reward: { type: 'rigging', id: 'closes_10' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'closes_11' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'closes_12' }, weight: 3 },
-
-  // --- снаряжение: инструмент ---
-  { reward: { type: 'rigging', id: 'ted_04' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'ted_05' }, weight: 14 },
-  { reward: { type: 'rigging', id: 'ted_06' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'ted_07' }, weight: 6 },
-  { reward: { type: 'rigging', id: 'ted_08' }, weight: 5 },
-]
+const LEVEL_DROPS: LootBoxDropConfig[] = LOOTBOX_DROPS.filter(
+  (drop) => drop.reward.type !== 'money'
+)
 
 /** Выбрать награду из таблицы по весам */
 function pickWeightedDrop(drops: LootBoxDropConfig[]): LootBoxReward {
@@ -200,7 +162,7 @@ export function getRandomLootBoxReward(): LootBoxReward {
   return pickWeightedDrop(LOOTBOX_DROPS)
 }
 
-/** Получить случайную награду за уровень на основе весов */
+/** Получить случайную награду за уровень: тот же дроп, но всегда предмет */
 export function getRandomLevelReward(): LootBoxReward {
   return pickWeightedDrop(LEVEL_DROPS)
 }

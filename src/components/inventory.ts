@@ -101,9 +101,8 @@ function openShiftSelector(staffId: string, role: 'forklift' | 'picker'): void {
               removeStaffFromInventory(staffId)
               // Закрываем выбор смены
               onClose()
-              // Перерендериваем инвентарь
-              inventoryModalHandle?.close()
-              openInventoryModal(container)
+              // Перерисовываем инвентарь на месте — скролл не сбрасывается
+              refreshInventory(container)
             } else {
               alert('Не удалось назначить сотрудника')
             }
@@ -124,11 +123,7 @@ function openShiftSelector(staffId: string, role: 'forklift' | 'picker'): void {
  * Собирает данные прокачки квалификации для карточки сотрудника.
  * undefined — сотрудника нет в каталоге.
  */
-function buildStaffUpgrade(
-  staffId: string,
-  _container: HTMLElement,
-  _onClose: () => void
-): InventoryCardUpgrade | undefined {
+function buildStaffUpgrade(staffId: string): InventoryCardUpgrade | undefined {
   const staff = getStaffById(staffId)
   if (!staff) return undefined
 
@@ -179,6 +174,40 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
 
   const body = document.createElement('div')
   body.className = 'inventory-modal-body'
+  renderInventoryBody(body, container)
+  modal.appendChild(body)
+
+  // Клик мимо карточек (карточки делают stopPropagation) — закрываем все раскрытые
+  modal.addEventListener('click', () => {
+    document.querySelectorAll('.inventory-card-expanded').forEach(c => {
+      c.classList.remove('inventory-card-expanded')
+      const btns = c.querySelector('.inventory-card-buttons') as HTMLElement | null
+      if (btns) btns.style.display = 'none'
+    })
+  })
+
+  return modal
+}
+
+/**
+ * Перерисовывает содержимое инвентаря на месте, сохраняя позицию прокрутки.
+ * Полное пересоздание окна сбрасывало скролл к началу страницы.
+ */
+function refreshInventory(container: HTMLElement): void {
+  const body = document.querySelector<HTMLElement>('.inventory-modal .inventory-modal-body')
+  if (!body) return
+
+  const scrollTop = body.scrollTop
+  renderInventoryBody(body, container)
+  body.scrollTop = scrollTop
+}
+
+/**
+ * Заполняет тело окна инвентаря секциями.
+ * Вызывается и при первом рендере, и при обновлении после продажи/назначения.
+ */
+function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
+  body.replaceChildren()
 
   // Загружаем инвентарь (купленные товары)
   const inventory = getState().inventory
@@ -217,8 +246,7 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
             showConfirmModal(container, `Вы точно хотите продать "${item.name}"?`, () => {
               playSound('buy')
               sellTechniqueItem(techId)
-              onClose()
-              openInventoryModal(container)
+              refreshInventory(container)
             })
           }
         )
@@ -264,12 +292,10 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
               playSound('buy')
               // Продать — перемещаем в shop и возвращаем деньги
               sellItem(pickerId)
-              // Перерисовываем модальное окно
-              onClose()
-              openInventoryModal(container)
+              refreshInventory(container)
             })
           },
-          buildStaffUpgrade(pickerId, container, onClose)
+          buildStaffUpgrade(pickerId)
         )
         pickersGrid.appendChild(card)
       }
@@ -313,12 +339,10 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
               playSound('buy')
               // Продать — перемещаем в shop и возвращаем деньги
               sellItem(driverId)
-              // Перерисовываем модальное окно
-              onClose()
-              openInventoryModal(container)
+              refreshInventory(container)
             })
           },
-          buildStaffUpgrade(driverId, container, onClose)
+          buildStaffUpgrade(driverId)
         )
         driversGrid.appendChild(card)
       }
@@ -365,8 +389,7 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
           () => {
             // Продать — удаляем из инвентаря и возвращаем деньги
             sellRiggingItem(riggingId)
-            onClose()
-            openInventoryModal(container)
+            refreshInventory(container)
           }
         )
         equipmentGrid.appendChild(card)
@@ -376,17 +399,4 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
 
   equipmentSection.appendChild(equipmentGrid)
   body.appendChild(equipmentSection)
-
-  modal.appendChild(body)
-
-  // Клик мимо карточек (карточки делают stopPropagation) — закрываем все раскрытые
-  modal.addEventListener('click', () => {
-    document.querySelectorAll('.inventory-card-expanded').forEach(c => {
-      c.classList.remove('inventory-card-expanded')
-      const btns = c.querySelector('.inventory-card-buttons') as HTMLElement | null
-      if (btns) btns.style.display = 'none'
-    })
-  })
-
-  return modal
 }
