@@ -1,3 +1,5 @@
+import type { StaffTier } from './staffUpgrades.ts'
+
 export type ShopCategory = 'equipment' | 'staff'
 
 export type StaffCategory = 'pickers' | 'reachTruckDrivers'
@@ -29,6 +31,10 @@ export interface Staff {
   cost: number
   baseSpeed: number // 0-100
   purpose: 'shop' | 'lootbox'
+  /** Стартовая лига без прокачки. По умолчанию 1 (красная) */
+  startTier?: StaffTier
+  /** Стартовый уровень скорости внутри startTier. По умолчанию baseSpeed */
+  startLevel?: number
   /** Стоимость одного повышения квалификации. По умолчанию — доля от cost */
   upgradeCost?: number
   /** Во сколько раз дорожает квалификация за каждое следующее повышение. По умолчанию 1.5 */

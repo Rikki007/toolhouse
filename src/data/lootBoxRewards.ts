@@ -80,9 +80,8 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'staff', id: 'picker_23' }, weight: 2 },
   { reward: { type: 'staff', id: 'picker_24' }, weight: 2 },
   { reward: { type: 'staff', id: 'picker_25' }, weight: 2 },
-
-  // --- Персонал водители: обычный ---
-  { reward: { type: 'staff', id: 'reachtruck_07' }, weight: 10 },
+  { reward: { type: 'staff', id: 'picker_26' }, weight: 2 },
+  { reward: { type: 'staff', id: 'picker_27' }, weight: 2 },
 
   // --- Персонал водители: легендарные (500000, 10★) ---
   { reward: { type: 'staff', id: 'reachtruck_18' }, weight: 2 },

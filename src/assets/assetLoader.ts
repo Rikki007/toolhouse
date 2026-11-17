@@ -80,6 +80,8 @@ import picker22 from './pickerAva/picker22.png'
 import picker23 from './pickerAva/witcher.png'
 import picker24 from './pickerAva/kratos.png'
 import picker25 from './pickerAva/predator.png'
+import picker26 from './pickerAva/rembo.png'
+import picker27 from './pickerAva/avatar.png'
 
 // Снаряжение
 import helmet01 from './rigging/helmet01.png'
@@ -377,6 +379,8 @@ export function initEquipmentImages(): void {
   pickerImages['picker_23'] = picker23
   pickerImages['picker_24'] = picker24
   pickerImages['picker_25'] = picker25
+  pickerImages['picker_26'] = picker26
+  pickerImages['picker_27'] = picker27
 
   // Снаряжение
   riggingImages['helmet_01'] = helmet01

@@ -418,6 +418,9 @@ function migrateStaffUpgrades(raw: unknown): StaffUpgrades {
     // Старый формат: number
     const oldCount = typeof value === 'number' ? value : 0
     const staffData = allStaff.find(s => s.id === staffId)
+    // У легендариков стартовая лига задана в данных, а старый числовой прогресс
+    // означает «0 повышений» — оставляем дефолт из getStaffTierProgress
+    if (staffData?.startTier) continue
     const baseSpeed = staffData?.baseSpeed ?? 3
     const newLevel = Math.min(10, baseSpeed + oldCount)
     result[staffId] = { tier: 1 as StaffTier, level: newLevel }

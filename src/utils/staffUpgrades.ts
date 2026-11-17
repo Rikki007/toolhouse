@@ -20,12 +20,16 @@ export function getUpgradeableStaff(staffId: string): Staff | undefined {
   return staffCatalog.get(staffId)
 }
 
-/** Получает прогресс тира для сотрудника (дефолт: тир 1, уровень = baseSpeed) */
+/** Получает прогресс тира для сотрудника (дефолт: стартовая лига, уровень = baseSpeed) */
 export function getStaffTierProgress(staff: Staff, upgrades?: StaffUpgrades): { tier: StaffTier; level: number } {
   const progress = upgrades?.[staff.id]
   if (progress) return progress
-  // Начальный прогресс: тир 1, уровень = baseSpeed
-  return { tier: 1, level: Math.min(staff.baseSpeed, MAX_TIER_LEVEL) }
+  // Начальный прогресс: у легендариков своя стартовая лига, у остальных
+  // красная с уровнем = baseSpeed
+  return {
+    tier: staff.startTier ?? 1,
+    level: Math.min(staff.startLevel ?? staff.baseSpeed, MAX_TIER_LEVEL),
+  }
 }
 
 /** Скорость сотрудника с учётом тира и уровня внутри него */
