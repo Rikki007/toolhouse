@@ -48,33 +48,20 @@ export interface LootBoxDropConfig {
  */
 export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   // --- Деньги (лёгкие награды) ---
-  { reward: { type: 'money', amount: 5000 }, weight: 30 },
-  { reward: { type: 'money', amount: 5500 }, weight: 30 },
-  { reward: { type: 'money', amount: 5500 }, weight: 30 },
-  { reward: { type: 'money', amount: 7500 }, weight: 25 },
-  { reward: { type: 'money', amount: 8500 }, weight: 25 },
-  { reward: { type: 'money', amount: 8000 }, weight: 25 },
-  { reward: { type: 'money', amount: 11500 }, weight: 20 },
-  { reward: { type: 'money', amount: 12000 }, weight: 20 },
-  { reward: { type: 'money', amount: 12500 }, weight: 20 },
-  { reward: { type: 'money', amount: 27000 }, weight: 15 },
-  { reward: { type: 'money', amount: 26500 }, weight: 15 },
-  { reward: { type: 'money', amount: 27500 }, weight: 15 },
-  { reward: { type: 'money', amount: 50000 }, weight: 10 },
-  { reward: { type: 'money', amount: 60000 }, weight: 10 },
-  { reward: { type: 'money', amount: 65000 }, weight: 10 },
-  { reward: { type: 'money', amount: 70000 }, weight: 10 },
-  { reward: { type: 'money', amount: 100000 }, weight: 5 },
-  { reward: { type: 'money', amount: 110000 }, weight: 5 },
-  { reward: { type: 'money', amount: 120000 }, weight: 5 },
+  { reward: { type: 'money', amount: 5000 }, weight: 16 },
+  { reward: { type: 'money', amount: 8000 }, weight: 15 },
+  { reward: { type: 'money', amount: 12000 }, weight: 14 },
+  { reward: { type: 'money', amount: 27000 }, weight: 13 },
+  { reward: { type: 'money', amount: 27500 }, weight: 12 },
+  { reward: { type: 'money', amount: 70000 }, weight: 8 },
   { reward: { type: 'money', amount: 130000 }, weight: 5 },
-  { reward: { type: 'money', amount: 140000 }, weight: 5 },
-  { reward: { type: 'money', amount: 500000 }, weight: 3 },
-  { reward: { type: 'money', amount: 1000000 }, weight: 2 },
   { reward: { type: 'money', amount: 1500000 }, weight: 1 },
 
   // --- Персонал сборщики: обычные ---
   { reward: { type: 'staff', id: 'picker_19' }, weight: 6 },
+  { reward: { type: 'staff', id: 'picker_28' }, weight: 6 },
+  { reward: { type: 'staff', id: 'picker_29' }, weight: 6 },
+  { reward: { type: 'staff', id: 'picker_30' }, weight: 6 },
 
   // --- Персонал сборщики: легендарные (500000, 10★) ---
   { reward: { type: 'staff', id: 'picker_23' }, weight: 2 },
@@ -91,6 +78,8 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'staff', id: 'reachtruck_22' }, weight: 2 },
   { reward: { type: 'staff', id: 'reachtruck_23' }, weight: 2 },
   { reward: { type: 'staff', id: 'reachtruck_24' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_25' }, weight: 2 },
+  { reward: { type: 'staff', id: 'reachtruck_26' }, weight: 2 },
 
   // --- Снаряжение: веса по редкости (слабое падает чаще, сильное — реже) ---
   // Каски: factor 1.25–1.3 обычные, 1.5 — золотая
@@ -121,6 +110,50 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'ted_06' }, weight: 1 },
   { reward: { type: 'rigging', id: 'ted_07' }, weight: 1 },
   { reward: { type: 'rigging', id: 'ted_08' }, weight: 1 },
+
+  // --- Персонажное снаряжение (лутбокс) ---
+  // Шлемы персонажей
+  { reward: { type: 'rigging', id: 'helmet_isaak' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_gordon' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_john117' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_witcher' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_kratos' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_predator' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_terminator' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_shepard' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_stalker' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_doom' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_verstappen' }, weight: 3 },
+
+  // Куртки персонажей
+  { reward: { type: 'rigging', id: 'closes_isaak' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_gordon' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_john117' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_witcher' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_kratos' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_predator' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_terminator' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_shepard' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_stalker' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_doom' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_verstappen' }, weight: 3 },
+
+  // Терминалы персонажей (редкие)
+  { reward: { type: 'rigging', id: 'ted_isaak' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_gordon' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_john117' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_witcher' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_kratos' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_predator' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_terminator' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_shepard' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_stalker_omega' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_stalker_taiga' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_stalker_veles' }, weight: 2 },
+  { reward: { type: 'rigging', id: 'ted_stalker_otklik' }, weight: 2 },
+  { reward: { type: 'rigging', id: 'ted_doom' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_santa' }, weight: 1 },
+  { reward: { type: 'rigging', id: 'ted_verstappen' }, weight: 1 },
 
 ]
 

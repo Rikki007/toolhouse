@@ -376,6 +376,21 @@
   margin-bottom: -8px;
 }
 
+/* Ряд иконок в комбинированном окне (техника + лига) */
+.equipment-unlock-images {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: -8px;
+}
+
+.equipment-unlock-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
 .equipment-unlock-desc {
   font-size: 16px;
   margin: 0;

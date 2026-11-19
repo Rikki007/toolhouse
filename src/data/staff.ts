@@ -257,6 +257,28 @@ export const reachTruckDriversList: Staff[] = [
     startTier: 4,
     startLevel: 5,
   },
+  {
+    id: 'reachtruck_25',
+    name: 'Санта',
+    position: 'Водитель ричтрака',
+    avatar: 'beaver_sant',
+    cost: 7500,
+    baseSpeed: 10,
+    purpose: 'lootbox',
+    startTier: 4,
+    startLevel: 5,
+  },
+  {
+    id: 'reachtruck_26',
+    name: 'Макс Ферстаппен',
+    position: 'Водитель ричтрака',
+    avatar: 'beaver_ver',
+    cost: 7500,
+    baseSpeed: 10,
+    purpose: 'lootbox',
+    startTier: 4,
+    startLevel: 5,
+  },
 ]
 
 export const pickersList: Staff[] = [
@@ -512,6 +534,33 @@ export const pickersList: Staff[] = [
     purpose: 'lootbox',
     startTier: 4,
     startLevel: 5,
+  },
+  {
+    id: 'picker_28',
+    name: 'Хена Абаканский',
+    position: 'Комплектовщик',
+    avatar: 'picker_28',
+    cost: 7250,
+    baseSpeed: 3,
+    purpose: 'lootbox',
+  },
+  {
+    id: 'picker_29',
+    name: 'Паша Техник',
+    position: 'Комплектовщик',
+    avatar: 'picker_29',
+    cost: 7250,
+    baseSpeed: 3,
+    purpose: 'lootbox',
+  },
+  {
+    id: 'picker_30',
+    name: 'Безумный Паша',
+    position: 'Комплектовщик',
+    avatar: 'picker_30',
+    cost: 7250,
+    baseSpeed: 3,
+    purpose: 'lootbox',
   },
   
 ]

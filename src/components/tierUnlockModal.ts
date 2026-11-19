@@ -4,6 +4,7 @@ import { levelFromXp } from '../data/playerLevels.ts'
 import { playSound } from '../state/audioManager.ts'
 import { STAFF_TIERS } from '../data/staffUpgrades.ts'
 import { tierImages } from '../assets/assetLoader.ts'
+import { COMBINED_TIER_LEVELS } from './equipmentUnlockModal.ts'
 
 /** Запись о разблокированной лиге */
 interface TierUnlock {
@@ -37,7 +38,7 @@ export function startTierUnlockObserver(container: HTMLElement): () => void {
     const seen = state.tierUnlocksSeen ?? []
 
     const unlock = TIER_UNLOCKS.find(
-      (u) => u.unlockLevel <= playerLevel && !seen.includes(u.tier)
+      (u) => u.unlockLevel <= playerLevel && !seen.includes(u.tier) && !COMBINED_TIER_LEVELS.includes(u.tier)
     )
 
     if (!unlock) return

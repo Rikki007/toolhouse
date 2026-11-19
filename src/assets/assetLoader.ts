@@ -2,6 +2,9 @@
 import pickerSlow from './orderPickers/pickerSlow.png'
 import pickerMedium from './orderPickers/pickerMedium.png'
 import pickerFast from './orderPickers/pickerFast.png'
+import pickerRuby from './orderPickers/pickerRuby.png'
+import pickerEmerald from './orderPickers/pickerEmerald.png'
+import pickerDiamond from './orderPickers/pickerDiamond.png'
 import pickerPremium from './orderPickers/pickerPremium.png'
 
 // Низкие ричтраки (для съёма товара с невысоких стеллажей)
@@ -13,6 +16,9 @@ import reachtruckFast from './forklifts/forkliftFast.png'
 import reachtruckTallSlow from './forklifts/heavySlow.png'
 import reachtruckTallMedium from './forklifts/heavyMedium.png'
 import reachtruckTallFast from './forklifts/heavyFast.png'
+import reachtruckTallRuby from './forklifts/heavyRuby.png'
+import reachtruckTallEmerald from './forklifts/heavyEmerald.png'
+import reachtruckTallDiamond from './forklifts/heavyDiamond.png'
 import reachtruckTallPremium from './forklifts/heavyPremium.png'
 
 // Мастера смен
@@ -52,7 +58,8 @@ import beaverChi from './richAva/john117.png'
 import beaverDoo from './richAva/doom.png'
 import beaverShep from './richAva/shepard.png'
 import beaverTerm from './richAva/terminator.png'
-
+import beaverSant from './richAva/santa.png'
+import beaverVer from './richAva/maxVerstappen.png'
 
 // Сборщики
 import picker01 from './pickerAva/picker01.png'
@@ -82,6 +89,9 @@ import picker24 from './pickerAva/kratos.png'
 import picker25 from './pickerAva/predator.png'
 import picker26 from './pickerAva/rembo.png'
 import picker27 from './pickerAva/avatar.png'
+import picker28 from './pickerAva/henaAbacanski.png'
+import picker29 from './pickerAva/pashaTehnik.png'
+import picker30 from './pickerAva/pashaBezumny.png'
 
 // Снаряжение
 import helmet01 from './rigging/helmet01.png'
@@ -118,6 +128,45 @@ import ted05 from './rigging/ted05.png'
 import ted06 from './rigging/ted06.png'
 import ted07 from './rigging/ted07.png'
 import ted08 from './rigging/ted08.png'
+
+// Персонажное снаряжение (только лутбокс)
+import isaakHelmet from './rigging/isaakHelmet.png'
+import isaakCloses from './rigging/isaakCloses.png'
+import isaacTed from './rigging/isaacTed.png'
+import gordonHelmet from './rigging/gordonHelmet.png'
+import gordonCloses from './rigging/gordonCloses.png'
+import gordonTed from './rigging/gordonTed.png'
+import john117Helmet from './rigging/john117Helmet.png'
+import john117Closes from './rigging/john117Closes.png'
+import john117Ted from './rigging/john117Ted.png'
+import witcherHelmet from './rigging/witcherHelmet.png'
+import witcherCloses from './rigging/witcherCloses.png'
+import witcherTed from './rigging/witcherTed.png'
+import kratosHelmet from './rigging/kratosHelmet.png'
+import kratosCloses from './rigging/kratosCloses.png'
+import kratosTed from './rigging/kratosTed.png'
+import predatorHelmet from './rigging/predatorHelmet.png'
+import predatorCloses from './rigging/predatorCloses.png'
+import predatorTed from './rigging/predatorTed.png'
+import terminatorHelmet from './rigging/terminatorHelmet.png'
+import terminatorCloses from './rigging/terminatorCloses.png'
+import terminatorTed from './rigging/terminatorTed.png'
+import shepardHelmet from './rigging/shepardHelmet.png'
+import shepardCloses from './rigging/shepardCloses.png'
+import shepardTed from './rigging/shepardTed.png'
+import stalkerHelmet from './rigging/stalkerHelmet.png'
+import stalkerCloses from './rigging/StalkerCloses.png'
+import stalkerTedOmega from './rigging/stalkerTedOmega.png'
+import stalkerTedOtklik from './rigging/stalkerTedOtklik.png'
+import stalkerTedTaiga from './rigging/stalkerTedTaiga.png'
+import stalkerTedVeles from './rigging/stalkerTedVeles.png'
+import doomHelmet from './rigging/doomHelmet.png'
+import doomCloses from './rigging/doomCloses.png'
+import doomTed from './rigging/doomTed.png'
+import santaTed from './rigging/santaTed.png'
+import verstappenHelmet from './rigging/verstappenHelmet.png'
+import verstappenCloses from './rigging/verstappenCloses.png'
+import verstappenTed from './rigging/verstappenTed.png'
 
 // Иконки интерфейса
 import lootboxIcon from './interfaceIcon/lootbox.png'
@@ -307,12 +356,18 @@ export function initEquipmentImages(): void {
   reachTruckImages['reachtruck_tall_slow'] = reachtruckTallSlow
   reachTruckImages['reachtruck_tall_medium'] = reachtruckTallMedium
   reachTruckImages['reachtruck_tall_fast'] = reachtruckTallFast
+  reachTruckImages['reachtruck_tall_ruby'] = reachtruckTallRuby
+  reachTruckImages['reachtruck_tall_emerald'] = reachtruckTallEmerald
+  reachTruckImages['reachtruck_tall_diamond'] = reachtruckTallDiamond
   reachTruckImages['reachtruck_tall_prem'] = reachtruckTallPremium
 
   // Ордерпикеры 
   orderPickerImages['picker_slow'] = pickerSlow
   orderPickerImages['picker_medium'] = pickerMedium
   orderPickerImages['picker_fast'] = pickerFast
+  orderPickerImages['picker_ruby'] = pickerRuby
+  orderPickerImages['picker_emerald'] = pickerEmerald
+  orderPickerImages['picker_diamond'] = pickerDiamond
   orderPickerImages['picker_prem'] = pickerPremium
 
   // Мастера смен 
@@ -352,6 +407,8 @@ export function initEquipmentImages(): void {
   richDriversImages['beaver_doo'] = beaverDoo
   richDriversImages['beaver_shep'] = beaverShep
   richDriversImages['beaver_term'] = beaverTerm
+  richDriversImages['beaver_sant'] = beaverSant
+  richDriversImages['beaver_ver'] = beaverVer
 
   // Сборщики
   pickerImages['picker_01'] = picker01
@@ -381,6 +438,9 @@ export function initEquipmentImages(): void {
   pickerImages['picker_25'] = picker25
   pickerImages['picker_26'] = picker26
   pickerImages['picker_27'] = picker27
+  pickerImages['picker_28'] = picker28
+  pickerImages['picker_29'] = picker29
+  pickerImages['picker_30'] = picker30
 
   // Снаряжение
   riggingImages['helmet_01'] = helmet01
@@ -417,6 +477,56 @@ export function initEquipmentImages(): void {
   riggingImages['ted_06'] = ted06
   riggingImages['ted_07'] = ted07
   riggingImages['ted_08'] = ted08
+
+  // Персонажное снаряжение (лутбокс)
+  riggingImages['helmet_isaak'] = isaakHelmet
+  riggingImages['closes_isaak'] = isaakCloses
+  riggingImages['ted_isaak'] = isaacTed
+
+  riggingImages['helmet_gordon'] = gordonHelmet
+  riggingImages['closes_gordon'] = gordonCloses
+  riggingImages['ted_gordon'] = gordonTed
+
+  riggingImages['helmet_john117'] = john117Helmet
+  riggingImages['closes_john117'] = john117Closes
+  riggingImages['ted_john117'] = john117Ted
+
+  riggingImages['helmet_witcher'] = witcherHelmet
+  riggingImages['closes_witcher'] = witcherCloses
+  riggingImages['ted_witcher'] = witcherTed
+
+  riggingImages['helmet_kratos'] = kratosHelmet
+  riggingImages['closes_kratos'] = kratosCloses
+  riggingImages['ted_kratos'] = kratosTed
+
+  riggingImages['helmet_predator'] = predatorHelmet
+  riggingImages['closes_predator'] = predatorCloses
+  riggingImages['ted_predator'] = predatorTed
+
+  riggingImages['helmet_terminator'] = terminatorHelmet
+  riggingImages['closes_terminator'] = terminatorCloses
+  riggingImages['ted_terminator'] = terminatorTed
+
+  riggingImages['helmet_shepard'] = shepardHelmet
+  riggingImages['closes_shepard'] = shepardCloses
+  riggingImages['ted_shepard'] = shepardTed
+
+  riggingImages['helmet_stalker'] = stalkerHelmet
+  riggingImages['closes_stalker'] = stalkerCloses
+  riggingImages['ted_stalker_omega'] = stalkerTedOmega
+  riggingImages['ted_stalker_otklik'] = stalkerTedOtklik
+  riggingImages['ted_stalker_taiga'] = stalkerTedTaiga
+  riggingImages['ted_stalker_veles'] = stalkerTedVeles
+
+  riggingImages['helmet_doom'] = doomHelmet
+  riggingImages['closes_doom'] = doomCloses
+  riggingImages['ted_doom'] = doomTed
+
+  riggingImages['ted_santa'] = santaTed
+
+  riggingImages['helmet_verstappen'] = verstappenHelmet
+  riggingImages['closes_verstappen'] = verstappenCloses
+  riggingImages['ted_verstappen'] = verstappenTed
 
   // Закладки тиров персонала
   tierImages['tierOne'] = tierOneImg
