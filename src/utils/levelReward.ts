@@ -6,12 +6,8 @@ import { getStaffById } from '../utils/itemLookup.ts'
 
 /** Результат подбора награды за уровень */
 export interface LevelRewardResult {
-  /** Итоговая награда (деньги, если дубликат персонала) */
+  /** Итоговая награда (предмет или деньги, если выпал дубликат персонала) */
   reward: LootBoxReward
-  /** Был ли дубликат персонала (награда заменена на деньги) */
-  wasDuplicate: boolean
-  /** Имя сотрудника-дубликата (для сообщения) */
-  duplicateStaffName?: string
 }
 
 /**
@@ -19,7 +15,7 @@ export interface LevelRewardResult {
  * Берётся из той же таблицы, что и лутбоксы, но без денег — чтобы награда
  * не повышала xpMoney и не запускала каскад новых уровней.
  * Проверяет дубликаты персонала — если сотрудник уже в инвентаре или смене,
- * заменяет награду на его стоимость в деньгах (как в лутбоксах).
+ * заменяет награду на его стоимость в деньгах.
  */
 export function pickLevelReward(): LevelRewardResult {
   const reward = getRandomLevelReward()
@@ -29,16 +25,13 @@ export function pickLevelReward(): LevelRewardResult {
     if (allStaffIds.includes(reward.id)) {
       // Дубликат — выдаём стоимость сотрудника деньгами
       const staff = getStaffById(reward.id)
-      const cashAmount = staff?.cost ?? 0
       return {
-        reward: { type: 'money', amount: cashAmount },
-        wasDuplicate: true,
-        duplicateStaffName: staff?.name,
+        reward: { type: 'money', amount: staff?.cost ?? 0 },
       }
     }
   }
 
-  return { reward, wasDuplicate: false }
+  return { reward }
 }
 
 /**

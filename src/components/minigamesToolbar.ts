@@ -15,7 +15,7 @@ import { createRewardCardForStaff, createRewardCardForRigging } from '../utils/r
 import { playSound } from '../state/audioManager.ts'
 import { formatMoney } from '../utils/format.ts'
 // Кулдаун лутбокса: 5 секунд (5000 мс)
-const LOOTBOX_COOLDOWN = 10 * 60 * 1000
+const LOOTBOX_COOLDOWN = 1 * 1000
 
 /**
  * Рендерит тулбар с мини-играми, лутбоксами и сменами

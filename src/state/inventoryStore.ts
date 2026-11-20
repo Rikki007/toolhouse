@@ -44,6 +44,11 @@ function withoutUpgrade(
   return rest
 }
 
+/** Сколько копий предмета лежит в инвентаре */
+function countInInventory(list: string[], itemId: string): number {
+  return list.reduce((count, id) => (id === itemId ? count + 1 : count), 0)
+}
+
 /** Продать снаряжение из inventory — удаляет и возвращает деньги (НЕ возвращает в shop) */
 export function sellRiggingItem(itemId: string): void {
   const item = getItemById(itemId)
@@ -69,6 +74,27 @@ export function sellRiggingItem(itemId: string): void {
       rigging: invRigging,
     },
     money: money + item.cost,
+  })
+}
+
+/** Продать весь стак снаряжения — удаляет все копии, деньги за каждую копию */
+export function sellRiggingItemAll(itemId: string): void {
+  const item = getItemById(itemId)
+  if (!item) return
+
+  const inventory = getState().inventory
+  const money = getState().money
+  const invRigging = inventory.rigging ?? []
+
+  const count = countInInventory(invRigging, itemId)
+  if (count === 0) return
+
+  updateState({
+    inventory: {
+      ...inventory,
+      rigging: invRigging.filter((id: string) => id !== itemId),
+    },
+    money: money + item.cost * count,
   })
 }
 
@@ -102,18 +128,54 @@ export function sellTechniqueItem(itemId: string): void {
   })
 }
 
+/**
+ * Продать весь стак техники — удаляет все копии и возвращает деньги за каждую.
+ * Доход не меняется: на него влияет только техника, закреплённая за сотрудником в смене.
+ */
+export function sellTechniqueItemAll(itemId: string): void {
+  const item = getItemById(itemId)
+  if (!item) return
+
+  const inventory = getState().inventory
+  const money = getState().money
+
+  const equipCat = getTechniqueSlot(itemId)
+  if (!equipCat) return
+
+  const invEquip = inventory.equipment[equipCat] ?? []
+  const count = countInInventory(invEquip, itemId)
+  if (count === 0) return
+
+  updateState({
+    inventory: {
+      ...inventory,
+      equipment: {
+        ...inventory.equipment,
+        [equipCat]: invEquip.filter((id: string) => id !== itemId),
+      },
+    },
+    money: money + item.cost * count,
+  })
+}
+
 /** Убрать сотрудника из inventory (при назначении в смену) */
 export function removeStaffFromInventory(staffId: string): void {
   const inventory = getState().inventory
   const staffCat = getStaffCategory(staffId)
   if (!staffCat) return
 
+  // Снимаем только одну копию: такие же ID могут лежать в инвентаре стопкой
+  const invStaff = [...inventory.staff[staffCat]]
+  const idx = invStaff.indexOf(staffId)
+  if (idx === -1) return
+  invStaff.splice(idx, 1)
+
   updateState({
     inventory: {
       ...inventory,
       staff: {
         ...inventory.staff,
-        [staffCat]: inventory.staff[staffCat].filter((id: string) => id !== staffId),
+        [staffCat]: invStaff,
       },
     },
   })
@@ -383,7 +445,17 @@ export function sellItem(itemId: string): void {
       money: money + item.cost,
     })
   } else if (staffCat) {
-    // Персонал — возвращаем в staff shop, прокачка аннулируется
+    // Персонал — удаляем одну копию, возвращаем в staff shop,
+    // прокачка аннулируется только если это была последняя копия.
+    const invStaff = [...inventory.staff[staffCat]]
+    const idx = invStaff.indexOf(itemId)
+    if (idx === -1) return
+    invStaff.splice(idx, 1)
+
+    const remainingUpgrades = invStaff.includes(itemId)
+      ? staffUpgrades
+      : withoutUpgrade(staffUpgrades, itemId)
+
     updateState({
       shop: {
         ...shop,
@@ -396,10 +468,10 @@ export function sellItem(itemId: string): void {
         ...inventory,
         staff: {
           ...inventory.staff,
-          [staffCat]: inventory.staff[staffCat].filter((id: string) => id !== itemId),
+          [staffCat]: invStaff,
         },
       },
-      staffUpgrades: withoutUpgrade(staffUpgrades, itemId),
+      staffUpgrades: remainingUpgrades,
       money: money + item.cost,
     })
   } else if (riggingCat) {
@@ -420,6 +492,83 @@ export function sellItem(itemId: string): void {
         rigging: invRigging,
       },
       money: money + item.cost,
+    })
+  }
+}
+
+/** Продать все копии предмета сразу — деньги за каждую копию */
+export function sellItemAll(itemId: string): void {
+  const item = getItemById(itemId)
+  if (!item) return
+
+  const shop = getState().shop
+  const inventory = getState().inventory
+  const money = getState().money
+  const staffUpgrades = getState().staffUpgrades
+
+  const equipCat = getTechniqueSlot(itemId)
+  const staffCat = getStaffCategory(itemId)
+  const riggingCat = getRiggingCategory(itemId)
+
+  if (equipCat) {
+    const invEquip = inventory.equipment[equipCat] ?? []
+    const count = countInInventory(invEquip, itemId)
+    if (count === 0) return
+
+    updateState({
+      inventory: {
+        ...inventory,
+        equipment: {
+          ...inventory.equipment,
+          [equipCat]: invEquip.filter((id: string) => id !== itemId),
+        },
+      },
+      money: money + item.cost * count,
+    })
+    return
+  }
+
+  if (staffCat) {
+    const invStaff = inventory.staff[staffCat]
+    const count = countInInventory(invStaff, itemId)
+    if (count === 0) return
+
+    updateState({
+      shop: {
+        ...shop,
+        staff: {
+          ...shop.staff,
+          [staffCat]: [...shop.staff[staffCat], ...Array(count).fill(itemId)],
+        },
+      },
+      inventory: {
+        ...inventory,
+        staff: {
+          ...inventory.staff,
+          [staffCat]: invStaff.filter((id: string) => id !== itemId),
+        },
+      },
+      staffUpgrades: withoutUpgrade(staffUpgrades, itemId),
+      money: money + item.cost * count,
+    })
+    return
+  }
+
+  if (riggingCat) {
+    const invRigging = inventory.rigging ?? []
+    const count = countInInventory(invRigging, itemId)
+    if (count === 0) return
+
+    updateState({
+      shop: {
+        ...shop,
+        rigging: [...(shop.rigging ?? []), ...Array(count).fill(itemId)],
+      },
+      inventory: {
+        ...inventory,
+        rigging: invRigging.filter((id: string) => id !== itemId),
+      },
+      money: money + item.cost * count,
     })
   }
 }

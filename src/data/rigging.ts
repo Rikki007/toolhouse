@@ -102,16 +102,6 @@ export const riggingList: Rigging[] = [
     purpose: 'lootbox',
   },
   {
-    id: 'helmet_11',
-    name: 'Шапка Санты',
-    image: 'helmet_11',
-    price: 7000,
-    speed: 8,
-    factor: 1.3,
-    type: 'headdress',
-    purpose: 'lootbox',
-  },
-  {
     id: 'helmet_12',
     name: 'Шлем пугала',
     image: 'helmet_12',
@@ -165,16 +155,6 @@ export const riggingList: Rigging[] = [
     id: 'closes_05',
     name: 'Броня генерала',
     image: 'closes_05',
-    price: 8500,
-    speed: 8,
-    factor: 1.3,
-    type: 'uniform',
-    purpose: 'lootbox',
-  },
-  {
-    id: 'closes_06',
-    name: 'Куртка Санты',
-    image: 'closes_06',
     price: 8500,
     speed: 8,
     factor: 1.3,
@@ -327,7 +307,7 @@ export const riggingList: Rigging[] = [
   // Айзек Кларк
   {
     id: 'helmet_isaak',
-    name: 'Шлем-скафандр Кларка',
+    name: 'Шлем инженера',
     image: 'helmet_isaak',
     price: 7000,
     speed: 8,
@@ -337,7 +317,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'closes_isaak',
-    name: 'Скафандр RIG',
+    name: 'Скафандр инженера',
     image: 'closes_isaak',
     price: 8500,
     speed: 8,
@@ -347,7 +327,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_isaak',
-    name: 'Плоскогубцы Кларка',
+    name: 'Плазменный резак',
     image: 'ted_isaak',
     price: 40000,
     speed: 8,
@@ -359,7 +339,7 @@ export const riggingList: Rigging[] = [
   // Гордон Фримен
   {
     id: 'helmet_gordon',
-    name: 'Визор HEV',
+    name: 'Очки физика-ядерщика',
     image: 'helmet_gordon',
     price: 7000,
     speed: 8,
@@ -379,7 +359,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_gordon',
-    name: 'Монтажка Фримена',
+    name: 'Монтировка',
     image: 'ted_gordon',
     price: 40000,
     speed: 8,
@@ -391,7 +371,7 @@ export const riggingList: Rigging[] = [
   // Джон-117
   {
     id: 'helmet_john117',
-    name: 'Шлем Спартанца',
+    name: 'Шлем MJOLNIR',
     image: 'helmet_john117',
     price: 7000,
     speed: 8,
@@ -411,7 +391,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_john117',
-    name: 'Штурмовая винтовка',
+    name: 'Энергетический меч',
     image: 'ted_john117',
     price: 40000,
     speed: 8,
@@ -423,7 +403,7 @@ export const riggingList: Rigging[] = [
   // Геральт
   {
     id: 'helmet_witcher',
-    name: 'Шлем Кабана',
+    name: 'Ведьмачий амулет',
     image: 'helmet_witcher',
     price: 7000,
     speed: 8,
@@ -433,7 +413,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'closes_witcher',
-    name: 'Доспех Кабана',
+    name: 'Доспех школы волка',
     image: 'closes_witcher',
     price: 8500,
     speed: 8,
@@ -475,7 +455,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_kratos',
-    name: 'Клинки Хаоса',
+    name: 'Левиафан',
     image: 'ted_kratos',
     price: 45000,
     speed: 9,
@@ -497,7 +477,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'closes_predator',
-    name: 'Сетка Хищника',
+    name: 'Броня Хищника',
     image: 'closes_predator',
     price: 8500,
     speed: 8,
@@ -519,7 +499,7 @@ export const riggingList: Rigging[] = [
   // Терминатор
   {
     id: 'helmet_terminator',
-    name: 'Визор T-800',
+    name: 'Темные очки',
     image: 'helmet_terminator',
     price: 7000,
     speed: 8,
@@ -529,7 +509,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'closes_terminator',
-    name: 'Кожаная куртка T-800',
+    name: 'Кожаная куртка',
     image: 'closes_terminator',
     price: 8500,
     speed: 8,
@@ -539,7 +519,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_terminator',
-    name: 'Гранатомёт T-800',
+    name: 'Винчестер',
     image: 'ted_terminator',
     price: 40000,
     speed: 8,
@@ -571,7 +551,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_shepard',
-    name: 'Винтовка Шепарда',
+    name: 'Инструметрон',
     image: 'ted_shepard',
     price: 40000,
     speed: 8,
@@ -583,7 +563,7 @@ export const riggingList: Rigging[] = [
   // Стрелок
   {
     id: 'helmet_stalker',
-    name: 'Маска Сталкера',
+    name: 'Противогаз',
     image: 'helmet_stalker',
     price: 7000,
     speed: 8,
@@ -593,7 +573,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'closes_stalker',
-    name: 'Комбинезон «Севка»',
+    name: 'Комбинезон «Сева»',
     image: 'closes_stalker',
     price: 8500,
     speed: 8,
@@ -603,7 +583,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_stalker_omega',
-    name: 'Артефакт «Омега»',
+    name: 'Детектор «Омега»',
     image: 'ted_stalker_omega',
     price: 45000,
     speed: 9,
@@ -613,7 +593,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_stalker_taiga',
-    name: 'Артефакт «Тайга»',
+    name: 'Детектор «Тайга»',
     image: 'ted_stalker_taiga',
     price: 40000,
     speed: 8,
@@ -623,7 +603,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_stalker_veles',
-    name: 'Артефакт «Велес»',
+    name: 'Детектор «Велес»',
     image: 'ted_stalker_veles',
     price: 38000,
     speed: 8,
@@ -633,7 +613,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_stalker_otklik',
-    name: 'Артефакт «Отклик»',
+    name: 'Детектор «Отклик»',
     image: 'ted_stalker_otklik',
     price: 35000,
     speed: 7,
@@ -645,7 +625,7 @@ export const riggingList: Rigging[] = [
   // Палач (DOOM)
   {
     id: 'helmet_doom',
-    name: 'Шлем Слаера',
+    name: 'Преторианский шлем',
     image: 'helmet_doom',
     price: 7000,
     speed: 8,
@@ -655,7 +635,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'closes_doom',
-    name: 'Броня Слаера',
+    name: 'Преторианская броня',
     image: 'closes_doom',
     price: 8500,
     speed: 8,
@@ -665,7 +645,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_doom',
-    name: 'Дробовик Палача',
+    name: 'Меч палача рока',
     image: 'ted_doom',
     price: 45000,
     speed: 9,
@@ -676,8 +656,28 @@ export const riggingList: Rigging[] = [
 
   // Санта
   {
+    id: 'helmet_santa',
+    name: 'Шапка Санты',
+    image: 'helmet_11',
+    price: 7000,
+    speed: 8,
+    factor: 1.3,
+    type: 'headdress',
+    purpose: 'lootbox',
+  },
+  {
+    id: 'closes_santa',
+    name: 'Куртка Санты',
+    image: 'closes_06',
+    price: 8500,
+    speed: 8,
+    factor: 1.3,
+    type: 'uniform',
+    purpose: 'lootbox',
+  },
+  {
     id: 'ted_santa',
-    name: 'Посох Деда Мороза',
+    name: 'Карамельная трость',
     image: 'ted_santa',
     price: 40000,
     speed: 8,
@@ -689,7 +689,7 @@ export const riggingList: Rigging[] = [
   // Макс Ферстаппен
   {
     id: 'helmet_verstappen',
-    name: 'Шлем Red Bull Racing',
+    name: 'Шлем гонщика',
     image: 'helmet_verstappen',
     price: 7000,
     speed: 8,
@@ -709,7 +709,7 @@ export const riggingList: Rigging[] = [
   },
   {
     id: 'ted_verstappen',
-    name: 'Руль болида F1',
+    name: 'Руль болида',
     image: 'ted_verstappen',
     price: 40000,
     speed: 8,

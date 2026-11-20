@@ -2,7 +2,7 @@ import { getState } from '../state/state.ts'
 import { createModal, showConfirmModal } from '../utils/modalFactory.ts'
 import { createInventoryCard, type InventoryCardUpgrade } from '../utils/inventory.ts'
 import { getItemById, getRiggingById, getStaffById } from '../utils/itemLookup.ts'
-import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem, upgradeStaff } from '../state/inventoryStore.ts'
+import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem, upgradeStaff, sellItemAll, sellRiggingItemAll, sellTechniqueItemAll } from '../state/inventoryStore.ts'
 import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
 import { getStaffTierProgress, getNextUpgrade } from '../utils/staffUpgrades.ts'
 import { updateUpgradeCardUI } from '../utils/inventory.ts'
@@ -190,6 +190,25 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
 }
 
 /**
+ * Группирует одинаковые ID: возвращает массив { id, count }.
+ * Сохраняет порядок первого появления каждого ID.
+ */
+function groupIds(ids: string[]): { id: string; count: number }[] {
+  const groups: { id: string; count: number }[] = []
+  const index = new Map<string, number>()
+  for (const id of ids) {
+    const at = index.get(id)
+    if (at === undefined) {
+      index.set(id, groups.length)
+      groups.push({ id, count: 1 })
+    } else {
+      groups[at].count++
+    }
+  }
+  return groups
+}
+
+/**
  * Перерисовывает содержимое инвентаря на месте, сохраняя позицию прокрутки.
  * Полное пересоздание окна сбрасывало скролл к началу страницы.
  */
@@ -236,7 +255,8 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
     emptySlot.textContent = 'Пусто'
     transportGrid.appendChild(emptySlot)
   } else {
-    for (const techId of allTechIds) {
+    // Одинаковая техника складывается в одну карточку со счётчиком
+    for (const { id: techId, count } of groupIds(allTechIds)) {
       const item = getItemById(techId)
       if (item) {
         const card = createInventoryCard(
@@ -248,6 +268,17 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
               sellTechniqueItem(techId)
               refreshInventory(container)
             })
+          },
+          undefined,
+          {
+            count,
+            onSellAll: () => {
+              showConfirmModal(container, `Вы точно хотите продать все "${item.name}" (${count})?`, () => {
+                playSound('buy')
+                sellTechniqueItemAll(techId)
+                refreshInventory(container)
+              })
+            },
           }
         )
         transportGrid.appendChild(card)
@@ -277,7 +308,8 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
     emptyCard.textContent = 'Нет сборщиков'
     pickersGrid.appendChild(emptyCard)
   } else {
-    for (const pickerId of pickerIds) {
+    // Одинаковые сотрудники складываются в одну карточку со счётчиком
+    for (const { id: pickerId, count } of groupIds(pickerIds)) {
       const item = getItemById(pickerId, getState().staffUpgrades)
       if (item) {
         const card = createInventoryCard(
@@ -295,7 +327,17 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
               refreshInventory(container)
             })
           },
-          buildStaffUpgrade(pickerId)
+          buildStaffUpgrade(pickerId),
+          {
+            count,
+            onSellAll: () => {
+              showConfirmModal(container, `Вы точно хотите продать все "${item.name}" (${count})?`, () => {
+                playSound('buy')
+                sellItemAll(pickerId)
+                refreshInventory(container)
+              })
+            },
+          }
         )
         pickersGrid.appendChild(card)
       }
@@ -324,7 +366,8 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
     emptyCard.textContent = 'Нет водителей'
     driversGrid.appendChild(emptyCard)
   } else {
-    for (const driverId of driverIds) {
+    // Одинаковые водители складываются в одну карточку со счётчиком
+    for (const { id: driverId, count } of groupIds(driverIds)) {
       const item = getItemById(driverId, getState().staffUpgrades)
       if (item) {
         const card = createInventoryCard(
@@ -342,7 +385,17 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
               refreshInventory(container)
             })
           },
-          buildStaffUpgrade(driverId)
+          buildStaffUpgrade(driverId),
+          {
+            count,
+            onSellAll: () => {
+              showConfirmModal(container, `Вы точно хотите продать все "${item.name}" (${count})?`, () => {
+                playSound('buy')
+                sellItemAll(driverId)
+                refreshInventory(container)
+              })
+            },
+          }
         )
         driversGrid.appendChild(card)
       }
@@ -371,7 +424,8 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
     emptyCard.textContent = 'Пусто'
     equipmentGrid.appendChild(emptyCard)
   } else {
-    for (const riggingId of riggingIds) {
+    // Одинаковое снаряжение складывается в одну карточку со счётчиком
+    for (const { id: riggingId, count } of groupIds(riggingIds)) {
       const rigging = getRiggingById(riggingId)
       if (rigging) {
         const item = {
@@ -387,9 +441,17 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
           item,
           undefined,
           () => {
-            // Продать — удаляем из инвентаря и возвращаем деньги
+            // Продать — удаляем одну копию из инвентаря и возвращаем деньги
             sellRiggingItem(riggingId)
             refreshInventory(container)
+          },
+          undefined,
+          {
+            count,
+            onSellAll: () => {
+              sellRiggingItemAll(riggingId)
+              refreshInventory(container)
+            },
           }
         )
         equipmentGrid.appendChild(card)

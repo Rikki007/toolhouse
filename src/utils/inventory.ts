@@ -75,8 +75,22 @@ function createInventoryButtons(
   return buttonsContainer
 }
 
-/** Создаёт контейнер с одной кнопкой "Продать" (для снаряжения) */
-function createSellOnlyButton(sellLabel: string, onSell: () => void): HTMLElement {
+/** Кнопка "Продать всё" — появляется, когда в инвентаре несколько копий предмета */
+function createSellAllButton(onSellAll: () => void): HTMLElement {
+  const sellAllBtn = document.createElement('button')
+  sellAllBtn.type = 'button'
+  sellAllBtn.className = 'inventory-card-btn inventory-card-btn-sell'
+  sellAllBtn.textContent = 'Продать всё'
+  sellAllBtn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    playSound('buy')
+    onSellAll()
+  })
+  return sellAllBtn
+}
+
+/** Создаёт контейнер с кнопками продажи (для снаряжения и техники) */
+function createSellButtons(onSell: () => void, onSellAll?: () => void): HTMLElement {
   const buttonsContainer = document.createElement('div')
   buttonsContainer.className = 'inventory-card-buttons'
   buttonsContainer.style.display = 'none'
@@ -87,23 +101,33 @@ function createSellOnlyButton(sellLabel: string, onSell: () => void): HTMLElemen
   const sellBtn = document.createElement('button')
   sellBtn.type = 'button'
   sellBtn.className = 'inventory-card-btn inventory-card-btn-sell'
-  sellBtn.textContent = sellLabel
+  sellBtn.textContent = 'Продать'
   sellBtn.addEventListener('click', (e) => {
     e.stopPropagation()
     playSound('buy')
     onSell()
   })
-
   buttonsContainer.appendChild(sellBtn)
+
+  // Копий больше одной — добавляем продажу всего стака
+  if (onSellAll) {
+    buttonsContainer.appendChild(createSellAllButton(onSellAll))
+  }
+
   return buttonsContainer
 }
 
 /** Создаёт кнопки "Назначить" и "Продать" для карточки персонала */
 function createStaffButtons(
   onAssign: () => void,
-  onSell: () => void
+  onSell: () => void,
+  onSellAll?: () => void
 ): HTMLElement {
-  return createInventoryButtons('Назначить', 'Продать', onAssign, onSell)
+  const buttons = createInventoryButtons('Назначить', 'Продать', onAssign, onSell)
+  if (onSellAll) {
+    buttons.appendChild(createSellAllButton(onSellAll))
+  }
+  return buttons
 }
 
 /** Данные для кнопки прокачки квалификации на карточке сотрудника */
@@ -226,12 +250,14 @@ export function updateUpgradeCardUI(staffId: string): void {
 /**
  * Создаёт DOM-карточку инвентаря для купленного предмета.
  * @param upgrade — если передан, на карточке сотрудника показывается уровень и кнопка прокачки
+ * @param options — количество одинаковых предметов и колбэк продажи всех
  */
 export function createInventoryCard(
   item: InventoryItem,
   onAssign?: () => void,
   onSell?: () => void,
-  upgrade?: InventoryCardUpgrade
+  upgrade?: InventoryCardUpgrade,
+  options?: { count?: number; onSellAll?: () => void }
 ): HTMLElement {
   const card = document.createElement('div')
   card.className = 'inventory-card'
@@ -302,14 +328,27 @@ export function createInventoryCard(
     card.appendChild(speed)
   }
 
+  // Количество одинаковых предметов в инвентаре — бейдж внизу карточки.
+  // Для одной копии цифра не показывается.
+  const count = options?.count ?? 1
+  if (count > 1) {
+    const countEl = document.createElement('div')
+    countEl.className = 'inventory-card-count'
+    countEl.textContent = `\u00d7${count}`
+    card.appendChild(countEl)
+  }
+
   // Кликабельные карточки: персонал (назначить/продать), снаряжение и техника (только продать)
   const expandable = (item.type === 'staff' && onAssign && onSell)
     || ((item.type === 'rigging' || item.type === 'equipment') && onSell)
 
   if (expandable) {
+    // "Продать всё" имеет смысл только когда копий больше одной
+    const onSellAll = count > 1 ? options?.onSellAll : undefined
+
     const buttons = item.type === 'staff'
-      ? createStaffButtons(onAssign!, onSell!)
-      : createSellOnlyButton('Продать', onSell!)
+      ? createStaffButtons(onAssign!, onSell!, onSellAll)
+      : createSellButtons(onSell!, onSellAll)
 
     // Кнопка прокачки — первой, чтобы она была заметнее технических действий
     if (upgrade) {

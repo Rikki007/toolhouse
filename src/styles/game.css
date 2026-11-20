@@ -274,6 +274,14 @@
   font-weight: 500;
 }
 
+/* Количество одинаковых предметов в стакае */
+.inventory-card-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin-top: 4px;
+}
+
 .inventory-card-remove {
   position: absolute;
   top: 4px;

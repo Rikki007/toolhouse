@@ -21,7 +21,7 @@ export function showLevelRewardModal(
   container: HTMLElement,
   onClosed: () => void
 ): void {
-  const { reward, wasDuplicate, duplicateStaffName } = pickLevelReward()
+  const { reward } = pickLevelReward()
 
   createModal(container, {
     overlayClass: 'lootbox-modal-overlay',
@@ -41,13 +41,6 @@ export function showLevelRewardModal(
       const body = document.createElement('div')
       body.className = 'lootbox-container'
       body.style.flexDirection = 'column'
-
-      if (wasDuplicate && duplicateStaffName) {
-        const note = document.createElement('p')
-        note.className = 'lootbox-result'
-        note.textContent = `Сотрудник «${duplicateStaffName}» уже в команде — начисляем его стоимость`
-        body.appendChild(note)
-      }
 
       if (reward.type === 'none') {
         const note = document.createElement('div')
