@@ -80,7 +80,8 @@ function migrateShopToIds(inventory: Partial<InventoryState>): ShopState {
 export const SHIFT_CONFIGS: ShiftConfig[] = [
   { id: 1, label: '1-я смена', price: 5000, incomeMultiplier: 1, requiredLevel: 1 },
   { id: 2, label: '2-я смена', price: 10_000_000, incomeMultiplier: 1.2, requiredLevel: 10 },
-  { id: 3, label: '3-я смена', price: 1_000_000_000, incomeMultiplier: 1.5, requiredLevel: 20 },
+  { id: 3, label: '3-я смена', price: 500_000_000, incomeMultiplier: 1.5, requiredLevel: 20 },
+  { id: 4, label: 'Средняя смена', price: 650_000_000, incomeMultiplier: 2, requiredLevel: 32 },
 ]
 
 const DEFAULT_SHIFTS: ShiftsState = {
@@ -109,7 +110,16 @@ const DEFAULT_SHIFTS: ShiftsState = {
       reachTruckDrivers: [],
       pickers: [],
     },
-    cost: 1_000_000_000,
+    cost: 500_000_000,
+  },
+  fourth: {
+    isActive: false,
+    personnel: {
+      master: 'master_04',
+      reachTruckDrivers: [],
+      pickers: [],
+    },
+    cost: 650_000_000,
   },
 }
 
@@ -224,10 +234,11 @@ function migrateFromOldKeys(): void {
  * (эта сумма влияет на стоимость прокачки мастера).
  */
 function migrateShiftPrices(shifts: ShiftsState): ShiftsState {
-  const keysByShiftId: Record<number, 'first' | 'second' | 'third'> = {
+  const keysByShiftId: Record<number, keyof ShiftsState> = {
     1: 'first',
     2: 'second',
     3: 'third',
+    4: 'fourth',
   }
 
   const result: ShiftsState = { ...shifts }
@@ -305,6 +316,11 @@ function migrateShiftsToNewFormat(oldShifts: unknown): ShiftsState {
           personnel: { master: null, reachTruckDrivers: reachTruckDrivers3, pickers: pickers3 },
           cost: 100000,
         },
+        fourth: {
+          isActive: false,
+          personnel: { master: null, reachTruckDrivers: [], pickers: [] },
+          cost: 0,
+        },
       }
     }
   }
@@ -322,9 +338,10 @@ function migratePersonnelToStringArrays(shifts: ShiftsState): ShiftsState {
     first: { isActive: false, personnel: { master: null, reachTruckDrivers: [], pickers: [] }, cost: 0 },
     second: { isActive: false, personnel: { master: null, reachTruckDrivers: [], pickers: [] }, cost: 0 },
     third: { isActive: false, personnel: { master: null, reachTruckDrivers: [], pickers: [] }, cost: 0 },
+    fourth: { isActive: false, personnel: { master: null, reachTruckDrivers: [], pickers: [] }, cost: 0 },
   }
 
-  for (const key of ['first', 'second', 'third'] as const) {
+  for (const key of ['first', 'second', 'third', 'fourth'] as const) {
     const shift = shifts[key]
     // Проверяем, что это string[] (старый формат после обновления)
     const rtData = shift.personnel.reachTruckDrivers
@@ -350,15 +367,16 @@ function migratePersonnelToStringArrays(shifts: ShiftsState): ShiftsState {
 
 /** Миграция: заполняем null master дефолтными значениями */
 function migrateMasterFields(shifts: ShiftsState): ShiftsState {
-  const masterDefaults: Record<'first' | 'second' | 'third', string | null> = {
+  const masterDefaults: Record<keyof ShiftsState, string | null> = {
     first: 'master_01',
     second: 'master_02',
     third: 'master_03',
+    fourth: 'master_04',
   }
 
   const result: ShiftsState = { ...shifts }
 
-  for (const key of ['first', 'second', 'third'] as const) {
+  for (const key of ['first', 'second', 'third', 'fourth'] as const) {
     if (result[key].personnel.master === null) {
       result[key] = {
         ...result[key],
@@ -377,7 +395,7 @@ function migrateMasterFields(shifts: ShiftsState): ShiftsState {
 function migrateAddTechniqueSlot(shifts: ShiftsState): ShiftsState {
   const result: ShiftsState = { ...shifts }
 
-  for (const key of ['first', 'second', 'third'] as const) {
+  for (const key of ['first', 'second', 'third', 'fourth'] as const) {
     const shift = result[key]
     const migrateStaff = (arr: ShiftStaff[]): ShiftStaff[] =>
       arr.map(s => ({

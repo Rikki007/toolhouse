@@ -25,6 +25,7 @@ import reachtruckTallPremium from './forklifts/heavyPremium.png'
 import master01 from './masters/master01.png'
 import master02 from './masters/master02.png'
 import master03 from './masters/master03.png'
+import master04 from './masters/master04.png'
 
 // Иконки уровней мастеров
 import masterLevelFirst from './masters/first.png'
@@ -128,6 +129,9 @@ import ted05 from './rigging/ted05.png'
 import ted06 from './rigging/ted06.png'
 import ted07 from './rigging/ted07.png'
 import ted08 from './rigging/ted08.png'
+import ted09 from './rigging/ted09.png'
+import ted10 from './rigging/ted10.png'
+import ted11 from './rigging/ted11.png'
 
 // Персонажное снаряжение (только лутбокс)
 import isaakHelmet from './rigging/isaakHelmet.png'
@@ -167,6 +171,12 @@ import santaTed from './rigging/santaTed.png'
 import verstappenHelmet from './rigging/verstappenHelmet.png'
 import verstappenCloses from './rigging/verstappenCloses.png'
 import verstappenTed from './rigging/verstappenTed.png'
+import remboHelmet from './rigging/remboHelmet.png'
+import remboCloses from './rigging/remboCloses.png'
+import remboTed from './rigging/remboTed.png'
+import avatarHelmet from './rigging/avatarHelmet.png'
+import avatarCloses from './rigging/avatarCloses.png'
+import avatarTed from './rigging/avatarTed.png'
 
 // Иконки интерфейса
 import lootboxIcon from './interfaceIcon/lootbox.png'
@@ -374,6 +384,7 @@ export function initEquipmentImages(): void {
   mastersImages['master_01'] = master01
   mastersImages['master_02'] = master02
   mastersImages['master_03'] = master03
+  mastersImages['master_04'] = master04
 
   // Иконки уровней мастеров
   masterLevelImages['first'] = masterLevelFirst
@@ -477,6 +488,9 @@ export function initEquipmentImages(): void {
   riggingImages['ted_06'] = ted06
   riggingImages['ted_07'] = ted07
   riggingImages['ted_08'] = ted08
+  riggingImages['ted_09'] = ted09
+  riggingImages['ted_10'] = ted10
+  riggingImages['ted_11'] = ted11
 
   // Персонажное снаряжение (лутбокс)
   riggingImages['helmet_isaak'] = isaakHelmet
@@ -527,6 +541,14 @@ export function initEquipmentImages(): void {
   riggingImages['helmet_verstappen'] = verstappenHelmet
   riggingImages['closes_verstappen'] = verstappenCloses
   riggingImages['ted_verstappen'] = verstappenTed
+
+  riggingImages['helmet_rembo'] = remboHelmet
+  riggingImages['closes_rembo'] = remboCloses
+  riggingImages['ted_rembo'] = remboTed
+
+  riggingImages['helmet_avatar'] = avatarHelmet
+  riggingImages['closes_avatar'] = avatarCloses
+  riggingImages['ted_avatar'] = avatarTed
 
   // Закладки тиров персонала
   tierImages['tierOne'] = tierOneImg

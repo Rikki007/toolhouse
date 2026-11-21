@@ -47,7 +47,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.1,
                         unlocksName: 'Официальный бухучёт',
                         unlocksDescription: 'Кристальная чистота в документах.',
@@ -55,7 +55,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.15,
                         unlocksName: 'Теневая касса',
                         unlocksDescription: 'Не всё золото любит свет.',
@@ -66,7 +66,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 4 — нейтральный
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.09,
                 unlocksName: 'Налоговый вычет',
                 unlocksDescription: 'Государство вернёт часть ваших денег.',
@@ -78,7 +78,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.2,
                         unlocksName: 'Инвестиционный портфель',
                         unlocksDescription: 'Централизация финансовых активов.',
@@ -86,7 +86,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.25,
                         unlocksName: 'Сомнительные инвестиции',
                         unlocksDescription: 'Вложения в то, о чём лучше молчать.',
@@ -97,7 +97,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 6 — нейтральный
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.11,
                 unlocksName: 'Аудит',
                 unlocksDescription: 'Полная проверка всех операций.',
@@ -109,7 +109,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.3,
                         unlocksName: 'Прозрачная отчётность',
                         unlocksDescription: 'Каждая транзакция легальна и видна.',
@@ -117,7 +117,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.35,
                         unlocksName: 'Двойная бухгалтерия',
                         unlocksDescription: 'Для налоговой одни цифры, для вас другие.',
@@ -128,7 +128,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 8 — нейтральный (НОВЫЙ)
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.13,
                 unlocksName: 'Автоматизация учёта',
                 unlocksDescription: 'ERP-система сводит все транзакции в единый поток. Без бумаги, без задержек.',
@@ -140,7 +140,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.4,
                         unlocksName: 'Легальный лоббизм',
                         unlocksDescription: 'Продвижение интересов через официальные каналы.',
@@ -148,7 +148,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.45,
                         unlocksName: 'Теневой лоббизм',
                         unlocksDescription: 'Под вашу деятельность начинают писать законы.',
@@ -162,7 +162,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.5,
                         unlocksName: 'Честная конкуренция',
                         unlocksDescription: 'Вы выигрываете рынок, не нарушая ни одного закона. Империя, построенная на доверии.',
@@ -170,7 +170,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.55,
                         unlocksName: 'Финансовый диктат',
                         unlocksDescription: 'Полный контроль рынка. Конкуренты разорены, регуляторы куплены, правила написаны вами.',
@@ -213,7 +213,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.1,
                         unlocksName: 'Мягкая мотивация',
                         unlocksDescription: 'Небольшая премия хорошим сотрудникам.',
@@ -221,7 +221,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.15,
                         unlocksName: 'KPI и метрики',
                         unlocksDescription: 'С отстающими проводится воспитательная работа.',
@@ -232,7 +232,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 4 — нейтральный
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.09,
                 unlocksName: 'Обучение',
                 unlocksDescription: 'Помощь в развитии навыков рабочих.',
@@ -244,7 +244,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.2,
                         unlocksName: 'Тимбилдинг',
                         unlocksDescription: 'Корпоративы сплачивают коллектив.',
@@ -252,7 +252,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.25,
                         unlocksName: 'Мягкая рука',
                         unlocksDescription: ' Добровольно-принудительное навязывание корпоративной культуры.',
@@ -263,7 +263,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 6 — нейтральный
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.11,
                 unlocksName: 'Хедхантинг',
                 unlocksDescription: 'Переманиваем лучших специалистов у конкурентов.',
@@ -275,7 +275,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.3,
                         unlocksName: 'Открытая культура',
                         unlocksDescription: 'Сотрудники открыто критикуют недочёты. Чужое мнение не осуждается.',
@@ -283,7 +283,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.35,
                         unlocksName: 'Внутренняя разведка',
                         unlocksDescription: 'Организованная сеть доносчиков. У стен появились уши.',
@@ -294,7 +294,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 8 — нейтральный
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.13,
                 unlocksName: 'Корпоративный университет',
                 unlocksDescription: 'Внутреннее обучение сотрудников.',
@@ -306,7 +306,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.4,
                         unlocksName: 'Свобода и доверие',
                         unlocksDescription: 'Гибкий график, удалёнка, отсутствие надзора.',
@@ -314,7 +314,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.45,
                         unlocksName: 'Надзор и контроль',
                         unlocksDescription: 'Рабочий график строго регламентирован. На удалёнке не проследить за сотрудниками.',
@@ -328,7 +328,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.5,
                         unlocksName: 'Свободный коллектив',
                         unlocksDescription: 'Люди работают не из страха, а из вдохновения.',
@@ -336,7 +336,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.55,
                         unlocksName: 'Тоталитарный коллектив',
                         unlocksDescription: 'Жёсткая вертикаль власти, где подавляется любая личная автономия.',
@@ -379,7 +379,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.1,
                         unlocksName: 'Open source аналитика',
                         unlocksDescription: 'Позволяет находить и решать проблемы в системе. Данные открыты для всех отделов.',
@@ -387,7 +387,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.15,
                         unlocksName: 'Скрытый сбор данных',
                         unlocksDescription: 'Каждый шаг сотрудника записан в базу. Ничего личного — только метрики.',
@@ -398,7 +398,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 4 — линейный
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.09,
                 unlocksName: 'Изолированное резервное копирование',
                 unlocksDescription: 'Защищает компанию от кибератак и вирусов-вымогателей.',
@@ -410,7 +410,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.2,
                         unlocksName: 'Кибергигиена',
                         unlocksDescription: 'Учим сотрудников не кликать по сомнительным ссылкам.',
@@ -418,7 +418,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.25,
                         unlocksName: 'Цифровой надзор',
                         unlocksDescription: 'Мониторинг цифрового следа сотрудников в сети.',
@@ -429,7 +429,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 6 — линейный
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.11,
                 unlocksName: 'Криптография',
                 unlocksDescription: 'Все корпоративные данные шифруются.',
@@ -441,7 +441,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.3,
                         unlocksName: 'Открытые API',
                         unlocksDescription: 'Интеграция с внешними сервисами. Данные доступны партнёрам и клиентам.',
@@ -449,7 +449,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.35,
                         unlocksName: 'Взлом конкурентов',
                         unlocksDescription: 'Лучшая защита — это нападение. А лучшая атака — незаметная.',
@@ -460,7 +460,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 8 — линейный
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.13,
                 unlocksName: 'Облачные вычисления',
                 unlocksDescription: 'Данные компании больше не в подвале.',
@@ -472,7 +472,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.4,
                         unlocksName: 'ИИ-ассистент',
                         unlocksDescription: 'Нейросеть помогает сотрудникам в работе. Подсказывает, обучает, разгружает.',
@@ -480,7 +480,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.45,
                         unlocksName: 'ИИ анализ поведения',
                         unlocksDescription: 'Нейросети изучают поведение сотрудников в сети. Выявляют нелояльных заранее.',
@@ -494,7 +494,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.5,
                         unlocksName: 'Цифровая свобода',
                         unlocksDescription: 'Открытая экосистема, где данные принадлежат пользователям. Технологии служат людям, а не наоборот.',
@@ -502,7 +502,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.55,
                         unlocksName: 'Система корпоративных баллов',
                         unlocksDescription: 'Введение социального рейтинга сотрудников. Каждый поступок влияет на премию.',
@@ -545,7 +545,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.1,
                         unlocksName: 'Оценка рисков',
                         unlocksDescription: 'Выявление опасностей на производстве. Честно фиксируем всё, что может навредить людям.',
@@ -553,7 +553,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.15,
                         unlocksName: 'Сокрытие инцидентов',
                         unlocksDescription: 'Мелкие травмы не фиксируются. Меньше бумаг - меньше проблем. Для компании.',
@@ -564,7 +564,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 4 — линейный
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.09,
                 unlocksName: 'Культура безопасности',
                 unlocksDescription: 'Расширение социальной ответственности сотрудников.',
@@ -576,7 +576,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.2,
                         unlocksName: 'Расширенные медосмотры',
                         unlocksDescription: 'Полное обследование здоровья. Находим проблемы до того, как они станут трагедией.',
@@ -584,7 +584,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.25,
                         unlocksName: 'Формальные медосмотры',
                         unlocksDescription: 'Быстрые тесты, чтобы допустить к работе. Всё, что не мешает работать - не проблема.',
@@ -595,7 +595,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 6 — линейный
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.11,
                 unlocksName: 'Журнал травматизма',
                 unlocksDescription: 'Написан кровью сотрудников.',
@@ -607,7 +607,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.3,
                         unlocksName: 'ИИ-оценка рисков',
                         unlocksDescription: 'ИИ анализирует данные журналов травматизма и выдаёт инструкции по избежанию повторения подобных случаев.',
@@ -615,7 +615,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.35,
                         unlocksName: 'Нейро-дисциплина',
                         unlocksDescription: 'ИИ анализирует будущие нарушения исходя из анализа профилей сотрудников и заранее выносит предупреждения.',
@@ -626,7 +626,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 8 — линейный
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.13,
                 unlocksName: 'Вентиляция, освещение, эргономика',
                 unlocksDescription: 'Сокращение вредных производственных факторов.',
@@ -638,7 +638,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.4,
                         unlocksName: 'Страхование сотрудников',
                         unlocksDescription: 'Полисы для всех. Если что-то случится, сотрудник получит страховую компенсацию.',
@@ -646,7 +646,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.45,
                         unlocksName: 'Иммунитет корпорации',
                         unlocksDescription: 'Любое ЧП списывается на форс-мажор.',
@@ -660,7 +660,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.5,
                         unlocksName: 'Протокол «Эгида»',
                         unlocksDescription: 'При аварии приоритет - спасение сотрудников. Люди дороже оборудования.',
@@ -668,7 +668,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.55,
                         unlocksName: 'Протокол «Живой щит»',
                         unlocksDescription: 'Оборудование дороже людей. При аварии приоритет - сохранить технику и товар.',
@@ -711,7 +711,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.1,
                         unlocksName: 'Репутация',
                         unlocksDescription: 'Высокое качество услуг, гарантии безопасного хранения.',
@@ -719,7 +719,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.15,
                         unlocksName: 'Спам-рассылки',
                         unlocksDescription: 'Почтовый ящик стал полем битвы. И мы наступаем.',
@@ -730,7 +730,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 4 — линейный
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.09,
                 unlocksName: 'Имя на рынке',
                 unlocksDescription: 'Годы репутации позволили завоевать хорошее имя.',
@@ -742,7 +742,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.2,
                         unlocksName: 'Программы лояльности',
                         unlocksDescription: 'Бонусные карты, кэшбэк, подарки, акции.',
@@ -750,7 +750,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.25,
                         unlocksName: 'Агрессивный маркетинг',
                         unlocksDescription: 'Перенимаем опыт рекламы у онлайн казино.',
@@ -761,7 +761,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 6 — линейный
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.11,
                 unlocksName: 'Маркетинговая аналитика',
                 unlocksDescription: 'Изучаем спрос и корректируем ассортимент.',
@@ -773,7 +773,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.3,
                         unlocksName: 'Партнёрские программы',
                         unlocksDescription: 'Честное сотрудничество с другими брендами. Взаимная выгода.',
@@ -781,7 +781,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.35,
                         unlocksName: 'Таргетированная реклама',
                         unlocksDescription: 'Алгоритмы знают, что вы купите завтра. И предлагают это сегодня.',
@@ -792,7 +792,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 8 — линейный
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.13,
                 unlocksName: 'Клиентский сервис',
                 unlocksDescription: 'Поддержка 24/7, возврат без вопросов.',
@@ -804,7 +804,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.4,
                         unlocksName: 'ИИ-Консультант',
                         unlocksDescription: 'Нейросеть подбирает клиенту идеальный товар. Честно и без давления.',
@@ -812,7 +812,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.45,
                         unlocksName: 'ИИ-Продавец',
                         unlocksDescription: 'Искусственный интеллект продавливает покупку. Вы покупаете, даже не понимая почему.',
@@ -826,7 +826,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'legal',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.5,
                         unlocksName: 'Империя доверия',
                         unlocksDescription: 'Клиенты возвращаются сами и приводят друзей. Репутация - главный актив.',
@@ -834,7 +834,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'dark',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.55,
                         unlocksName: 'Глобальная монополия',
                         unlocksDescription: 'Если вы не покупаете у нас, вы не покупаете нигде.',
@@ -871,7 +871,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 3,
-                cost: 50000,
+                cost: 500000,
                 factor: 1.09,
                 unlocksName: 'Слесарь Василий',
                 unlocksDescription: 'Появление серьезных специалистов в тех отделе.',
@@ -879,7 +879,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.13,
                 unlocksName: 'Журнал поломок',
                 unlocksDescription: 'Записываем всё, что сломалось. И всё, что мы сломали, пока чинили.',
@@ -887,7 +887,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 5,
-                cost: 350000,
+                cost: 3500000,
                 factor: 1.15,
                 unlocksName: 'Инвентаризация инструмента',
                 unlocksDescription: 'Введение контроля по инструменту и оснастке.',
@@ -895,7 +895,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.17,
                 unlocksName: 'Быстрый ремонт',
                 unlocksDescription: 'Нет ничего более постоянного, чем временное решение.',
@@ -903,7 +903,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 7,
-                cost: 750000,
+                cost: 7500000,
                 factor: 1.2,
                 unlocksName: 'Регламентное ТО',
                 unlocksDescription: 'Периодическое обслуживание техники увеличивает ресурс её работы.',
@@ -911,7 +911,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.25,
                 unlocksName: 'Ремонтная база',
                 unlocksDescription: 'Наличие собственной базы запчастей сокращает простой техники.',
@@ -919,7 +919,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 9,
-                cost: 1500000,
+                cost: 15000000,
                 factor: 1.35,
                 unlocksName: 'Модернизация',
                 unlocksDescription: 'Покупка новой техники сохраняет высокую скорость работ.',
@@ -927,7 +927,7 @@ export const skills: Skill[] = [
             },
             {
                 level: 10,
-                cost: 10000000,
+                cost: 100000000,
                 factor: 1.45,
                 unlocksName: 'Разработка системы ТО и Р',
                 unlocksDescription: 'Внедрение полного цикла обслуживания и ремонта.',
@@ -968,7 +968,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.1,
                         unlocksName: 'Профессиональная охрана',
                         unlocksDescription: 'Обученные сотрудники, чёткие регламенты, уважение к правам человека.',
@@ -976,7 +976,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 50000,
+                        cost: 500000,
                         factor: 1.15,
                         unlocksName: 'Единый реестр лиц',
                         unlocksDescription: 'Профили всех, кто когда-либо входил на склад, внесены в базу.',
@@ -987,7 +987,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 4 — линейный
             {
                 level: 4,
-                cost: 150000,
+                cost: 1500000,
                 factor: 1.09,
                 unlocksName: 'Пост охраны',
                 unlocksDescription: 'Организованный центр контроля и принятия решений.',
@@ -999,7 +999,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.2,
                         unlocksName: 'Прозрачный досмотр',
                         unlocksDescription: 'Досмотр по протоколу, с уважением к достоинству.',
@@ -1007,7 +1007,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 350000,
+                        cost: 3500000,
                         factor: 1.25,
                         unlocksName: 'Тотальный контроль перемещений',
                         unlocksDescription: 'Мы знаем, где вы. Мы знаем, куда вы. Мы знаем, зачем вы.',
@@ -1018,7 +1018,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 6 — линейный
             {
                 level: 6,
-                cost: 500000,
+                cost: 5000000,
                 factor: 1.11,
                 unlocksName: 'Система видеонаблюдения',
                 unlocksDescription: 'Полный контроль ситуации на складе. Только для безопасности.',
@@ -1030,7 +1030,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.3,
                         unlocksName: 'Устный разбор',
                         unlocksDescription: 'Нарушение обсуждается с сотрудником лично. Без бумаг, без приказов, без следа в деле. Цель — исправить, а не наказать.',
@@ -1038,7 +1038,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 750000,
+                        cost: 7500000,
                         factor: 1.35,
                         unlocksName: 'Объяснительные',
                         unlocksDescription: 'Охрана замечает нарушение и вызывает сотрудника. Он пишет объяснительную. Бумага идёт в личное дело.',
@@ -1049,7 +1049,7 @@ export const skills: Skill[] = [
             // УРОВЕНЬ 8 — линейный
             {
                 level: 8,
-                cost: 1000000,
+                cost: 10000000,
                 factor: 1.13,
                 unlocksName: 'Кризисный центр',
                 unlocksDescription: 'Единый штаб для реагирования на ЧП. Быстро, чётко, по протоколу.',
@@ -1061,7 +1061,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.4,
                         unlocksName: 'Защита прав сотрудников',
                         unlocksDescription: 'Юристы следят, чтобы охрана не превышала полномочия. Даже по отношению к нарушителям.',
@@ -1069,7 +1069,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 1500000,
+                        cost: 15000000,
                         factor: 1.45,
                         unlocksName: 'Система поощрений за лояльность',
                         unlocksDescription: 'Сообщил о коллеге — получил премию.',
@@ -1083,7 +1083,7 @@ export const skills: Skill[] = [
                 branch: [
                     {
                         path: 'liberal',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.5,
                         unlocksName: 'Протокол «Астрея»',
                         unlocksDescription: 'Богиня справедливости и невинности. Протокол регламентирует действия сотрудников охраны. Люди чувствуют себя в безопасности - и работают лучше.',
@@ -1091,7 +1091,7 @@ export const skills: Skill[] = [
                     },
                     {
                         path: 'totalitarian',
-                        cost: 10000000,
+                        cost: 100000000,
                         factor: 1.55,
                         unlocksName: 'Протокол «Паноптикум»',
                         unlocksDescription: 'Паноптикум это проект идеальной тюрьмы. Все на виду. Наказание следует за нарушением с автоматической точностью. Без суда, следствия и жалости.',

@@ -80,6 +80,7 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
     { id: 1, key: 'first' as const, label: '1-я смена' },
     { id: 2, key: 'second' as const, label: '2-я смена' },
     { id: 3, key: 'third' as const, label: '3-я смена' },
+    { id: 4, key: 'fourth' as const, label: 'Средняя смена' },
   ]
 
   for (const shiftInfo of shifts) {
@@ -134,7 +135,7 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
       itemFooter.appendChild(mult)
 
       // Бонус за полную укомплектованность смены
-      if (isShiftFullyStaffed(shift, playerLevel(state))) {
+      if (isShiftFullyStaffed(shift, playerLevel(state), shiftInfo.id)) {
         // Множитель и бонус stack'ом друг под другом
         itemFooter.classList.add('shifts-modal-item-footer-stacked')
         const bonus = document.createElement('span')
@@ -241,6 +242,7 @@ function isPreviousShiftActive(shiftId: number): boolean {
   if (shiftId === 1) return true // первая всегда доступна для покупки
   if (shiftId === 2) return state.shifts.first.isActive
   if (shiftId === 3) return state.shifts.second.isActive
+  if (shiftId === 4) return state.shifts.third.isActive
   return false
 }
 
@@ -252,6 +254,7 @@ function getShiftIncomeMultiplierForShift(shiftId: number): number {
   if (shiftId >= 1 && state.shifts.first.isActive) multiplier = Math.max(multiplier, 1)
   if (shiftId >= 2 && state.shifts.second.isActive) multiplier = Math.max(multiplier, 1.2)
   if (shiftId >= 3 && state.shifts.third.isActive) multiplier = Math.max(multiplier, 1.5)
+  if (shiftId >= 4 && state.shifts.fourth.isActive) multiplier = Math.max(multiplier, 2)
   
   return multiplier
 }
@@ -301,7 +304,7 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   masterSection.appendChild(masterTitle)
 
   /** Ключ смены в стейте */
-  const shiftKey = shiftId === 1 ? 'first' : shiftId === 2 ? 'second' : 'third'
+  const shiftKey = shiftId === 1 ? 'first' : shiftId === 2 ? 'second' : shiftId === 3 ? 'third' : 'fourth'
 
   /**
    * Обновляет блок мастера: если карточка этого мастера уже отрисована —
@@ -342,7 +345,7 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   const forkliftGrid = document.createElement('div')
   forkliftGrid.className = 'shifts-personnel-grid'
 
-  const forkliftSlots = getForkliftSlots()
+  const forkliftSlots = getForkliftSlots(shiftId)
   for (let i = 0; i < forkliftSlots.length; i++) {
     forkliftGrid.appendChild(createPersonnelCard(forkliftSlots[i], shiftId, i))
   }
@@ -362,7 +365,7 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   const assemblerGrid = document.createElement('div')
   assemblerGrid.className = 'shifts-personnel-grid'
 
-  const assemblerSlots = getAssemblerSlots()
+  const assemblerSlots = getAssemblerSlots(shiftId)
   for (let i = 0; i < assemblerSlots.length; i++) {
     assemblerGrid.appendChild(createPersonnelCard(assemblerSlots[i], shiftId, i))
   }

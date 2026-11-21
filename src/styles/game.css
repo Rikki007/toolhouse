@@ -244,8 +244,8 @@
 }
 
 .inventory-card-image {
-  width: 65px;
-  height: 65px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
   margin-bottom: 8px;
 }

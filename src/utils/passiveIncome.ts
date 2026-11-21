@@ -5,7 +5,7 @@ import type { Shift, ShiftStaff, ShiftsState, StaffUpgrades, MasterUpgrades } fr
 import { getStaffById, getRiggingById, getEquipmentById } from './itemLookup.ts'
 import { getStaffSpeed } from './staffUpgrades.ts'
 import { formatMoney } from './format.ts'
-import { getMaxSlotsForLevel } from '../data/shiftSlots.ts'
+import { getMaxSlotsForShift } from '../data/shiftSlots.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 
 /** Базовый пассивный доход: 1 монета в секунду */
@@ -23,10 +23,11 @@ const EQUIPMENT_INCOME_MULTIPLIER = 10
 /**
  * Смена укомплектована, если заняты все доступные на текущем уровне слоты.
  * @param playerLevel — уровень игрока (от него зависит количество слотов в смене)
+ * @param shiftId — ID смены (нужен для смены с фиксированным штатом)
  */
-export function isShiftFullyStaffed(shift: Shift, playerLevel: number): boolean {
-  const maxForklifts = getMaxSlotsForLevel(playerLevel, 'forklift')
-  const maxPickers = getMaxSlotsForLevel(playerLevel, 'picker')
+export function isShiftFullyStaffed(shift: Shift, playerLevel: number, shiftId: number): boolean {
+  const maxForklifts = getMaxSlotsForShift(playerLevel, 'forklift', shiftId)
+  const maxPickers = getMaxSlotsForShift(playerLevel, 'picker', shiftId)
   return (
     shift.personnel.reachTruckDrivers.length >= maxForklifts &&
     shift.personnel.pickers.length >= maxPickers
@@ -128,14 +129,17 @@ export function calculateShiftStaffIncome(
   let income = 0
   const level = playerLevel ?? levelFromXp(0)
 
-  for (const shift of Object.values(shifts)) {
+  const shiftIds: Record<keyof ShiftsState, number> = { first: 1, second: 2, third: 3, fourth: 4 }
+
+  for (const [key, shift] of Object.entries(shifts) as Array<[keyof ShiftsState, Shift]>) {
     if (!shift.isActive) continue
+    const shiftId = shiftIds[key]
     let shiftIncome = 0
     for (const staff of [...shift.personnel.reachTruckDrivers, ...shift.personnel.pickers]) {
       shiftIncome += calculateStaffKpi(staff, upgrades) + calculateTechniqueIncome(staff.slots.technique)
     }
     // Бонус за полную укомплектованность смены
-    if (isShiftFullyStaffed(shift, level)) {
+    if (isShiftFullyStaffed(shift, level, shiftId)) {
       shiftIncome *= FULLY_STAFFED_MULTIPLIER
     }
     // Множитель мастера смены
@@ -148,12 +152,14 @@ export function calculateShiftStaffIncome(
 
 /**
  * Множитель дохода от открытых смен: вторая смена поднимает его до 1.2,
- * третья — до 1.5. Учитывается наибольший из достигнутых уровней.
+ * третья — до 1.5, четвёртая (средняя) — до 2.0.
+ * Учитывается наибольший из достигнутых уровней.
  */
 export function calculateShiftsMultiplier(shifts: ShiftsState): number {
   let multiplier = 1
   if (shifts.second.isActive) multiplier = Math.max(multiplier, 1.2)
   if (shifts.third.isActive) multiplier = Math.max(multiplier, 1.5)
+  if (shifts.fourth.isActive) multiplier = Math.max(multiplier, 2)
   return multiplier
 }
 

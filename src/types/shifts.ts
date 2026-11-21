@@ -37,4 +37,5 @@ export interface ShiftsState {
   first: Shift
   second: Shift
   third: Shift
+  fourth: Shift
 }

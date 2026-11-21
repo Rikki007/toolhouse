@@ -17,7 +17,7 @@ import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
 import { formatMoney } from './format.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
-import { getMaxSlotsForLevel } from '../data/shiftSlots.ts'
+import { getMaxSlotsForShift } from '../data/shiftSlots.ts'
 
 /**
  * Создаёт массив слотов заданного количества.
@@ -32,21 +32,23 @@ function createSlotsArray(base: number, role: 'forklift' | 'picker'): PersonnelS
 }
 
 /**
- * Текущие слоты водителя ричтраков (динамически, зависит от уровня игрока).
+ * Текущие слоты водителя ричтраков (зависят от смены и уровня игрока).
+ * В средней смене количество фиксировано и не растёт с уровнем.
  */
-export function getForkliftSlots(): PersonnelSlot[] {
+export function getForkliftSlots(shiftId: number): PersonnelSlot[] {
   const state = getState()
   const playerLevel = levelFromXp(state.xpMoney)
-  return createSlotsArray(getMaxSlotsForLevel(playerLevel, 'forklift'), 'forklift')
+  return createSlotsArray(getMaxSlotsForShift(playerLevel, 'forklift', shiftId), 'forklift')
 }
 
 /**
- * Текущие слоты сборщиков (динамически, зависит от уровня игрока).
+ * Текущие слоты сборщиков (зависят от смены и уровня игрока).
+ * В средней смене количество фиксировано и не растёт с уровнем.
  */
-export function getAssemblerSlots(): PersonnelSlot[] {
+export function getAssemblerSlots(shiftId: number): PersonnelSlot[] {
   const state = getState()
   const playerLevel = levelFromXp(state.xpMoney)
-  return createSlotsArray(getMaxSlotsForLevel(playerLevel, 'picker'), 'picker')
+  return createSlotsArray(getMaxSlotsForShift(playerLevel, 'picker', shiftId), 'picker')
 }
 
 /**
@@ -622,7 +624,7 @@ function openTechniqueSelectorModal(
     const grid = card.closest('.shifts-personnel-grid')
     if (grid) {
       grid.innerHTML = ''
-      const slots = role === 'forklift' ? getForkliftSlots() : getAssemblerSlots()
+      const slots = role === 'forklift' ? getForkliftSlots(shiftId) : getAssemblerSlots(shiftId)
       for (let i = 0; i < slots.length; i++) {
         grid.appendChild(createPersonnelCard(slots[i], shiftId, i))
       }

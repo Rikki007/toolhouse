@@ -48,10 +48,10 @@ export interface LootBoxDropConfig {
  */
 export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   // --- Персонал сборщики: обычные ---
-  { reward: { type: 'staff', id: 'picker_19' }, weight: 8 },
-  { reward: { type: 'staff', id: 'picker_28' }, weight: 8 },
-  { reward: { type: 'staff', id: 'picker_29' }, weight: 8 },
-  { reward: { type: 'staff', id: 'picker_30' }, weight: 8 },
+  { reward: { type: 'staff', id: 'picker_19' }, weight: 5 },
+  { reward: { type: 'staff', id: 'picker_28' }, weight: 5 },
+  { reward: { type: 'staff', id: 'picker_29' }, weight: 5 },
+  { reward: { type: 'staff', id: 'picker_30' }, weight: 5 },
 
   // --- Персонал сборщики: легендарные (500000, 10★) ---
   { reward: { type: 'staff', id: 'picker_23' }, weight: 3 },
@@ -73,31 +73,43 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
 
   // --- Снаряжение: веса по редкости (слабое падает чаще, сильное — реже) ---
   // Каски: factor 1.25–1.3 обычные, 1.5 — золотая
-  { reward: { type: 'rigging', id: 'helmet_04' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_05' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_01' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'helmet_02' }, weight: 8 },
+  { reward: { type: 'rigging', id: 'helmet_03' }, weight: 7 },
+  { reward: { type: 'rigging', id: 'helmet_04' }, weight: 5 },
+  { reward: { type: 'rigging', id: 'helmet_05' }, weight: 5 },
   { reward: { type: 'rigging', id: 'helmet_06' }, weight: 2 },
-  { reward: { type: 'rigging', id: 'helmet_07' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_08' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_09' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_10' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'helmet_12' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_07' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'helmet_08' }, weight: 5 },
+  { reward: { type: 'rigging', id: 'helmet_09' }, weight: 5 },
+  { reward: { type: 'rigging', id: 'helmet_10' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'helmet_12' }, weight: 4 },
 
   // Одежда: жилеты слабые (частые), куртки крепкие, золотая — редкая
-  { reward: { type: 'rigging', id: 'closes_04' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'closes_01' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'closes_02' }, weight: 8 },
+  { reward: { type: 'rigging', id: 'closes_03' }, weight: 7 },
+  { reward: { type: 'rigging', id: 'closes_04' }, weight: 2 },
   { reward: { type: 'rigging', id: 'closes_05' }, weight: 4 },
   { reward: { type: 'rigging', id: 'closes_07' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'closes_08' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'closes_09' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'closes_10' }, weight: 4 },
-  { reward: { type: 'rigging', id: 'closes_11' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'closes_12' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_08' }, weight: 8 },
+  { reward: { type: 'rigging', id: 'closes_09' }, weight: 7 },
+  { reward: { type: 'rigging', id: 'closes_10' }, weight: 6 },
+  { reward: { type: 'rigging', id: 'closes_11' }, weight: 5 },
+  { reward: { type: 'rigging', id: 'closes_12' }, weight: 5 },
 
   // Терминалы: самые дорогие и сильные предметы — падают реже всего
+  { reward: { type: 'rigging', id: 'ted_01' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'ted_02' }, weight: 8},
+  { reward: { type: 'rigging', id: 'ted_03' }, weight: 7 },
   { reward: { type: 'rigging', id: 'ted_04' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'ted_05' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'ted_06' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'ted_07' }, weight: 3 },
-  { reward: { type: 'rigging', id: 'ted_08' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'ted_05' }, weight: 6 },
+  { reward: { type: 'rigging', id: 'ted_06' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'ted_07' }, weight: 5 },
+  { reward: { type: 'rigging', id: 'ted_08' }, weight: 2 },
+  { reward: { type: 'rigging', id: 'ted_09' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'ted_10' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'ted_11' }, weight: 9 },
 
   // --- Персонажное снаряжение (лутбокс) ---
   // Шлемы персонажей
@@ -113,6 +125,8 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'helmet_doom' }, weight: 3 },
   { reward: { type: 'rigging', id: 'helmet_santa' }, weight: 3 },
   { reward: { type: 'rigging', id: 'helmet_verstappen' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_avatar' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'helmet_rembo' }, weight: 3 },
 
   // Куртки персонажей
   { reward: { type: 'rigging', id: 'closes_isaak' }, weight: 3 },
@@ -127,6 +141,8 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'closes_doom' }, weight: 3 },
   { reward: { type: 'rigging', id: 'closes_santa' }, weight: 3 },
   { reward: { type: 'rigging', id: 'closes_verstappen' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_avatar' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'closes_rembo' }, weight: 3 },
 
   // Терминалы персонажей (редкие)
   { reward: { type: 'rigging', id: 'ted_isaak' }, weight: 3 },
@@ -144,6 +160,8 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'ted_doom' }, weight: 3 },
   { reward: { type: 'rigging', id: 'ted_santa' }, weight: 3 },
   { reward: { type: 'rigging', id: 'ted_verstappen' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'ted_avatar' }, weight: 3 },
+  { reward: { type: 'rigging', id: 'ted_rembo' }, weight: 3 },
 
 ]
 

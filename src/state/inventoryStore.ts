@@ -587,7 +587,7 @@ export function getAllStaffIds(): string[] {
   }
 
   // Из смен — массивы ShiftStaff (объекты с id)
-  for (const key of ['first', 'second', 'third'] as const) {
+  for (const key of ['first', 'second', 'third', 'fourth'] as const) {
     const shift = state.shifts[key]
     for (const staff of shift.personnel.reachTruckDrivers) {
       const staffId = typeof staff === 'string' ? staff : staff.id

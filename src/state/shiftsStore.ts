@@ -3,7 +3,7 @@ import type { AppState } from './state.ts'
 import { getState, updateState, SHIFT_CONFIGS } from './state.ts'
 import { calculatePassiveIncome, calculateShiftsMultiplier, getIncomeSources } from '../utils/passiveIncome.ts'
 import { playerLevel as getPlayerLevel } from '../utils/skillProgress.ts'
-import { getMaxSlotsForLevel } from '../data/shiftSlots.ts'
+import { getMaxSlotsForShift } from '../data/shiftSlots.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 
 export { SHIFT_CONFIGS as shiftConfigs }
@@ -35,10 +35,11 @@ function createEmptyStaff(id: string): ShiftStaff {
 }
 
 /** Получить ключ смены по ID */
-function getShiftKeyById(id: number): 'first' | 'second' | 'third' {
+function getShiftKeyById(id: number): 'first' | 'second' | 'third' | 'fourth' {
   if (id === 1) return 'first'
   if (id === 2) return 'second'
-  return 'third'
+  if (id === 3) return 'third'
+  return 'fourth'
 }
 
 /**
@@ -292,6 +293,9 @@ export function getActiveShifts(): Array<{ id: number; label: string }> {
   if (state.shifts.third.isActive) {
     result.push({ id: 3, label: '3-я смена' })
   }
+  if (state.shifts.fourth.isActive) {
+    result.push({ id: 4, label: 'Средняя смена' })
+  }
   
   return result
 }
@@ -303,13 +307,19 @@ export function getActiveShifts(): Array<{ id: number; label: string }> {
 export function getShiftSlotAvailability(role: 'forklift' | 'picker'): Array<{ shiftId: number; availableSlots: number }> {
   const state = getState()
   const level = levelFromXp(state.xpMoney)
-  const maxSlots = getMaxSlotsForLevel(level, role)
-  
-  return [
-    { shiftId: 1, availableSlots: maxSlots - state.shifts.first.personnel[role === 'forklift' ? 'reachTruckDrivers' : 'pickers'].length },
-    { shiftId: 2, availableSlots: maxSlots - state.shifts.second.personnel[role === 'forklift' ? 'reachTruckDrivers' : 'pickers'].length },
-    { shiftId: 3, availableSlots: maxSlots - state.shifts.third.personnel[role === 'forklift' ? 'reachTruckDrivers' : 'pickers'].length },
+  const personnelKey = role === 'forklift' ? 'reachTruckDrivers' : 'pickers'
+
+  const shifts: Array<{ shiftId: number; key: keyof ShiftsState }> = [
+    { shiftId: 1, key: 'first' },
+    { shiftId: 2, key: 'second' },
+    { shiftId: 3, key: 'third' },
+    { shiftId: 4, key: 'fourth' },
   ]
+
+  return shifts.map(({ shiftId, key }) => ({
+    shiftId,
+    availableSlots: getMaxSlotsForShift(level, role, shiftId) - state.shifts[key].personnel[personnelKey].length,
+  }))
 }
 
 /**
@@ -338,7 +348,7 @@ export function assignStaffToShift(
   
   // Проверяем, есть ли свободные слоты
   const level = getPlayerLevel(state)
-  const maxSlots = getMaxSlotsForLevel(level, role)
+  const maxSlots = getMaxSlotsForShift(level, role, shiftId)
   if (currentArray.length >= maxSlots) {
     return false
   }

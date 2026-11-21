@@ -24,6 +24,12 @@ export const shiftMasters: ShiftMaster[] = [
     position: 'Мастер смены',
     avatar: 'master03',
   },
+  {
+    id: 'master_04',
+    name: 'Сергей',
+    position: 'Мастер смены',
+    avatar: 'master04',
+  },
 ]
 
 export const reachTruckDriversList: Staff[] = [
