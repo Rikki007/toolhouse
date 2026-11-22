@@ -170,12 +170,12 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'ted_rembo' }, weight: 3 },
 
   // --- Жетоны ---
-  { reward: { type: 'token', id: 'lootboxTokenGold' }, weight: 40 },
-  { reward: { type: 'token', id: 'lootboxTokenGreen' }, weight: 70 },
-  { reward: { type: 'token', id: 'lootboxTokenRed' }, weight: 80 },
-  { reward: { type: 'token', id: 'accelerationTokenGold' }, weight: 40 },
-  { reward: { type: 'token', id: 'accelerationTokenGreen' }, weight: 70 },
-  { reward: { type: 'token', id: 'accelerationTokenRed' }, weight: 80 },
+  { reward: { type: 'token', id: 'lootboxTokenGold' }, weight: 4 },
+  { reward: { type: 'token', id: 'lootboxTokenGreen' }, weight: 7 },
+  { reward: { type: 'token', id: 'lootboxTokenRed' }, weight: 8 },
+  { reward: { type: 'token', id: 'accelerationTokenGold' }, weight: 4 },
+  { reward: { type: 'token', id: 'accelerationTokenGreen' }, weight: 7 },
+  { reward: { type: 'token', id: 'accelerationTokenRed' }, weight: 8 },
 
 ]
 
