@@ -1,6 +1,7 @@
 import { getCurrentShiftConfig, buyShift, shiftConfigs } from '../state/shiftsStore.ts'
 import { createModal } from '../utils/modalFactory.ts'
 import { createPersonnelCard, createMasterCard, getForkliftSlots, getAssemblerSlots, updateMasterCardUI } from '../utils/personnel.ts'
+import { createShiftIncomeChart } from './shiftIncomeChart.ts'
 import { getState, subscribe } from '../state/state.ts'
 import { isShiftFullyStaffed } from '../utils/passiveIncome.ts'
 import { interfaceIconImages, coinFrames } from '../assets/assetLoader.ts'
@@ -74,6 +75,12 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
 
   const modalBody = document.createElement('div')
   modalBody.className = 'shifts-modal-body'
+
+  // Аналитика дохода по купленным сменам (круговая диаграмма)
+  const incomeChart = createShiftIncomeChart()
+  if (incomeChart) {
+    modalBody.appendChild(incomeChart)
+  }
 
   const state = getState()
   const shifts = [

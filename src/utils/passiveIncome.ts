@@ -113,6 +113,67 @@ export function calculateTechniqueIncome(techniqueId: string | null): number {
 }
 
 /**
+ * Доход в секунду одной смены.
+ * Сумма KPI сотрудников (скорость × снаряжение) и дохода закреплённой техники.
+ * Полностью укомплектованная смена получает бонус, затем применяется множитель мастера.
+ */
+export function calculateSingleShiftIncome(
+  shift: Shift,
+  shiftId: number,
+  upgrades?: StaffUpgrades,
+  masterUpgrades?: MasterUpgrades,
+  playerLevel?: number,
+): number {
+  const level = playerLevel ?? levelFromXp(0)
+  let shiftIncome = 0
+
+  for (const staff of [...shift.personnel.reachTruckDrivers, ...shift.personnel.pickers]) {
+    shiftIncome += calculateStaffKpi(staff, upgrades) + calculateTechniqueIncome(staff.slots.technique)
+  }
+
+  // Бонус за полную укомплектованность смены
+  if (isShiftFullyStaffed(shift, level, shiftId)) {
+    shiftIncome *= FULLY_STAFFED_MULTIPLIER
+  }
+
+  // Множитель мастера смены
+  return shiftIncome * getMasterFactorForShift(shift, masterUpgrades)
+}
+
+/** Доход одной активной смены для аналитики */
+export interface ShiftIncomeEntry {
+  shiftId: number
+  /** Доход в секунду (уже с общим множителем открытых смен) */
+  income: number
+}
+
+/**
+ * Доход каждой купленной смены — для круговой диаграммы.
+ * Значения включают общий множитель открытых смен, поэтому их сумма
+ * равна вкладу персонала смен в пассивный доход.
+ */
+export function calculateShiftIncomes(
+  shifts: ShiftsState,
+  upgrades?: StaffUpgrades,
+  masterUpgrades?: MasterUpgrades,
+  playerLevel?: number,
+): ShiftIncomeEntry[] {
+  const level = playerLevel ?? levelFromXp(0)
+  const shiftsMultiplier = calculateShiftsMultiplier(shifts)
+  const shiftIds: Record<keyof ShiftsState, number> = { first: 1, second: 2, third: 3, fourth: 4 }
+  const result: ShiftIncomeEntry[] = []
+
+  for (const [key, shift] of Object.entries(shifts) as Array<[keyof ShiftsState, Shift]>) {
+    if (!shift.isActive) continue
+    const shiftId = shiftIds[key]
+    const income = calculateSingleShiftIncome(shift, shiftId, upgrades, masterUpgrades, level)
+    result.push({ shiftId, income: income * shiftsMultiplier })
+  }
+
+  return result
+}
+
+/**
  * Суммарный доход в секунду от персонала всех активных смен.
  * Считается как сумма KPI сотрудников (скорость × снаряжение)
  * и дохода закреплённой за ними техники (speed × 10).
@@ -133,18 +194,7 @@ export function calculateShiftStaffIncome(
 
   for (const [key, shift] of Object.entries(shifts) as Array<[keyof ShiftsState, Shift]>) {
     if (!shift.isActive) continue
-    const shiftId = shiftIds[key]
-    let shiftIncome = 0
-    for (const staff of [...shift.personnel.reachTruckDrivers, ...shift.personnel.pickers]) {
-      shiftIncome += calculateStaffKpi(staff, upgrades) + calculateTechniqueIncome(staff.slots.technique)
-    }
-    // Бонус за полную укомплектованность смены
-    if (isShiftFullyStaffed(shift, level, shiftId)) {
-      shiftIncome *= FULLY_STAFFED_MULTIPLIER
-    }
-    // Множитель мастера смены
-    shiftIncome *= getMasterFactorForShift(shift, masterUpgrades)
-    income += shiftIncome
+    income += calculateSingleShiftIncome(shift, shiftIds[key], upgrades, masterUpgrades, level)
   }
 
   return income

@@ -822,6 +822,115 @@
   font-style: italic;
 }
 
+/* ===== Аналитика дохода по сменам ===== */
+.shift-chart {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.shift-chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 12px;
+}
+
+.shift-chart-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.shift-chart-donut-wrapper {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  flex: 0 0 auto;
+}
+
+.shift-chart-donut {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.shift-chart-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.shift-chart-center-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.shift-chart-center-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.shift-chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.shift-chart-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.shift-chart-legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.shift-chart-legend-name {
+  color: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.shift-chart-legend-value {
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.shift-chart-legend-percent {
+  color: rgba(255, 255, 255, 0.5);
+  min-width: 34px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .shift-chart-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .shift-chart-legend {
+    width: 100%;
+  }
+}
+
 .shifts-modal-item-level-req {
   font-size: 13px;
   color: #f87171;
