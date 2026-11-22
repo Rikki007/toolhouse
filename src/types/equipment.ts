@@ -81,4 +81,6 @@ export interface ShopState {
     orderPickers: string[]     // ID ордерпикеров
   }
   rigging: string[]            // ID купленного снаряжения
+  /** ID жетонов (см. data/tokens.ts) */
+  tokens?: string[]
 }

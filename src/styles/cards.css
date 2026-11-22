@@ -1570,6 +1570,24 @@
   padding: 20px;
 }
 
+/* ===== Карточка жетона в модалке лутбокса ===== */
+.token-reward-card {
+  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.token-reward-image {
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+}
+
+.token-reward-description {
+  text-align: center;
+  font-size: 13px;
+  color: #c7d2fe;
+  margin-top: 4px;
+}
+
 /* ===== Кнопка "Новости" ===== */
 .news-toolbar-btn {
   position: relative;

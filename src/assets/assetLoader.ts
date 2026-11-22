@@ -193,6 +193,14 @@ import newsIcon from './interfaceIcon/news.png'
 import achievementsIcon from './interfaceIcon/achievements.png'
 import accelerationIcon from './interfaceIcon/acceleration.png'
 
+// Картинки жетонов
+import tokenLootboxGold from './tokens/lootboxTokenGold.png'
+import tokenLootboxGreen from './tokens/lootboxTokenGreen.png'
+import tokenLootboxRed from './tokens/lootboxTokenRed.png'
+import tokenAccelerationGold from './tokens/accelerationTokenGold.png'
+import tokenAccelerationGreen from './tokens/accelerationTokenGreen.png'
+import tokenAccelerationRed from './tokens/accelerationTokenRed.png'
+
 // Иконки ссылок (экран «Поделиться»)
 import copyIcon from './links/copy.png'
 import telegramIcon from './links/telegram.png'
@@ -354,6 +362,16 @@ export const linkIconImages: Record<string, string> = {
   'copy': copyIcon,
   'telegram': telegramIcon,
   'gitHub': gitHubIcon,
+}
+
+/** Картинки жетонов (ключ — TokenId) */
+export const tokenImages: Record<string, string> = {
+  'lootboxTokenGold': tokenLootboxGold,
+  'lootboxTokenGreen': tokenLootboxGreen,
+  'lootboxTokenRed': tokenLootboxRed,
+  'accelerationTokenGold': tokenAccelerationGold,
+  'accelerationTokenGreen': tokenAccelerationGreen,
+  'accelerationTokenRed': tokenAccelerationRed,
 }
 
 // Импортируем и заполняем маппинг

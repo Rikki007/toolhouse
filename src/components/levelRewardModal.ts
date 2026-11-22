@@ -1,8 +1,11 @@
 import { createModal } from '../utils/modalFactory.ts'
 import { pickLevelReward, applyLevelReward } from '../utils/levelReward.ts'
 import { getStaffById, getRiggingById } from '../utils/itemLookup.ts'
-import { createRewardCardForStaff, createRewardCardForRigging } from '../utils/rewardCard.ts'
+import { createRewardCardForStaff, createRewardCardForRigging, createRewardCardForToken } from '../utils/rewardCard.ts'
 import { sellLootboxReward } from '../state/inventoryStore.ts'
+import { sellLootboxToken } from '../state/tokenStore.ts'
+import { getTokenConfig } from '../utils/tokenLookup.ts'
+import type { TokenId } from '../types/index.ts'
 import { formatMoney } from '../utils/format.ts'
 import { playSound } from '../state/audioManager.ts'
 import { getState, updateState, subscribe } from '../state/state.ts'
@@ -58,6 +61,8 @@ export function showLevelRewardModal(
       } else if (reward.type === 'rigging') {
         const rig = getRiggingById(reward.id)
         if (rig) body.appendChild(createRewardCardForRigging(rig))
+      } else if (reward.type === 'token') {
+        body.appendChild(createRewardCardForToken(getTokenConfig(reward.id as TokenId)))
       }
 
       modal.appendChild(body)
@@ -84,8 +89,8 @@ export function showLevelRewardModal(
       })
       buttons.appendChild(btnTake)
 
-      // «Продать» — только для предметов (не для денег)
-      if (reward.type === 'staff' || reward.type === 'rigging') {
+      // «Продать» — только для предметов и жетонов (не для денег)
+      if (reward.type === 'staff' || reward.type === 'rigging' || reward.type === 'token') {
         const btnSell = document.createElement('button')
         btnSell.type = 'button'
         btnSell.className = 'lootbox-modal-close'
@@ -95,7 +100,13 @@ export function showLevelRewardModal(
         btnSell.style.color = '#ff4444'
         btnSell.addEventListener('click', () => {
           playSound('buy')
-          finish(() => sellLootboxReward(reward))
+          finish(() => {
+            if (reward.type === 'token') {
+              sellLootboxToken(reward.id as TokenId)
+            } else {
+              sellLootboxReward(reward)
+            }
+          })
         })
         buttons.appendChild(btnSell)
       }

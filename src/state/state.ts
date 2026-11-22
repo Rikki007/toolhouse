@@ -38,6 +38,7 @@ const DEFAULT_INVENTORY: ShopState = {
     orderPickers: [],
   },
   rigging: [],
+  tokens: [],
 }
 
 /** Миграция: старый InventoryState → новый ShopState */
@@ -494,7 +495,11 @@ function loadState(): AppState {
         rigging: shopRigging,
       }
 
-      const inventoryState: ShopState = parsed.inventory || { ...DEFAULT_INVENTORY }
+      // Жетоны появились позже — у старых сейвов поля нет
+      const inventoryState: ShopState = {
+        ...(parsed.inventory || { ...DEFAULT_INVENTORY }),
+        tokens: parsed.inventory?.tokens ?? [],
+      }
       const skillsState = parsed.skills || { ...DEFAULT_SKILLS }
       const staffUpgradesState = migrateStaffUpgrades(parsed.staffUpgrades)
       const branchChoicesState: SkillBranchChoices = parsed.branchChoices ?? {}

@@ -1,6 +1,7 @@
-import { pickerImages, richDriversImages } from '../assets/assetLoader.ts'
+import { pickerImages, richDriversImages, tokenImages } from '../assets/assetLoader.ts'
 import { getRiggingImage } from './assets.ts'
 import { createProgressBar } from './progressBar.ts'
+import type { TokenConfig } from '../types/index.ts'
 
 /**
  * Создаёт карточку сотрудника-награды (для лутбоксов и наград за уровень).
@@ -89,6 +90,40 @@ export function createRewardCardForRigging(rigging: { name: string; image: strin
 
   // Скорость (звёзды)
   card.appendChild(createProgressBar('Скорость', rigging.speed))
+
+  return card
+}
+
+/**
+ * Создаёт карточку жетона-награды (для модалки лутбокса).
+ */
+export function createRewardCardForToken(token: TokenConfig): HTMLElement {
+  const card = document.createElement('div')
+  card.className = 'shop-card lootbox-reward-card token-reward-card'
+
+  const imageSrc = tokenImages[token.id]
+  if (imageSrc) {
+    const image = document.createElement('img')
+    image.className = 'shop-card-image token-reward-image'
+    image.src = imageSrc
+    image.alt = token.label
+    card.appendChild(image)
+  } else {
+    const placeholder = document.createElement('div')
+    placeholder.className = 'shop-card-image'
+    placeholder.textContent = '🎟️'
+    card.appendChild(placeholder)
+  }
+
+  const name = document.createElement('h3')
+  name.className = 'shop-card-name'
+  name.textContent = token.label
+  card.appendChild(name)
+
+  const description = document.createElement('div')
+  description.className = 'token-reward-description'
+  description.textContent = token.description
+  card.appendChild(description)
 
   return card
 }

@@ -1,8 +1,10 @@
-import type { LootBoxReward, StaffReward, RiggingReward } from '../data/lootBoxRewards.ts'
+import type { LootBoxReward, StaffReward, RiggingReward, TokenReward } from '../data/lootBoxRewards.ts'
 import { getRandomLevelReward } from '../data/lootBoxRewards.ts'
 import { getState, updateState } from '../state/state.ts'
 import { getAllStaffIds, addLootboxReward } from '../state/inventoryStore.ts'
 import { getStaffById } from '../utils/itemLookup.ts'
+import { takeLootboxToken } from '../state/tokenStore.ts'
+import type { TokenId } from '../types/index.ts'
 
 /** Результат подбора награды за уровень */
 export interface LevelRewardResult {
@@ -50,5 +52,7 @@ export function applyLevelReward(reward: LootBoxReward): void {
     addLootboxReward(reward as StaffReward)
   } else if (reward.type === 'rigging') {
     addLootboxReward(reward as RiggingReward)
+  } else if (reward.type === 'token') {
+    takeLootboxToken((reward as TokenReward).id as TokenId)
   }
 }

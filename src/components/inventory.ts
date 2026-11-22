@@ -1,6 +1,6 @@
 import { getState } from '../state/state.ts'
 import { createModal, showConfirmModal } from '../utils/modalFactory.ts'
-import { createInventoryCard, type InventoryCardUpgrade } from '../utils/inventory.ts'
+import { createInventoryCard, type InventoryCardUpgrade, createTokenCard } from '../utils/inventory.ts'
 import { getItemById, getRiggingById, getStaffById } from '../utils/itemLookup.ts'
 import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem, upgradeStaff, sellItemAll, sellRiggingItemAll, sellTechniqueItemAll } from '../state/inventoryStore.ts'
 import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
@@ -9,8 +9,16 @@ import { updateUpgradeCardUI } from '../utils/inventory.ts'
 import { assignStaffToShift, getActiveShifts, getShiftSlotAvailability } from '../state/shiftsStore.ts'
 import { playSound } from '../state/audioManager.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
+import { TOKENS } from '../data/tokens.ts'
+import type { TokenId } from '../types/index.ts'
+import { consumeToken } from '../state/tokenStore.ts'
+import { applyTokenEffect } from '../utils/tokenEffects.ts'
+import { openLootBoxSequence } from './lootboxModal.ts'
 
 let inventoryModalHandle: ReturnType<typeof createModal> | null = null
+
+/** Колбэк закрытия текущей модалки инвентаря (для использования жетонов) */
+let inventoryCloseCallback: (() => void) | null = null
 
 export function openInventoryModal(container: HTMLElement): void {
   if (inventoryModalHandle) {
@@ -24,6 +32,7 @@ export function openInventoryModal(container: HTMLElement): void {
     renderContent: (onClose) => renderInventoryModal(container, onClose),
     onClose: () => {
       inventoryModalHandle = null
+      inventoryCloseCallback = null
     },
   })
 }
@@ -148,6 +157,9 @@ function buildStaffUpgrade(staffId: string): InventoryCardUpgrade | undefined {
 }
 
 function renderInventoryModal(container: HTMLElement, onClose: () => void): HTMLElement {
+  // Запоминаем колбэк — жетоны закрывают окно инвентаря при использовании
+  inventoryCloseCallback = onClose
+
   const modal = document.createElement('div')
   modal.className = 'inventory-modal'
 
@@ -461,4 +473,59 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
 
   equipmentSection.appendChild(equipmentGrid)
   body.appendChild(equipmentSection)
+
+  // Секция: Жетоны
+  const tokensSection = document.createElement('div')
+  tokensSection.className = 'inventory-section'
+
+  const tokensTitle = document.createElement('h4')
+  tokensTitle.className = 'inventory-section-title'
+  tokensTitle.textContent = 'Жетоны'
+  tokensSection.appendChild(tokensTitle)
+
+  const tokensGrid = document.createElement('div')
+  tokensGrid.className = 'inventory-grid'
+
+  const tokenIds = (inventory.tokens ?? []) as TokenId[]
+  if (tokenIds.length === 0) {
+    const emptyCard = document.createElement('div')
+    emptyCard.className = 'inventory-empty-card'
+    emptyCard.textContent = 'Нет жетонов'
+    tokensGrid.appendChild(emptyCard)
+  } else {
+    // Одинаковые жетоны складываются в одну карточку со счётчиком
+    for (const { id: tokenId, count } of groupIds(tokenIds)) {
+      const config = TOKENS.find((t) => t.id === tokenId)
+      if (!config) continue
+
+      const card = createTokenCard(
+        config.id,
+        config.label,
+        config.description,
+        count,
+        () => useTokenFromInventory(config.id, container),
+      )
+      tokensGrid.appendChild(card)
+    }
+  }
+
+  tokensSection.appendChild(tokensGrid)
+  body.appendChild(tokensSection)
+}
+
+/**
+ * Использовать жетон из инвентаря:
+ * списывает жетон, закрывает инвентарь и запускает эффект
+ * (ускорение склада или серию лутбоксов).
+ */
+function useTokenFromInventory(tokenId: TokenId, container: HTMLElement): void {
+  const config = consumeToken(tokenId)
+  if (!config) return
+
+  // По ТЗ окно инвентаря исчезает в обоих случаях — и для буста, и для лутбоксов
+  inventoryCloseCallback?.()
+
+  applyTokenEffect(config.id, {
+    onLootboxOpen: (count) => openLootBoxSequence(container, count),
+  })
 }

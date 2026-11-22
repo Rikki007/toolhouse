@@ -1,4 +1,4 @@
-import { orderPickerImages, reachTruckImages, pickerImages, richDriversImages, riggingImages, tierImages } from '../assets/assetLoader.ts'
+import { orderPickerImages, reachTruckImages, pickerImages, richDriversImages, riggingImages, tierImages, tokenImages } from '../assets/assetLoader.ts'
 import type { InventoryItem, InventoryState } from '../types/index.ts'
 import { createCreditIcon } from './creditIcon.ts'
 import { formatMoney } from './format.ts'
@@ -383,6 +383,100 @@ export function createInventoryCard(
     card.classList.add('inventory-card-static')
     card.style.cursor = 'default'
   }
+
+  return card
+}
+
+/**
+ * Создаёт DOM-карточку жетона в инвентаре.
+ * @param tokenId — ID жетона из data/tokens.ts
+ * @param count — сколько одинаковых жетонов в инвентаре
+ * @param onUse — колбэк кнопки «Использовать»
+ */
+export function createTokenCard(
+  tokenId: string,
+  label: string,
+  description: string,
+  count: number,
+  onUse: () => void,
+): HTMLElement {
+  const card = document.createElement('div')
+  card.className = 'inventory-card'
+  card.dataset.itemId = tokenId
+
+  // Изображение жетона
+  const imageSrc = tokenImages[tokenId]
+  if (imageSrc) {
+    const image = document.createElement('img')
+    image.className = 'inventory-card-image'
+    image.src = imageSrc
+    image.alt = label
+    card.appendChild(image)
+  } else {
+    const placeholder = document.createElement('div')
+    placeholder.className = 'inventory-card-placeholder'
+    placeholder.textContent = '🎟️'
+    card.appendChild(placeholder)
+  }
+
+  // Название
+  const nameEl = document.createElement('div')
+  nameEl.className = 'inventory-card-name'
+  nameEl.textContent = label
+  card.appendChild(nameEl)
+
+  // Описание
+  const descEl = document.createElement('div')
+  descEl.className = 'inventory-card-speed'
+  descEl.textContent = description
+  card.appendChild(descEl)
+
+  // Счётчик одинаковых
+  if (count > 1) {
+    const countEl = document.createElement('div')
+    countEl.className = 'inventory-card-count'
+    countEl.textContent = `\u00d7${count}`
+    card.appendChild(countEl)
+  }
+
+  // Кнопка «Использовать» (раскрывается по клику)
+  const buttons = document.createElement('div')
+  buttons.className = 'inventory-card-buttons'
+  buttons.style.display = 'none'
+  buttons.style.gap = '8px'
+  buttons.style.marginTop = '8px'
+  buttons.style.flexDirection = 'column'
+
+  const useBtn = document.createElement('button')
+  useBtn.type = 'button'
+  useBtn.className = 'inventory-card-btn inventory-card-btn-assign'
+  useBtn.textContent = 'Использовать'
+  useBtn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    playSound('click')
+    onUse()
+  })
+  buttons.appendChild(useBtn)
+
+  card.appendChild(buttons)
+  card.style.cursor = 'pointer'
+
+  card.addEventListener('click', (e) => {
+    e.stopPropagation()
+    playSound('click')
+    const isExpanded = card.classList.contains('inventory-card-expanded')
+
+    document.querySelectorAll('.inventory-card-expanded').forEach(c => {
+      c.classList.remove('inventory-card-expanded')
+      const btns = c.querySelector('.inventory-card-buttons') as HTMLElement | null
+      if (btns) btns.style.display = 'none'
+    })
+
+    if (!isExpanded) {
+      card.classList.add('inventory-card-expanded')
+      buttons.style.display = 'flex'
+    }
+  })
 
   return card
 }

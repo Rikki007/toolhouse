@@ -1,5 +1,5 @@
 /** Типы наград лутбокса */
-export type LootBoxRewardType = 'money'  | 'staff' | 'rigging' | 'none'
+export type LootBoxRewardType = 'money'  | 'staff' | 'rigging' | 'token' | 'none'
 
 /** Награда: деньги */
 export interface MoneyReward {
@@ -25,6 +25,12 @@ export interface RiggingReward {
   id: string
 }
 
+/** Награда: жетон */
+export interface TokenReward {
+  type: 'token'
+  id: string // ID из data/tokens.ts (lootboxTokenGold, accelerationTokenRed и т.д.)
+}
+
 /**
  * Награда: пусто. Не выпадает ни из одной таблицы, оставлена как аварийный
  * вариант: на неё опирается отрисовка модалки, если таблица оказалась пустой.
@@ -34,7 +40,7 @@ export interface NoneReward {
 }
 
 /** Все типы наград объединены */
-export type LootBoxReward = MoneyReward | StaffReward | RiggingReward | NoneReward
+export type LootBoxReward = MoneyReward | StaffReward | RiggingReward | TokenReward | NoneReward
 
 /** Конфигурация выпадения — награда + вероятность (вес) */
 export interface LootBoxDropConfig {
@@ -162,6 +168,14 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'ted_verstappen' }, weight: 3 },
   { reward: { type: 'rigging', id: 'ted_avatar' }, weight: 3 },
   { reward: { type: 'rigging', id: 'ted_rembo' }, weight: 3 },
+
+  // --- Жетоны ---
+  { reward: { type: 'token', id: 'lootboxTokenGold' }, weight: 40 },
+  { reward: { type: 'token', id: 'lootboxTokenGreen' }, weight: 70 },
+  { reward: { type: 'token', id: 'lootboxTokenRed' }, weight: 80 },
+  { reward: { type: 'token', id: 'accelerationTokenGold' }, weight: 40 },
+  { reward: { type: 'token', id: 'accelerationTokenGreen' }, weight: 70 },
+  { reward: { type: 'token', id: 'accelerationTokenRed' }, weight: 80 },
 
 ]
 
