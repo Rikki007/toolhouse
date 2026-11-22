@@ -15,6 +15,8 @@ import helmetSound from '../assets/music/helmet.mp3'
 import closesSound from '../assets/music/closes.mp3'
 import terminalSound from '../assets/music/terminal.mp3'
 import forkliftSound from '../assets/music/forklift.mp3'
+import accelerationSound from '../assets/music/acceleration.mp3'
+import brakingSound from '../assets/music/braking.mp3'
 
 // Звуковые эффекты — Vite-импорты (файлы в src/assets/music/)
 const soundFiles: Record<string, string> = {
@@ -27,6 +29,8 @@ const soundFiles: Record<string, string> = {
   closes: closesSound,
   terminal: terminalSound,
   forklift: forkliftSound,
+  acceleration: accelerationSound,
+  braking: brakingSound,
 }
 
 /** Варианты звука майнинга (бывший одиночный minig.mp3) */

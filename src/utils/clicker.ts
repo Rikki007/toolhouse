@@ -2,6 +2,7 @@ import { getState, updateState } from '../state/state.ts'
 import { createCoinAnimation } from '../effects/coinAnimation.ts'
 import { formatMoney } from './format.ts'
 import { playSound } from '../state/audioManager.ts'
+import { getBoostMultiplier } from './warehouseBoost.ts'
 
 export interface ClickerDeps {
   clickArea: HTMLElement
@@ -18,7 +19,8 @@ export function setupClicker(deps: ClickerDeps): { cleanup: () => void } {
     const state = getState()
     const passiveIncome = state.passiveIncomePerSecond
     if (passiveIncome > 0) {
-      const newMoney = state.money + passiveIncome
+      const multiplier = getBoostMultiplier(state)
+      const newMoney = state.money + passiveIncome * multiplier
       updateState({ money: newMoney })
       if (moneyEl) moneyEl.textContent = formatMoney(newMoney)
     }
@@ -30,9 +32,11 @@ export function setupClicker(deps: ClickerDeps): { cleanup: () => void } {
     if (target.closest('button, a, input, select, textarea, .minigame-btn, .lootbox-btn, .shifts-btn')) return
 
     // За один клик начисляем столько же, сколько приносит пассивный доход в секунду
-    const incomePerClick = getState().passiveIncomePerSecond
-    const newMoney = getState().money + incomePerClick
-    updateState({ money: newMoney, clicks: getState().clicks + 1 })
+    const state = getState()
+    const incomePerClick = state.passiveIncomePerSecond
+    const multiplier = getBoostMultiplier(state)
+    const newMoney = state.money + incomePerClick * multiplier
+    updateState({ money: newMoney, clicks: state.clicks + 1 })
     if (moneyEl) moneyEl.textContent = formatMoney(newMoney)
 
     // Звук добычи монетки

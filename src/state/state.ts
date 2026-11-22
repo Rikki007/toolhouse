@@ -175,6 +175,10 @@ export interface AppState {
   shiftExpansionSeen: string[]
   /** Статус ачивок: id → 'locked' | 'unlocked' */
   achievements: Record<AchievementId, 'locked' | 'unlocked'>
+  /** Timestamp окончания действия буста ускорения */
+  boostActiveUntil: number
+  /** Timestamp окончания кулдауна буста */
+  boostCooldownEndsAt: number
 }
 
 let state: AppState
@@ -534,6 +538,8 @@ function loadState(): AppState {
         equipmentUnlocksSeen: parsed.equipmentUnlocksSeen ?? [],
         shiftExpansionSeen: parsed.shiftExpansionSeen ?? [],
         achievements: parsed.achievements ?? {},
+        boostActiveUntil: parsed.boostActiveUntil ?? 0,
+        boostCooldownEndsAt: parsed.boostCooldownEndsAt ?? 0,
       }
     }
   } catch (error) {
@@ -580,6 +586,8 @@ function loadState(): AppState {
       equipmentUnlocksSeen: [],
       shiftExpansionSeen: [],
       achievements: {},
+      boostActiveUntil: 0,
+      boostCooldownEndsAt: 0,
     }
   }
 
@@ -621,6 +629,8 @@ function createDefaultState(): AppState {
     equipmentUnlocksSeen: [],
     shiftExpansionSeen: [],
     achievements: {},
+    boostActiveUntil: 0,
+    boostCooldownEndsAt: 0,
   }
 }
 

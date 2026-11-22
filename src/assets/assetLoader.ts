@@ -191,6 +191,7 @@ import forcliftDriverIcon from './interfaceIcon/forcliftDriver.png'
 import riggingIcon from './interfaceIcon/rigging.png'
 import newsIcon from './interfaceIcon/news.png'
 import achievementsIcon from './interfaceIcon/achievements.png'
+import accelerationIcon from './interfaceIcon/acceleration.png'
 
 // Иконки ссылок (экран «Поделиться»)
 import copyIcon from './links/copy.png'
@@ -346,6 +347,7 @@ export const interfaceIconImages: Record<string, string> = {
   'rigging': riggingIcon,
   'news': newsIcon,
   'achievements': achievementsIcon,
+  'acceleration': accelerationIcon,
 }
 
 export const linkIconImages: Record<string, string> = {

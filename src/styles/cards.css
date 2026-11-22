@@ -529,6 +529,44 @@
   background: rgba(251, 191, 36, 0.2);
 }
 
+/* ===== Кнопка буста ===== */
+.boost-toolbar-btn {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.1);
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+
+.boost-toolbar-btn.boost-active {
+  border-color: rgba(56, 189, 248, 0.7);
+  background: rgba(56, 189, 248, 0.25);
+}
+
+.boost-toolbar-btn.boost-active .toolbar-btn-icon {
+  animation: boostPulse 1s ease-in-out infinite;
+}
+
+.boost-timer {
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.boost-cooldown {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.boost-icon {
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6));
+}
+
+@keyframes boostPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
 .shifts-toolbar-icon {
   display: flex;
   align-items: center;

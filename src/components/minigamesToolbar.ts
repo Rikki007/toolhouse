@@ -14,6 +14,12 @@ import { getStaffById, getRiggingById } from '../utils/itemLookup.ts'
 import { createRewardCardForStaff, createRewardCardForRigging } from '../utils/rewardCard.ts'
 import { playSound } from '../state/audioManager.ts'
 import { formatMoney } from '../utils/format.ts'
+import {
+  activateBoost,
+  formatTime,
+  getTimeRemaining,
+  startBoost,
+} from '../utils/warehouseBoost.ts'
 // Кулдаун лутбокса: 5 секунд (5000 мс)
 const LOOTBOX_COOLDOWN = 10 * 60 * 1000
 
@@ -88,6 +94,9 @@ export function renderGameToolbar(container: HTMLElement): HTMLElement {
   })
   
   toolbar.appendChild(lootBoxBtn)
+
+  // Кнопка "Ускорение склада" с активным бустом
+  toolbar.appendChild(renderBoostButton(container))
 
   // Кнопка "Инвентарь"
   const inventoryBtn = document.createElement('button')
@@ -402,6 +411,103 @@ function openShiftsModal(container: HTMLElement): void {
       shiftsModalHandle = null
     },
   })
+}
+
+// ===== Ускорение склада =====
+
+/**
+ * Рендерит кнопку буста «Ускорение склада».
+ * Показывает таймер обратного отсчёта при активном бусте или кулдауне.
+ */
+function renderBoostButton(container: HTMLElement): HTMLElement {
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.className = 'toolbar-btn boost-toolbar-btn'
+  btn.setAttribute('aria-label', 'Ускорение склада')
+
+  // Для отслеживания момента окончания буста (звук торможения)
+  let wasBoostActive = false
+
+  // Обновляет состояние кнопки и подсветку склада
+  function updateButton(): void {
+    const state = getState()
+    const activeRemaining = getTimeRemaining(state.boostActiveUntil)
+    const cooldownRemaining = getTimeRemaining(state.boostCooldownEndsAt)
+    const clickArea = container.querySelector('.game-click-area')
+    const isActive = activeRemaining > 0
+
+    // Звук окончания ускорения — при переходе «активен → не активен»
+    if (wasBoostActive && !isActive) {
+      playSound('braking')
+    }
+    wasBoostActive = isActive
+
+    if (isActive) {
+      // Буст активен — показываем обратный отсчёт и подсвечиваем склад
+      btn.disabled = true
+      btn.classList.add('boost-active')
+      btn.innerHTML = `
+        <span class="toolbar-btn-icon boost-icon">
+          <img src="${interfaceIconImages['acceleration']}" alt="Ускорение">
+        </span>
+        <span class="toolbar-btn-label boost-timer">${formatTime(activeRemaining)}</span>
+      `
+      clickArea?.classList.add('boost-glow')
+    } else {
+      clickArea?.classList.remove('boost-glow')
+
+      if (cooldownRemaining > 0) {
+        // На кулдауне
+        btn.disabled = true
+        btn.classList.remove('boost-active')
+        btn.innerHTML = `
+          <span class="toolbar-btn-icon">
+            <img src="${interfaceIconImages['acceleration']}" alt="Ускорение">
+          </span>
+          <span class="toolbar-btn-label boost-cooldown">${formatTime(cooldownRemaining)}</span>
+        `
+      } else {
+        // Готов к использованию
+        btn.disabled = false
+        btn.classList.remove('boost-active')
+        btn.innerHTML = `
+          <span class="toolbar-btn-icon">
+            <img src="${interfaceIconImages['acceleration']}" alt="Ускорение">
+          </span>
+        `
+      }
+    }
+  }
+
+  // Обновляем каждую секунду (для таймера) и при изменениях стейта (для активации)
+  const intervalId = setInterval(updateButton, 1000)
+  const unsubscribe = subscribe(updateButton)
+
+  // Отписка при удалении кнопки из DOM
+  const observer = new MutationObserver(() => {
+    if (!document.body.contains(btn)) {
+      clearInterval(intervalId)
+      unsubscribe()
+      observer.disconnect()
+    }
+  })
+  observer.observe(btn.parentElement || document.body, { childList: true, subtree: true })
+
+  btn.addEventListener('click', () => {
+    const state = getState()
+    const result = startBoost(state)
+
+    if (!result.success) {
+      alert(result.error ?? 'Буст недоступен')
+      return
+    }
+
+    // Активируем буст — subscribe сам обновит кнопку и подсветку
+    updateState(activateBoost(state))
+    playSound('acceleration')
+  })
+
+  return btn
 }
 
 // ===== Инвентарь =====
