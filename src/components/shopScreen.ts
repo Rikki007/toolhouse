@@ -257,6 +257,8 @@ function openCategory(categoryId: ShopCategoryId, container: HTMLElement): void 
   }
 
   // Преобразуем ID в полные объекты
+  const playerLevel = levelFromXp(getState().xpMoney)
+
   let items: Array<Equipment | Staff | Rigging> = []
   if (categoryId === 'pickers' || categoryId === 'reachTruckDrivers') {
     items = idList
@@ -268,16 +270,19 @@ function openCategory(categoryId: ShopCategoryId, container: HTMLElement): void 
     items = idList
       .map(id => getRiggingById(id))
       .filter((item): item is NonNullable<typeof item> => item !== undefined)
+      // Слабые предметы пропадают из магазина с определённого уровня игрока
+      .filter(item => !item.removeLevel || playerLevel < item.removeLevel)
       .sort((a, b) => {
         const order: Record<string, number> = { headdress: 1, uniform: 2, tool: 3 }
         return (order[a.type] ?? 99) - (order[b.type] ?? 99)
       })
   } else {
-    const playerLevel = levelFromXp(getState().xpMoney)
     items = idList
       .map(id => getEquipmentById(id))
       .filter((item): item is NonNullable<typeof item> => item !== undefined)
       .filter(item => !item.unlockLevel || playerLevel >= item.unlockLevel)
+      // Слабые предметы пропадают из магазина с определённого уровня игрока
+      .filter(item => !item.removeLevel || playerLevel < item.removeLevel)
   }
 
   createShopOverlay(container, (onClose) => {

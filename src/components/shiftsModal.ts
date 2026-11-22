@@ -13,11 +13,9 @@ import { playerLevel } from '../utils/skillProgress.ts'
  * Рендерит кнопку «Смены» в тулбаре
  */
 export function renderShiftsButton(onToggle: () => void): HTMLElement {
-  const shift = getCurrentShiftConfig()
   const btn = document.createElement('button')
   btn.type = 'button'
   btn.className = 'shifts-toolbar-btn'
-  btn.dataset.shifts = String(shift.id)
   
   // Иконка и количество активных смен
   const icon = document.createElement('span')
@@ -38,7 +36,6 @@ export function renderShiftsButton(onToggle: () => void): HTMLElement {
  */
 export function updateShiftsButton(btn: HTMLElement): void {
   const shift = getCurrentShiftConfig()
-  btn.dataset.shifts = String(shift.id)
   const badge = btn.querySelector('.shifts-toolbar-badge')
   if (badge) {
     badge.textContent = String(shift.id)
@@ -75,14 +72,8 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
 
   const modalBody = document.createElement('div')
   modalBody.className = 'shifts-modal-body'
+  modal.appendChild(modalBody)
 
-  // Аналитика дохода по купленным сменам (круговая диаграмма)
-  const incomeChart = createShiftIncomeChart()
-  if (incomeChart) {
-    modalBody.appendChild(incomeChart)
-  }
-
-  const state = getState()
   const shifts = [
     { id: 1, key: 'first' as const, label: '1-я смена' },
     { id: 2, key: 'second' as const, label: '2-я смена' },
@@ -90,133 +81,156 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
     { id: 4, key: 'fourth' as const, label: 'Средняя смена' },
   ]
 
-  for (const shiftInfo of shifts) {
-    const shift = state.shifts[shiftInfo.key]
-    const config = shiftConfigs.find(c => c.id === shiftInfo.id)
-    const isActive = shift.isActive
-    const isNext = !isActive && isPreviousShiftActive(shiftInfo.id)
-    // Смена открывается для покупки только с определённого уровня игрока
-    const levelOk = !config || playerLevel(state) >= config.requiredLevel
+  /**
+   * Перерисовывает содержимое модалки по актуальному стейту.
+   * Вызывается после покупки смены, чтобы окно осталось открытым,
+   * а статус смены сразу стал «Активна».
+   */
+  const renderBody = (): void => {
+    modalBody.replaceChildren()
 
-    const item = document.createElement('div')
-    item.className = 'shifts-modal-item'
-
-    // Название и статус
-    const itemHeader = document.createElement('div')
-    itemHeader.className = 'shifts-modal-item-header'
-
-    const nameLabel = document.createElement('span')
-    nameLabel.className = 'shifts-modal-item-name'
-    nameLabel.textContent = shiftInfo.label
-    itemHeader.appendChild(nameLabel)
-
-    const statusLabel = document.createElement('span')
-    statusLabel.className = 'shifts-modal-item-status'
-    if (isActive) {
-      statusLabel.textContent = 'Активна'
-      statusLabel.classList.add('status-active')
-    } else if (isNext && config && !levelOk) {
-      statusLabel.textContent = `🔒 Нужен ${config.requiredLevel} уровень`
-      statusLabel.classList.add('status-locked')
-    } else if (isNext) {
-      statusLabel.textContent = 'Доступна'
-      statusLabel.classList.add('status-unlocked')
-    } else {
-      statusLabel.textContent = '🔒 Закрыта'
-      statusLabel.classList.add('status-locked')
+    // Аналитика дохода по купленным сменам (круговая диаграмма)
+    const incomeChart = createShiftIncomeChart()
+    if (incomeChart) {
+      modalBody.appendChild(incomeChart)
     }
-    itemHeader.appendChild(statusLabel)
 
-    item.appendChild(itemHeader)
+    const state = getState()
 
-    // Цена и кнопка
-    const itemFooter = document.createElement('div')
-    itemFooter.className = 'shifts-modal-item-footer'
+    for (const shiftInfo of shifts) {
+      const shift = state.shifts[shiftInfo.key]
+      const config = shiftConfigs.find(c => c.id === shiftInfo.id)
+      const isActive = shift.isActive
+      const isNext = !isActive && isPreviousShiftActive(shiftInfo.id)
+      // Смена открывается для покупки только с определённого уровня игрока
+      const levelOk = !config || playerLevel(state) >= config.requiredLevel
 
-    if (isActive) {
-      // Уже активна — просто показываем множитель
-      const mult = document.createElement('span')
-      mult.className = 'shifts-modal-item-multiplier'
-      const multiplier = getShiftIncomeMultiplierForShift(shiftInfo.id)
-      mult.textContent = `Множитель дохода: ×${multiplier}`
-      itemFooter.appendChild(mult)
+      const item = document.createElement('div')
+      item.className = 'shifts-modal-item'
 
-      // Бонус за полную укомплектованность смены
-      if (isShiftFullyStaffed(shift, playerLevel(state), shiftInfo.id)) {
-        // Множитель и бонус stack'ом друг под другом
-        itemFooter.classList.add('shifts-modal-item-footer-stacked')
-        const bonus = document.createElement('span')
-        bonus.className = 'shifts-modal-item-bonus'
-        bonus.textContent = 'Активен бонус укомплектованности'
-        itemFooter.appendChild(bonus)
+      // Название и статус
+      const itemHeader = document.createElement('div')
+      itemHeader.className = 'shifts-modal-item-header'
+
+      const nameLabel = document.createElement('span')
+      nameLabel.className = 'shifts-modal-item-name'
+      nameLabel.textContent = shiftInfo.label
+      itemHeader.appendChild(nameLabel)
+
+      const statusLabel = document.createElement('span')
+      statusLabel.className = 'shifts-modal-item-status'
+      if (isActive) {
+        statusLabel.textContent = 'Активна'
+        statusLabel.classList.add('status-active')
+      } else if (isNext && config && !levelOk) {
+        statusLabel.textContent = `🔒 Нужен ${config.requiredLevel} уровень`
+        statusLabel.classList.add('status-locked')
+      } else if (isNext) {
+        statusLabel.textContent = 'Доступна'
+        statusLabel.classList.add('status-unlocked')
+      } else {
+        statusLabel.textContent = '🔒 Закрыта'
+        statusLabel.classList.add('status-locked')
       }
-    } else if (isNext && config) {
-      // Следующая смена — можно купить
-      const price = document.createElement('span')
-      price.className = 'shifts-modal-item-price'
-      
-      const coinImg = document.createElement('img')
-      coinImg.src = coinFrames[0]
-      coinImg.alt = 'Валюта'
-      coinImg.style.width = '20px'
-      coinImg.style.height = '20px'
-      coinImg.style.verticalAlign = 'middle'
-      coinImg.style.marginRight = '4px'
-      price.appendChild(coinImg)
-      
-      const priceText = document.createTextNode(formatMoney(shift.cost))
-      price.appendChild(priceText)
-      itemFooter.appendChild(price)
+      itemHeader.appendChild(statusLabel)
 
-      const buyBtn = document.createElement('button')
-      buyBtn.type = 'button'
-      buyBtn.className = 'shifts-modal-buy-btn'
-      buyBtn.textContent = 'Купить'
-      buyBtn.dataset.cost = String(shift.cost)
-      buyBtn.dataset.requiredLevel = String(config.requiredLevel)
+      item.appendChild(itemHeader)
 
-      itemFooter.appendChild(buyBtn)
-      updateBuyButtonsAvailability()
+      // Цена и кнопка
+      const itemFooter = document.createElement('div')
+      itemFooter.className = 'shifts-modal-item-footer'
 
-      buyBtn.addEventListener('click', (e) => {
-        // предотвращаем всплытие на карточку — иначе откроется модалка персонала
-        e.stopPropagation()
+      if (isActive) {
+        // Уже активна — просто показываем множитель
+        const mult = document.createElement('span')
+        mult.className = 'shifts-modal-item-multiplier'
+        const multiplier = getShiftIncomeMultiplierForShift(shiftInfo.id)
+        mult.textContent = `Множитель дохода: ×${multiplier}`
+        itemFooter.appendChild(mult)
 
-        if (buyBtn.disabled) return
-
-        // Звук покупки — кнопка активна, покупка состоится
-        playSound('buy')
-
-        const result = buyShift(shiftInfo.id)
-        if (result.success) {
-          onClose()
-        } else {
-          alert(result.error ?? 'Не удалось купить')
+        // Бонус за полную укомплектованность смены
+        if (isShiftFullyStaffed(shift, playerLevel(state), shiftInfo.id)) {
+          // Множитель и бонус stack'ом друг под другом
+          itemFooter.classList.add('shifts-modal-item-footer-stacked')
+          const bonus = document.createElement('span')
+          bonus.className = 'shifts-modal-item-bonus'
+          bonus.textContent = 'Активен бонус укомплектованности'
+          itemFooter.appendChild(bonus)
         }
+      } else if (isNext && config) {
+        // Следующая смена — можно купить
+        const price = document.createElement('span')
+        price.className = 'shifts-modal-item-price'
+
+        const coinImg = document.createElement('img')
+        coinImg.src = coinFrames[0]
+        coinImg.alt = 'Валюта'
+        coinImg.style.width = '20px'
+        coinImg.style.height = '20px'
+        coinImg.style.verticalAlign = 'middle'
+        coinImg.style.marginRight = '4px'
+        price.appendChild(coinImg)
+
+        const priceText = document.createTextNode(formatMoney(shift.cost))
+        price.appendChild(priceText)
+        itemFooter.appendChild(price)
+
+        const buyBtn = document.createElement('button')
+        buyBtn.type = 'button'
+        buyBtn.className = 'shifts-modal-buy-btn'
+        buyBtn.textContent = 'Купить'
+        buyBtn.dataset.cost = String(shift.cost)
+        buyBtn.dataset.requiredLevel = String(config.requiredLevel)
+
+        itemFooter.appendChild(buyBtn)
+
+        buyBtn.addEventListener('click', (e) => {
+          // предотвращаем всплытие на карточку — иначе откроется модалка персонала
+          e.stopPropagation()
+
+          if (buyBtn.disabled) return
+
+          // Звук покупки — кнопка активна, покупка состоится
+          playSound('buy')
+
+          const result = buyShift(shiftInfo.id)
+          if (result.success) {
+            // Окно не закрываем: перерисовываем статусы на месте
+            const shiftsBtn = document.querySelector('.shifts-toolbar-btn')
+            if (shiftsBtn) {
+              updateShiftsButton(shiftsBtn as HTMLElement)
+            }
+            renderBody()
+          } else {
+            alert(result.error ?? 'Не удалось купить')
+          }
+        })
+      } else {
+        // Закрыта — показываем, что нужно купить предыдущую
+        const locked = document.createElement('span')
+        locked.className = 'shifts-modal-item-locked'
+        locked.textContent = 'Сначала купите предыдущую смену'
+        itemFooter.appendChild(locked)
+      }
+
+      item.appendChild(itemFooter)
+
+      // Клик по карточке смены — открыть управление персоналом
+      item.addEventListener('click', () => {
+        playSound('click')
+        openShiftPersonnelModal(shiftInfo.id)
       })
-    } else {
-      // Закрыта — показываем, что нужно купить предыдущую
-      const locked = document.createElement('span')
-      locked.className = 'shifts-modal-item-locked'
-      locked.textContent = 'Сначала купите предыдущую смену'
-      itemFooter.appendChild(locked)
+
+      modalBody.appendChild(item)
     }
 
-    item.appendChild(itemFooter)
-
-    // Клик по карточке смены — открыть управление персоналом
-    item.addEventListener('click', () => {
-      playSound('click')
-      openShiftPersonnelModal(shiftInfo.id, onClose)
-    })
-
-    modalBody.appendChild(item)
+    updateBuyButtonsAvailability(modalBody)
   }
 
-  modal.appendChild(modalBody)
+  renderBody()
 
   // Подписка на изменения стейта — обновляем disabled кнопок при изменении денег
-  const unsubscribe = subscribe(updateBuyButtonsAvailability)
+  const unsubscribe = subscribe(() => updateBuyButtonsAvailability(modalBody))
 
   // Добавляем cleanup-функцию к HTMLElement
   const result = modal as unknown as HTMLElement & { cleanup: () => void }
@@ -226,10 +240,10 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
 }
 
 /** Обновляет доступность всех кнопок покупки в зависимости от денег и уровня */
-function updateBuyButtonsAvailability(): void {
+function updateBuyButtonsAvailability(root: ParentNode = document): void {
   const state = getState()
   const level = playerLevel(state)
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.shifts-modal-buy-btn')
+  const buttons = root.querySelectorAll<HTMLButtonElement>('.shifts-modal-buy-btn')
   for (const btn of buttons) {
     const cost = Number(btn.dataset.cost ?? 0)
     const requiredLevel = Number(btn.dataset.requiredLevel ?? 0)
@@ -237,7 +251,7 @@ function updateBuyButtonsAvailability(): void {
   }
 
   // Подписи требования уровня прячем, как только уровень достигнут
-  const reqs = document.querySelectorAll<HTMLElement>('.shifts-modal-item-level-req')
+  const reqs = root.querySelectorAll<HTMLElement>('.shifts-modal-item-level-req')
   for (const req of reqs) {
     req.hidden = level >= Number(req.dataset.requiredLevel ?? 0)
   }
@@ -388,16 +402,17 @@ function renderShiftPersonnelModal(shiftId: number, onClose: () => void): HTMLEl
   return result
 }
 
-export function openShiftPersonnelModal(shiftId: number, onClose: () => void): void {
+/**
+ * Открывает модалку управления персоналом смены поверх модалки смен.
+ * Закрытие затрагивает только эту модалку — родительская остаётся открытой.
+ */
+export function openShiftPersonnelModal(shiftId: number): void {
   const container = document.querySelector('.game-screen') as HTMLElement | null
   if (!container) return
 
   createModal(container, {
     overlayClass: 'shifts-personnel-overlay',
     renderContent: (onCloseModal) => renderShiftPersonnelModal(shiftId, onCloseModal),
-    onClose: () => {
-      onClose()
-    },
   })
 }
 

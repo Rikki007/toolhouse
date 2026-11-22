@@ -10,6 +10,7 @@ export const riggingList: Rigging[] = [
     factor: 1.05,
     type: 'headdress',
     purpose: 'shop',
+    removeLevel: 5,
   },
   {
     id: 'helmet_02',
@@ -20,6 +21,7 @@ export const riggingList: Rigging[] = [
     factor: 1.1,
     type: 'headdress',
     purpose: 'shop',
+    removeLevel: 10,
   },
   {
     id: 'helmet_03',
@@ -120,6 +122,7 @@ export const riggingList: Rigging[] = [
     factor: 1.05,
     type: 'uniform',
     purpose: 'shop',
+    removeLevel: 5,
   },
   {
     id: 'closes_02',
@@ -130,6 +133,7 @@ export const riggingList: Rigging[] = [
     factor: 1.1,
     type: 'uniform',
     purpose: 'shop',
+    removeLevel: 10,
   },
   {
     id: 'closes_03',
@@ -230,6 +234,7 @@ export const riggingList: Rigging[] = [
     factor: 1.1,
     type: 'tool',
     purpose: 'shop',
+    removeLevel: 10,
   },
   {
     id: 'ted_02',
@@ -240,6 +245,7 @@ export const riggingList: Rigging[] = [
     factor: 1.2,
     type: 'tool',
     purpose: 'shop',
+    removeLevel: 15,
   },
   {
     id: 'ted_03',

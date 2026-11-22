@@ -5,8 +5,8 @@ export const TOKENS: TokenConfig[] = [
   // Токены лутбоксов
   {
     id: 'lootboxTokenGold',
-    label: 'Золотой жетон',
-    description: 'Открывает 3 лутбокса подряд',
+    label: 'Жетон лутбокса',
+    description: 'Открывает 3 лутбокса',
     imageKey: 'lootboxTokenGold',
     kind: 'lootbox',
     color: 'gold',
@@ -14,8 +14,8 @@ export const TOKENS: TokenConfig[] = [
   },
   {
     id: 'lootboxTokenGreen',
-    label: 'Зелёный жетон',
-    description: 'Открывает 2 лутбокса подряд',
+    label: 'Жетон лутбокса',
+    description: 'Открывает 2 лутбокса',
     imageKey: 'lootboxTokenGreen',
     kind: 'lootbox',
     color: 'green',
@@ -23,7 +23,7 @@ export const TOKENS: TokenConfig[] = [
   },
   {
     id: 'lootboxTokenRed',
-    label: 'Красный жетон',
+    label: 'Жетон лутбокса',
     description: 'Открывает 1 лутбокс',
     imageKey: 'lootboxTokenRed',
     kind: 'lootbox',
@@ -33,7 +33,7 @@ export const TOKENS: TokenConfig[] = [
   // Токены ускорения
   {
     id: 'accelerationTokenGold',
-    label: 'Золотой жетон ускорения',
+    label: 'Жетон ускорения',
     description: '+90 секунд ускорения',
     imageKey: 'accelerationTokenGold',
     kind: 'acceleration',
@@ -42,7 +42,7 @@ export const TOKENS: TokenConfig[] = [
   },
   {
     id: 'accelerationTokenGreen',
-    label: 'Зелёный жетон ускорения',
+    label: 'Жетон ускорения',
     description: '+60 секунд ускорения',
     imageKey: 'accelerationTokenGreen',
     kind: 'acceleration',
@@ -51,7 +51,7 @@ export const TOKENS: TokenConfig[] = [
   },
   {
     id: 'accelerationTokenRed',
-    label: 'Красный жетон ускорения',
+    label: 'Жетон ускорения',
     description: '+30 секунд ускорения',
     imageKey: 'accelerationTokenRed',
     kind: 'acceleration',

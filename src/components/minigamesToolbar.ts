@@ -14,7 +14,7 @@ import {
   startBoost,
 } from '../utils/warehouseBoost.ts'
 // Кулдаун лутбокса: 5 секунд (5000 мс)
-const LOOTBOX_COOLDOWN = 1 * 60 * 1000
+const LOOTBOX_COOLDOWN = 1 * 60 * 10 * 1000
 
 /**
  * Рендерит тулбар с мини-играми, лутбоксами и сменами

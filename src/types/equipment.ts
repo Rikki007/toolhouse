@@ -15,6 +15,8 @@ export interface Equipment {
   factor: number
   /** Минимальный уровень игрока для появления в магазине */
   unlockLevel?: number
+  /** Уровень игрока, с которого предмет пропадает из магазина */
+  removeLevel?: number
 }
 
 export interface EquipmentCategoryConfig {
@@ -56,7 +58,8 @@ export interface Rigging {
   factor: number
   type: 'headdress' | 'uniform' | 'tool'
   purpose: 'shop' | 'lootbox'
-
+  /** Уровень игрока, с которого предмет пропадает из магазина */
+  removeLevel?: number
 }
 
 /** Сотрудник в смене — с ID и слотами снаряжения */

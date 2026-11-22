@@ -14,6 +14,7 @@ export const orderPickersList: Equipment[] = [
     price: 100000,
     speed: 2,
     factor: 1.2,
+    removeLevel: 15,
   },
   {
     id: 'orderpicker_2',
@@ -22,6 +23,7 @@ export const orderPickersList: Equipment[] = [
     price: 350000,
     speed: 3,
     factor: 1.4,
+    removeLevel: 20,
   },
   {
     id: 'orderpicker_3',
@@ -30,7 +32,6 @@ export const orderPickersList: Equipment[] = [
     price: 700000,
     speed: 5,
     factor: 1.6,
-    unlockLevel: 17,
   },
   {
     id: 'orderpicker_4',
@@ -78,6 +79,7 @@ export const reachTrucksList: Equipment[] = [
     price: 350000,
     speed: 1,
     factor: 1.2,
+    removeLevel: 15,
   },
   {
     id: 'reachtruck_eq_2',
@@ -86,6 +88,7 @@ export const reachTrucksList: Equipment[] = [
     price: 600000,
     speed: 2,
     factor: 1.35,
+    removeLevel: 20,
   },
   {
     id: 'reachtruck_eq_3',
@@ -102,6 +105,7 @@ export const reachTrucksList: Equipment[] = [
     price: 1100000,
     speed: 4,
     factor: 1.65,
+    removeLevel: 20,
   },
   {
     id: 'reachtruck_eq_5',
@@ -110,6 +114,7 @@ export const reachTrucksList: Equipment[] = [
     price: 1500000,
     speed: 5,
     factor: 1.8,
+    removeLevel: 20,
   },
   {
     id: 'reachtruck_eq_6',
