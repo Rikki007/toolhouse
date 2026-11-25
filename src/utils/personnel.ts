@@ -8,7 +8,7 @@ import { getState } from '../state/state.ts'
 import { createModal } from '../utils/modalFactory.ts'
 import { getStaffTierProgress, getNextUpgrade, getStaffTierImageKey, getStaffTierName, getTierNameByNumber } from './staffUpgrades.ts'
 import { playSound } from '../state/audioManager.ts'
-import { createTierBookmark, createStaffUpgradeButton } from '../components/staffUpgradeButton.ts'
+import { createTierBookmark, createStaffUpgradeButton, createTokenUpgradeButton } from '../components/staffUpgradeButton.ts'
 import { createMasterUpgradeButton, getMasterTitle, getMasterLevelImageKey } from '../components/masterUpgradeButton.ts'
 import { shiftMasters } from '../data/staff.ts'
 import { getMasterUpgradeLevel, getMasterUpgradeCost } from '../state/masterUpgradeStore.ts'
@@ -141,6 +141,13 @@ function renderStaffDetailModal(
     updatePersonnelCardSpeed(staffInfo.id)
   })
   if (upgradeBtn) body.appendChild(upgradeBtn)
+
+  // Жетон повышения — повышает скорость без денег
+  const tokenBtn = createTokenUpgradeButton(staffInfo, () => {
+    updateStaffDetailUI(modal, staffInfo.id)
+    updatePersonnelCardSpeed(staffInfo.id)
+  })
+  if (tokenBtn) body.appendChild(tokenBtn)
 
   // Секция снаряжения
   const equipmentTitle = document.createElement('div')

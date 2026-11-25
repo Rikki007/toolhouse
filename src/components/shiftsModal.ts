@@ -74,6 +74,9 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
   modalBody.className = 'shifts-modal-body'
   modal.appendChild(modalBody)
 
+  /** Текущий блок диаграммы дохода — обновляется при изменениях стейта */
+  let incomeChart: (HTMLElement & { refresh: () => void }) | null = null
+
   const shifts = [
     { id: 1, key: 'first' as const, label: '1-я смена' },
     { id: 2, key: 'second' as const, label: '2-я смена' },
@@ -90,10 +93,9 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
     modalBody.replaceChildren()
 
     // Аналитика дохода по купленным сменам (круговая диаграмма)
-    const incomeChart = createShiftIncomeChart()
-    if (incomeChart) {
-      modalBody.appendChild(incomeChart)
-    }
+    const chart = createShiftIncomeChart()
+    incomeChart = chart
+    modalBody.appendChild(chart)
 
     const state = getState()
 
@@ -230,7 +232,11 @@ export function renderShiftsModal(onClose: () => void): HTMLElement & { cleanup:
   renderBody()
 
   // Подписка на изменения стейта — обновляем disabled кнопок при изменении денег
-  const unsubscribe = subscribe(() => updateBuyButtonsAvailability(modalBody))
+  // и пересчитываем диаграмму дохода (прокачка, техника, снаряжение)
+  const unsubscribe = subscribe(() => {
+    updateBuyButtonsAvailability(modalBody)
+    incomeChart?.refresh()
+  })
 
   // Добавляем cleanup-функцию к HTMLElement
   const result = modal as unknown as HTMLElement & { cleanup: () => void }

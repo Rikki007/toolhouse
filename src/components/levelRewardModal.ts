@@ -3,21 +3,24 @@ import { pickLevelReward, applyLevelReward } from '../utils/levelReward.ts'
 import { getStaffById, getRiggingById } from '../utils/itemLookup.ts'
 import { createRewardCardForStaff, createRewardCardForRigging, createRewardCardForToken } from '../utils/rewardCard.ts'
 import { sellLootboxReward } from '../state/inventoryStore.ts'
-import { sellLootboxToken } from '../state/tokenStore.ts'
+import { consumeToken } from '../state/tokenStore.ts'
 import { getTokenConfig } from '../utils/tokenLookup.ts'
 import type { TokenId } from '../types/index.ts'
 import { formatMoney } from '../utils/format.ts'
 import { playSound } from '../state/audioManager.ts'
 import { getState, updateState, subscribe } from '../state/state.ts'
+import { applyTokenEffect } from '../utils/tokenEffects.ts'
+import { openStaffTokenPicker } from './staffTokenModal.ts'
+import { openLootBoxSequence } from './lootboxModal.ts'
 
 /**
  * Показывает модальное окно награды за уровень (схема как у лутбоксов).
- * Игрок обязан выбрать «Забрать» или «Продать» — закрытие без выбора недоступно,
- * поэтому очередь наград не может зациклиться.
+ * Игрок обязан выбрать «Забрать» (или «Использовать» для жетона) либо «Продать» —
+ * закрытие без выбора недоступно, поэтому очередь наград не может зациклиться.
  *
  * @param level — уровень, за который выдаётся награда
  * @param container — DOM-контейнер для оверлея
- * @param onClosed — вызывается после удаления оверлея
+ * @param onClosed — вызывается после удаления оверлея и завершения эффектов жетона
  */
 export function showLevelRewardModal(
   level: number,
@@ -29,7 +32,6 @@ export function showLevelRewardModal(
   createModal(container, {
     overlayClass: 'lootbox-modal-overlay',
     closeOnOverlayClick: false,
-    onClose: onClosed,
     renderContent: (onClose) => {
       const modal = document.createElement('div')
       modal.className = 'lootbox-modal'
@@ -67,11 +69,20 @@ export function showLevelRewardModal(
 
       modal.appendChild(body)
 
-      // Кнопки: завершают выдачу — помечают уровень награждённым
-      const finish = (claim: () => void): void => {
+      // Кнопки: завершают выдачу — помечают уровень награждённым.
+      // after — механика, запущенная наградой (например, применение жетона):
+      // очередь наград ждёт её завершения, чтобы окна не наслаивались.
+      const finish = (claim: () => void, after?: () => Promise<void> | undefined): void => {
         claim()
         updateState({ lastRewardedLevel: level })
         onClose()
+
+        const pending = after?.()
+        if (pending) {
+          void pending.then(onClosed)
+        } else {
+          onClosed()
+        }
       }
 
       const buttons = document.createElement('div')
@@ -89,8 +100,40 @@ export function showLevelRewardModal(
       })
       buttons.appendChild(btnTake)
 
-      // «Продать» — только для предметов и жетонов (не для денег)
-      if (reward.type === 'staff' || reward.type === 'rigging' || reward.type === 'token') {
+      // «Использовать» — только для жетонов
+      if (reward.type === 'token') {
+        const tokenConfig = getTokenConfig(reward.id as TokenId)
+
+        const btnUse = document.createElement('button')
+        btnUse.type = 'button'
+        btnUse.className = 'lootbox-modal-close'
+        btnUse.textContent = 'Использовать'
+        btnUse.style.background = 'rgba(99, 102, 241, 0.15)'
+        btnUse.style.border = '1px solid rgba(99, 102, 241, 0.3)'
+        btnUse.style.color = '#a5b4fc'
+        btnUse.addEventListener('click', () => {
+          playSound('buy')
+          finish(
+            () => applyLevelReward(reward),
+            () => {
+              // Жетон повышения сначала попадает в инвентарь, затем открывается
+              // выбор сотрудника — окно само спишет жетон при применении
+              if (tokenConfig.kind === 'levelUp') {
+                return openStaffTokenPicker(container, tokenConfig.id)
+              }
+              // Ускорение и лутбоксы применяем сразу, без хранения в инвентаре
+              consumeToken(tokenConfig.id)
+              return applyTokenEffect(tokenConfig.id, {
+                onLootboxOpen: (count) => openLootBoxSequence(container, count),
+              })
+            },
+          )
+        })
+        buttons.appendChild(btnUse)
+      }
+
+      // «Продать» — только для предметов (у жетона вместо неё «Использовать»)
+      if (reward.type === 'staff' || reward.type === 'rigging') {
         const btnSell = document.createElement('button')
         btnSell.type = 'button'
         btnSell.className = 'lootbox-modal-close'
@@ -100,13 +143,7 @@ export function showLevelRewardModal(
         btnSell.style.color = '#ff4444'
         btnSell.addEventListener('click', () => {
           playSound('buy')
-          finish(() => {
-            if (reward.type === 'token') {
-              sellLootboxToken(reward.id as TokenId)
-            } else {
-              sellLootboxReward(reward)
-            }
-          })
+          finish(() => sellLootboxReward(reward))
         })
         buttons.appendChild(btnSell)
       }

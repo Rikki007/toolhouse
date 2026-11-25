@@ -1,9 +1,18 @@
-import type { Settings, SkillId, SkillBranchChoices, ShiftConfig, ShiftsState, ShopState, InventoryState, ShiftStaff, StaffUpgrades, NewsItem, AchievementId, MasterUpgrades, StaffTier } from '../types/index.ts'
+import type { Settings, SkillId, SkillBranchChoices, ShiftConfig, ShiftsState, ShopState, InventoryState, ShiftStaff, StaffUpgrades, NewsItem, AchievementId, MasterUpgrades, StaffTier, ActingManagerState, TokenId } from '../types/index.ts'
 import { defaultSettings } from './settingsStore.ts'
 import { orderPickersList, reachTrucksList } from '../data/equipment.ts'
 import { pickersList, reachTruckDriversList } from '../data/staff.ts'
 import { riggingList } from '../data/rigging.ts'
 import { calculatePassiveIncome, getIncomeSources, roundToCents } from '../utils/passiveIncome.ts'
+import {
+  getActingOfflineDurationMs,
+  getActingOfflineRate,
+  getActingTokenChance,
+  getActingTokenDistribution,
+  getActingTokenDrawsPerHour,
+  rollActingTokens,
+} from '../utils/actingOffline.ts'
+import { ACTING_TOKEN_MAX_LEVELS } from '../data/actingManager.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 import { achievements } from '../data/achievements.ts'
 
@@ -137,6 +146,24 @@ const DEFAULT_SKILLS: Record<SkillId, number> = {
 /** Пустой набор выборов веток */
 const DEFAULT_BRANCH_CHOICES: SkillBranchChoices = {}
 
+/** Стартовое состояние И.О.: первый уровень, навыки не прокачаны */
+const DEFAULT_ACTING_MANAGER: ActingManagerState = {
+  level: 1,
+  xp: 0,
+  branches: {
+    performance: 0,
+    duration: 0,
+    tokens: 0,
+  },
+  tokenUpgrades: {
+    frequency: 0,
+    chance: 0,
+    value: 0,
+  },
+  tokensCollected: 0,
+  tokenProgressMs: 0,
+}
+
 export interface AppState {
   settings: Settings
   shop: ShopState
@@ -180,6 +207,10 @@ export interface AppState {
   boostActiveUntil: number
   /** Timestamp окончания кулдауна буста */
   boostCooldownEndsAt: number
+  /** Прогресс И.О.: уровень, опыт и уровни навыков дерева */
+  actingManager: ActingManagerState
+  /** Последний уровень И.О., который игрок уже видел (для индикатора на кнопке) */
+  actingSeenLevel: number
 }
 
 let state: AppState
@@ -452,6 +483,48 @@ function migrateStaffUpgrades(raw: unknown): StaffUpgrades {
   return result
 }
 
+/** Миграция: у старых сейвов нет прогресса И.О. — подставляем дефолт */
+function migrateActingManager(raw: unknown): ActingManagerState {
+  const defaults: ActingManagerState = {
+    ...DEFAULT_ACTING_MANAGER,
+    branches: { ...DEFAULT_ACTING_MANAGER.branches },
+    tokenUpgrades: { ...DEFAULT_ACTING_MANAGER.tokenUpgrades },
+  }
+  if (!raw || typeof raw !== 'object') return defaults
+
+  const data = raw as Partial<ActingManagerState>
+  const xp = typeof data.xp === 'number' && data.xp >= 0 ? data.xp : 0
+  const branches = { ...defaults.branches, ...(data.branches ?? {}) }
+
+  // Миграция старого единого уровня «Сбора жетонов» на три параметра.
+  // Сумма уровней параметров должна совпасть со старым уровнем,
+  // иначе у игрока изменится количество потраченных очков.
+  let tokenUpgrades = data.tokenUpgrades
+  if (!tokenUpgrades) {
+    const legacy = Math.max(0, Math.floor(branches.tokens ?? 0))
+    const frequency = Math.min(ACTING_TOKEN_MAX_LEVELS.frequency, legacy)
+    const afterFrequency = legacy - frequency
+    const chance = Math.min(ACTING_TOKEN_MAX_LEVELS.chance, afterFrequency)
+    const value = Math.min(ACTING_TOKEN_MAX_LEVELS.value, afterFrequency - chance)
+    tokenUpgrades = { frequency, chance, value }
+    branches.tokens = frequency + chance + value
+  }
+
+  return {
+    xp,
+    // Уровень И.О. — производная от накопленного оффлайн-дохода
+    level: levelFromXp(xp),
+    branches,
+    tokenUpgrades: { ...defaults.tokenUpgrades, ...tokenUpgrades },
+    tokensCollected:
+      typeof data.tokensCollected === 'number' && data.tokensCollected >= 0
+        ? data.tokensCollected
+        : 0,
+    tokenProgressMs:
+      typeof data.tokenProgressMs === 'number' && data.tokenProgressMs >= 0 ? data.tokenProgressMs : 0,
+  }
+}
+
 function loadState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -545,6 +618,9 @@ function loadState(): AppState {
         achievements: parsed.achievements ?? {},
         boostActiveUntil: parsed.boostActiveUntil ?? 0,
         boostCooldownEndsAt: parsed.boostCooldownEndsAt ?? 0,
+        actingManager: migrateActingManager(parsed.actingManager),
+        // Старые сейвы без поля: считаем текущий уровень уже просмотренным
+        actingSeenLevel: parsed.actingSeenLevel ?? levelFromXp(parsed.actingManager?.xp ?? 0),
       }
     }
   } catch (error) {
@@ -593,6 +669,8 @@ function loadState(): AppState {
       achievements: {},
       boostActiveUntil: 0,
       boostCooldownEndsAt: 0,
+      actingManager: migrateActingManager(null),
+      actingSeenLevel: 1,
     }
   }
 
@@ -636,6 +714,8 @@ function createDefaultState(): AppState {
     achievements: {},
     boostActiveUntil: 0,
     boostCooldownEndsAt: 0,
+    actingManager: migrateActingManager(null),
+    actingSeenLevel: 1,
   }
 }
 
@@ -747,6 +827,13 @@ export function markPlayerLevelSeen(): void {
   }
 }
 
+/** Помечает текущий уровень И.О. как «увиденный» (гасит индикатор на кнопке) */
+export function markActingLevelSeen(): void {
+  if (state.actingManager.level > state.actingSeenLevel) {
+    updateState({ actingSeenLevel: state.actingManager.level })
+  }
+}
+
 function notify(): void {
   listeners.forEach((listener) => listener(state))
 }
@@ -761,47 +848,89 @@ saveState()
 
 let saveIntervalId: number | null = null
 
-/**
- * Максимальное время, за которое начисляется оффлайн-доход — 1 час.
- * Дальше доход не копится: чтобы получать больше, игрок должен заходить в игру чаще.
- */
-export const MAX_OFFLINE_MS = 60 * 60 * 1000
-
-/** Доля от онлайн-дохода, которую приносит оффлайн: 60% */
-const OFFLINE_INCOME_RATE = 0.6
-
 export interface OfflineIncomeInfo {
-  /** Сколько начислить */
+  /** Сколько денег начислить */
   amount: number
-  /** Время отсутствия больше потолка — начислили только за MAX_OFFLINE_MS */
+  /** Время отсутствия больше потолка — начислили только за доступное время */
   capped: boolean
   /** Фактическое время отсутствия в миллисекундах */
   offlineMs: number
+  /** Добытые за оффлайн жетоны */
+  tokens: TokenId[]
+  /** Остаток времени до следующего жетона после начисления */
+  tokenProgressMs: number
+  /** Сколько опыта получит И.О. (равно начисленному оффлайн-доходу) */
+  actingXpGained: number
 }
 
 /**
- * Вычисляет доход за время отсутствия.
- * Начисляется не более чем за MAX_OFFLINE_MS — остальное время сгорает.
+ * Вычисляет оффлайн-доход, жетоны и опыт И.О. за время отсутствия.
+ * Доля дохода и потолок времени зависят от навыков И.О.
  */
 export function calculateOfflineIncome(): OfflineIncomeInfo {
-  const offlineMs = Date.now() - state.lastSaveTime
-  const effectiveDiffMs = Math.min(offlineMs, MAX_OFFLINE_MS)
+  const acting = state.actingManager
+  const rate = getActingOfflineRate(acting.branches.performance)
+  const durationMs = getActingOfflineDurationMs(acting.branches.duration)
+
+  // Перевод часов назад не должен давать отрицательный оффлайн
+  const offlineMs = Math.max(0, Date.now() - state.lastSaveTime)
+  const effectiveDiffMs = Math.min(offlineMs, durationMs)
   const secondsOffline = effectiveDiffMs / 1000
+  const amount = Math.floor(secondsOffline * state.passiveIncomePerSecond * rate)
+
+  // Жетоны: накапливаем остаток времени, чтобы короткие заходы тоже шли в счёт.
+  // За час происходит фиксированное число розыгрышей, каждый с шансом дать жетон.
+  const drawsPerHour = getActingTokenDrawsPerHour(acting.tokenUpgrades.frequency)
+  let tokenProgressMs = acting.tokenProgressMs
+  let tokens: TokenId[] = []
+
+  if (drawsPerHour > 0) {
+    const intervalMs = 3_600_000 / drawsPerHour
+    const totalMs = tokenProgressMs + effectiveDiffMs
+    const count = Math.floor(totalMs / intervalMs)
+    tokenProgressMs = totalMs - count * intervalMs
+    tokens = rollActingTokens(
+      count,
+      getActingTokenChance(acting.tokenUpgrades.chance),
+      getActingTokenDistribution(acting.tokenUpgrades.value),
+    )
+  }
+
   return {
-    amount: Math.floor(secondsOffline * state.passiveIncomePerSecond * OFFLINE_INCOME_RATE),
-    capped: offlineMs > MAX_OFFLINE_MS,
+    amount,
+    capped: offlineMs > durationMs,
     offlineMs,
+    tokens,
+    tokenProgressMs,
+    actingXpGained: amount,
   }
 }
 
-/** Начисляет рассчитанный оффлайн-доход к балансу */
-export function applyOfflineIncome(amount: number): void {
-  if (amount > 0) {
-    updateState({
-      money: state.money + amount,
-      lastSaveTime: Date.now(),
-    })
-  }
+/**
+ * Начисляет оффлайн-доход: деньги, жетоны и опыт И.О.
+ * Всегда сдвигает время последнего сохранения, даже при нулевом доходе,
+ * иначе оффлайн копился бы повторно.
+ */
+export function applyOfflineIncome(info: OfflineIncomeInfo): void {
+  const acting = state.actingManager
+  const xp = acting.xp + info.actingXpGained
+
+  const inventory = info.tokens.length > 0
+    ? { ...state.inventory, tokens: [...(state.inventory.tokens ?? []), ...info.tokens] }
+    : state.inventory
+
+  updateState({
+    money: state.money + info.amount,
+    inventory,
+    lastSaveTime: Date.now(),
+    actingManager: {
+      ...acting,
+      xp,
+      level: levelFromXp(xp),
+      tokensCollected: acting.tokensCollected + info.tokens.length,
+      tokenProgressMs: info.tokenProgressMs,
+    },
+  })
 }
 
 /** Запускает периодическое сохранение времени (каждые 10 сек) */

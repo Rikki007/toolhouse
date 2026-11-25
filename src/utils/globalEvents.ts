@@ -64,14 +64,15 @@ function hasOpenModal(container: HTMLElement): boolean {
 const FALLBACK_STAFF_NAME = 'Сотрудник'
 
 /**
- * Имя сотрудника для подстановки в текст локального события.
+ * Имя и аватарка сотрудника для подстановки в текст и сообщение локального события.
  */
-function pickStaffName(role: LocaleEvents['role']): string {
+function pickStaff(role: LocaleEvents['role']): { name: string; avatar?: string } {
   const ids = getAllStaffIds()
   const pool = ids.filter((id) => getStaffCategory(id) === (role === 'reachtruck' ? 'reachTruckDrivers' : 'pickers'))
-  if (pool.length === 0) return FALLBACK_STAFF_NAME
+  if (pool.length === 0) return { name: FALLBACK_STAFF_NAME }
 
-  return getStaffById(pickRandom(pool))?.name ?? FALLBACK_STAFF_NAME
+  const staff = getStaffById(pickRandom(pool))
+  return { name: staff?.name ?? FALLBACK_STAFF_NAME, avatar: staff?.avatar }
 }
 
 /**
@@ -85,8 +86,8 @@ function joinSubject(name: string, description: string): string {
 }
 
 /** Текст локального события: имя сотрудника + проступок или заслуга */
-function buildLocaleEventText(event: LocaleEvents): string {
-  return joinSubject(pickStaffName(event.role), event.description)
+function buildLocaleEventText(staff: { name: string }, event: LocaleEvents): string {
+  return joinSubject(staff.name, event.description)
 }
 
 /**
@@ -146,12 +147,15 @@ export function triggerLocaleEvent(deps: GlobalEventsDeps): void {
   const isPositive = event.influence === 'positive'
   const delta = isPositive ? amount : -amount
 
+  const staff = pickStaff(event.role)
+
   applyEventResult(deps, delta)
   addNewsItem({
     kind: 'locale',
     title: 'Локальное событие',
-    description: buildLocaleEventText(event),
+    description: buildLocaleEventText(staff, event),
     amount: delta,
+    avatar: staff.avatar,
   })
 }
 

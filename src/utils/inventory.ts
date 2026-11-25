@@ -257,7 +257,7 @@ export function createInventoryCard(
   onAssign?: () => void,
   onSell?: () => void,
   upgrade?: InventoryCardUpgrade,
-  options?: { count?: number; onSellAll?: () => void }
+  options?: { count?: number; onSellAll?: () => void; extraActions?: HTMLElement[] }
 ): HTMLElement {
   const card = document.createElement('div')
   card.className = 'inventory-card'
@@ -355,6 +355,13 @@ export function createInventoryCard(
       buttons.insertBefore(createUpgradeButton(upgrade), buttons.firstChild)
     }
 
+    // Дополнительные действия (например, применение жетона)
+    if (options?.extraActions) {
+      for (const action of options.extraActions) {
+        buttons.insertBefore(action, buttons.firstChild)
+      }
+    }
+
     card.appendChild(buttons)
 
     card.style.cursor = 'pointer'
@@ -387,18 +394,28 @@ export function createInventoryCard(
   return card
 }
 
+/** Действия карточки жетона */
+export interface TokenCardActions {
+  /** «Использовать» — запустить эффект жетона */
+  onUse: () => void
+  /** «Продать» — продать одну копию */
+  onSell: () => void
+  /** «Продать всё» — продать все копии этого жетона */
+  onSellAll: () => void
+}
+
 /**
  * Создаёт DOM-карточку жетона в инвентаре.
+ * Кнопки скрыты до тапа по карточке: «Использовать», «Продать», «Продать всё».
  * @param tokenId — ID жетона из data/tokens.ts
  * @param count — сколько одинаковых жетонов в инвентаре
- * @param onUse — колбэк кнопки «Использовать»
  */
 export function createTokenCard(
   tokenId: string,
   label: string,
   description: string,
   count: number,
-  onUse: () => void,
+  actions: TokenCardActions,
 ): HTMLElement {
   const card = document.createElement('div')
   card.className = 'inventory-card'
@@ -439,7 +456,20 @@ export function createTokenCard(
     card.appendChild(countEl)
   }
 
-  // Кнопка «Использовать» (раскрывается по клику)
+  /** Кнопка действия карточки жетона */
+  const createButton = (text: string, className: string, onClick: () => void): HTMLElement => {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = `inventory-card-btn ${className}`
+    btn.textContent = text
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      playSound('click')
+      onClick()
+    })
+    return btn
+  }
+
   const buttons = document.createElement('div')
   buttons.className = 'inventory-card-buttons'
   buttons.style.display = 'none'
@@ -447,16 +477,18 @@ export function createTokenCard(
   buttons.style.marginTop = '8px'
   buttons.style.flexDirection = 'column'
 
-  const useBtn = document.createElement('button')
-  useBtn.type = 'button'
-  useBtn.className = 'inventory-card-btn inventory-card-btn-assign'
-  useBtn.textContent = 'Использовать'
-  useBtn.addEventListener('click', (e) => {
-    e.stopPropagation()
-    playSound('click')
-    onUse()
-  })
-  buttons.appendChild(useBtn)
+  buttons.appendChild(
+    createButton('Использовать', 'inventory-card-btn-assign', actions.onUse),
+  )
+  buttons.appendChild(
+    createButton('Продать', 'inventory-card-btn-sell', actions.onSell),
+  )
+  // «Продать всё» имеет смысл только когда копий больше одной
+  if (count > 1) {
+    buttons.appendChild(
+      createButton('Продать всё', 'inventory-card-btn-sell', actions.onSellAll),
+    )
+  }
 
   card.appendChild(buttons)
   card.style.cursor = 'pointer'
@@ -466,6 +498,7 @@ export function createTokenCard(
     playSound('click')
     const isExpanded = card.classList.contains('inventory-card-expanded')
 
+    // Сворачиваем все раскрытые карточки
     document.querySelectorAll('.inventory-card-expanded').forEach(c => {
       c.classList.remove('inventory-card-expanded')
       const btns = c.querySelector('.inventory-card-buttons') as HTMLElement | null

@@ -6,25 +6,32 @@ import { playSound } from '../state/audioManager.ts'
 
 /** Куда открывать лутбоксы после использования жетона */
 export interface TokenEffectOptions {
-  /** Открыть указанное число лутбоксов подряд */
-  onLootboxOpen?: (count: number) => void
+  /** Открыть указанное число лутбоксов подряд. Возвращает промис — ждём окончания серии */
+  onLootboxOpen?: (count: number) => void | Promise<void>
 }
 
 /**
  * Применяет эффект жетона (без добавления в инвентарь).
- * Используется кнопкой «Использовать» в модалке лутбокса и в инвентаре.
+ * Используется кнопкой «Использовать» в модалке лутбокса, в инвентаре
+ * и в награде за уровень.
+ * @returns промис, если эффект запускает серию лутбоксов, иначе undefined
  */
-export function applyTokenEffect(tokenId: TokenId, options?: TokenEffectOptions): void {
+export function applyTokenEffect(
+  tokenId: TokenId,
+  options?: TokenEffectOptions,
+): Promise<void> | undefined {
   const config = getTokenConfig(tokenId)
 
   if (config.kind === 'lootbox') {
-    options?.onLootboxOpen?.(config.lootboxCount ?? 1)
-    return
+    playSound('lootbox')
+    const pending = options?.onLootboxOpen?.(config.lootboxCount ?? 1)
+    return pending instanceof Promise ? pending : undefined
   }
 
   if (config.kind === 'acceleration') {
     applyAccelerationToken(config.boostDurationMs ?? 0)
   }
+  return undefined
 }
 
 /**

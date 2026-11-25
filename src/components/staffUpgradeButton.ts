@@ -1,7 +1,9 @@
 import type { Staff } from '../types/equipment.ts'
 import { getState } from '../state/state.ts'
 import { upgradeStaff } from '../state/inventoryStore.ts'
-import { getStaffTierProgress, getNextUpgrade, getStaffTierName, getTierNameByNumber } from '../utils/staffUpgrades.ts'
+import { applyLevelUpTokenToStaff, getBestLevelUpToken } from '../state/tokenStore.ts'
+import { getStaffTierProgress, getNextUpgrade, getStaffTierName, getTierNameByNumber, previewStarUpgrade } from '../utils/staffUpgrades.ts'
+import { getTokenConfig } from '../utils/tokenLookup.ts'
 import { createCreditIcon } from '../utils/creditIcon.ts'
 import { MAX_STAFF_TIER, MAX_TIER_LEVEL, STAFF_TIERS } from '../data/staffUpgrades.ts'
 import { playSound } from '../state/audioManager.ts'
@@ -69,6 +71,59 @@ export function createStaffUpgradeButton(
       playSound('buy')
       onUpgraded()
     }
+  })
+
+  return button
+}
+
+/**
+ * Кнопка «Применить жетон повышения» — повышает скорость сотрудника
+ * без списания денег. Не рендерится (null), если подходящего жетона нет
+ * либо сотрудник уже на максимуме.
+ * @param onApplied — вызывается после успешного применения
+ */
+export function createTokenUpgradeButton(
+  staff: Staff,
+  onApplied: () => void,
+): HTMLElement | null {
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.className = 'staff-token-btn'
+
+  /** Пересчитывает текст кнопки; false — применять больше нечего */
+  const refreshLabel = (): boolean => {
+    const state = getState()
+    const tokenId = getBestLevelUpToken()
+    if (!tokenId) return false
+
+    const config = getTokenConfig(tokenId)
+    const stars = config.starCount ?? 1
+    const preview = previewStarUpgrade(
+      staff,
+      state.staffUpgrades,
+      stars,
+      levelFromXp(state.xpMoney),
+    )
+    if (!preview) return false
+
+    button.textContent = preview.leftover > 0
+      ? `Применить жетон · +${preview.spent}★ (останется ${preview.leftover})`
+      : `Применить жетон · +${preview.spent}★`
+    return true
+  }
+
+  if (!refreshLabel()) return null
+
+  button.addEventListener('click', (event) => {
+    event.stopPropagation()
+
+    const tokenId = getBestLevelUpToken()
+    if (!tokenId) return
+    if (!applyLevelUpTokenToStaff(tokenId, staff.id)) return
+
+    playSound('levelUp')
+    if (!refreshLabel()) button.remove()
+    onApplied()
   })
 
   return button

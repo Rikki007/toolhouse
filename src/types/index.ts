@@ -22,3 +22,13 @@ export type { MasterUpgrades } from './masterUpgrades.ts'
 export type { AchievementId, AchievementStatus, AchievementsState } from './achievements.ts'
 export { MAX_MASTER_UPGRADES } from './masterUpgrades.ts'
 export type { TokenId, TokenConfig } from './tokens.ts'
+export type {
+  ActingBranchId,
+  ActingBranchColor,
+  ActingTokenColor,
+  ActingTokenKind,
+  ActingTokenParam,
+  ActingTokenUpgrades,
+  ActingBranch,
+  ActingManagerState,
+} from './actingManager.ts'

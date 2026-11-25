@@ -10,6 +10,7 @@ import { getTokenConfig } from '../utils/tokenLookup.ts'
 import type { TokenId } from '../types/index.ts'
 import { takeLootboxToken } from '../state/tokenStore.ts'
 import { applyTokenEffect } from '../utils/tokenEffects.ts'
+import { openStaffTokenPicker } from './staffTokenModal.ts'
 
 /** Создать кнопку в модалке лутбокса с заданным цветом */
 function createLootboxButton(
@@ -35,32 +36,32 @@ const INDIGO_BTN = { bg: 'rgba(99, 102, 241, 0.15)', border: 'rgba(99, 102, 241,
 
 /**
  * Открывает один лутбокс с анимацией и модалкой награды.
- * @returns Promise, который резолвится при закрытии модалки:
- *   true — цепочку нужно прервать (игрок использовал жетон лутбокса,
- *   который сам открывает новую серию), false — можно открывать следующий.
+ * Promise резолвится, когда игрок закрыл награду и завершились все
+ * вложенные механики (окно применения жетона, новая серия лутбоксов).
  */
-export function openLootBoxAnimation(container: HTMLElement): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
+export function openLootBoxAnimation(container: HTMLElement): Promise<void> {
+  return new Promise<void>((resolve) => {
     void runLootBox(container, resolve)
   })
 }
 
 /**
  * Открывает указанное количество лутбоксов подряд.
- * Каждый следующий открывается после закрытия модалки предыдущего.
+ * Каждый следующий открывается после закрытия модалки предыдущего
+ * и после завершения действий, запущенных из неё (например, применение
+ * жетона повышения) — оставшиеся открытия не прогорают.
  */
-export function openLootBoxSequence(container: HTMLElement, count: number): void {
-  void (async () => {
+export function openLootBoxSequence(container: HTMLElement, count: number): Promise<void> {
+  return (async () => {
     for (let i = 0; i < count; i++) {
-      const abort = await openLootBoxAnimation(container)
-      if (abort) return
+      await openLootBoxAnimation(container)
     }
   })()
 }
 
 async function runLootBox(
   container: HTMLElement,
-  resolve: (abort: boolean) => void,
+  resolve: () => void,
 ): Promise<void> {
   // Показываем прелоадер
   const preloader = showPreloader(container)
@@ -72,13 +73,23 @@ async function runLootBox(
   const modal = document.createElement('div')
   modal.className = 'lootbox-modal'
 
-  // Прервать ли цепочку лутбоксов (жетон лутбокса открывает свою серию)
-  let abortChain = false
+  // Действие, которое должно завершиться до продолжения цепочки
+  // (например, окно применения жетона повышения)
+  let pendingAfterClose: Promise<void> | null = null
+  let closed = false
 
   // Единая точка закрытия — резолвит промис после удаления оверлея
+  // и после завершения вложенных механик
   const closeModal = (): void => {
+    if (closed) return
+    closed = true
     modalOverlay.remove()
-    resolve(abortChain)
+
+    if (pendingAfterClose) {
+      void pendingAfterClose.then(() => resolve())
+      return
+    }
+    resolve()
   }
 
   // Контейнер для кнопок (показываются после награды)
@@ -194,12 +205,22 @@ async function runLootBox(
       modal.appendChild(createRewardCardForToken(tokenConfig))
 
       const btnUse = createLootboxButton('Использовать', INDIGO_BTN, () => {
-        // Жетон лутбокса сам откроет новую серию — текущую цепочку прерываем
-        if (tokenConfig.kind === 'lootbox') abortChain = true
+        // Жетон повышения: кладём в инвентарь и открываем выбор сотрудника.
+        // Оставшиеся лутбоксы серии открываются после закрытия этого окна.
+        if (tokenConfig.kind === 'levelUp') {
+          takeLootboxToken(tokenConfig.id)
+          pendingAfterClose = openStaffTokenPicker(container, tokenConfig.id)
+          closeModal()
+          return
+        }
+        // Жетон лутбокса открывает свою серию, затем продолжается текущая
+        if (tokenConfig.kind === 'lootbox') {
+          pendingAfterClose = openLootBoxSequence(container, tokenConfig.lootboxCount ?? 1)
+          closeModal()
+          return
+        }
         closeModal()
-        applyTokenEffect(tokenConfig.id, {
-          onLootboxOpen: (count) => openLootBoxSequence(container, count),
-        })
+        applyTokenEffect(tokenConfig.id)
       })
 
       const btnTake = createLootboxButton('Забрать', GREEN_BTN, () => {

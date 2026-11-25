@@ -3,6 +3,7 @@ import { renderShiftsModal } from './shiftsModal.ts'
 import { createModal } from '../utils/modalFactory.ts'
 import { openInventoryModal } from './inventory.ts'
 import { renderNewsModal } from './newsModal.ts'
+import { openActingManagerModal } from './actingManagerModal.ts'
 import { getState, updateState, subscribe, markNewsRead } from '../state/state.ts'
 import { interfaceIconImages } from '../assets/assetLoader.ts'
 import { openLootBoxSequence } from './lootboxModal.ts'
@@ -114,11 +115,66 @@ export function renderGameToolbar(container: HTMLElement): HTMLElement {
   })
   toolbar.appendChild(shiftsBtn)
 
+  // Кнопка «И.О.» — исполняющий обязанности и его дерево развития
+  toolbar.appendChild(createActingButton(container))
+
   // Кнопка "Новости" с индикатором непрочитанных событий
   toolbar.appendChild(createNewsButton(container))
 
   container.appendChild(toolbar)
   return toolbar
+}
+
+// ===== И.О. =====
+
+/** Отписка от обновлений стейта для индикатора кнопки И.О. */
+let actingUnsubscribe: (() => void) | null = null
+
+/**
+ * Кнопка «И.О.»: открывает дерево развития.
+ * Индикатор горит, когда у И.О. появился новый уровень,
+ * а звук повышения играет в момент получения уровня.
+ */
+function createActingButton(container: HTMLElement): HTMLElement {
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.className = 'toolbar-btn acting-toolbar-btn'
+  btn.setAttribute('aria-label', 'И. О.')
+  btn.innerHTML = `
+    <span class="toolbar-btn-icon">
+      <img src="${interfaceIconImages['acting']}" alt="И. О.">
+    </span>
+    <span class="department-indicator"></span>
+  `
+
+  const indicator = btn.querySelector('.department-indicator') as HTMLElement | null
+
+  // Запоминаем уровень до начисления оффлайн-дохода: кнопка создаётся раньше,
+  // поэтому повышение уровня поймает subscribe и проиграет звук.
+  let previousLevel = getState().actingManager.level
+
+  const updateIndicator = () => {
+    const state = getState()
+    const level = state.actingManager.level
+
+    if (level > previousLevel) {
+      playSound('levelUp')
+      previousLevel = level
+    }
+
+    indicator?.classList.toggle('department-indicator-available', level > state.actingSeenLevel)
+  }
+
+  // Пересоздаём подписку, чтобы не копить слушатели при повторном входе в игру
+  actingUnsubscribe?.()
+  actingUnsubscribe = subscribe(updateIndicator)
+
+  btn.addEventListener('click', () => {
+    playSound('click')
+    openActingManagerModal(container)
+  })
+
+  return btn
 }
 
 // ===== Новости =====

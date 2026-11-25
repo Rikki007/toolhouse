@@ -27,6 +27,13 @@ import master02 from './masters/master02.png'
 import master03 from './masters/master03.png'
 import master04 from './masters/master04.png'
 
+// И.О. — исполняющий обязанности управляющего
+import actingPortrait from './masters/acting.jpg'
+import actingAva from './masters/actingAva.png'
+import actingPerformance from './acting/performance.png'
+import actingDuration from './acting/duration.png'
+import actingTokens from './acting/kollectingTokens.png'
+
 // Иконки уровней мастеров
 import masterLevelFirst from './masters/first.png'
 import masterLevelSecond from './masters/second.png'
@@ -192,6 +199,7 @@ import riggingIcon from './interfaceIcon/rigging.png'
 import newsIcon from './interfaceIcon/news.png'
 import achievementsIcon from './interfaceIcon/achievements.png'
 import accelerationIcon from './interfaceIcon/acceleration.png'
+import actingIcon from './interfaceIcon/acting.png'
 
 // Картинки жетонов
 import tokenLootboxGold from './tokens/lootboxTokenGold.png'
@@ -200,6 +208,9 @@ import tokenLootboxRed from './tokens/lootboxTokenRed.png'
 import tokenAccelerationGold from './tokens/accelerationTokenGold.png'
 import tokenAccelerationGreen from './tokens/accelerationTokenGreen.png'
 import tokenAccelerationRed from './tokens/accelerationTokenRed.png'
+import tokenLevelUpGold from './tokens/levelUptokenGold.png'
+import tokenLevelUpGreen from './tokens/levelUpTokenGreen.png'
+import tokenLevelUpRed from './tokens/levelUpTokenRed.png'
 
 // Иконки ссылок (экран «Поделиться»)
 import copyIcon from './links/copy.png'
@@ -356,6 +367,14 @@ export const interfaceIconImages: Record<string, string> = {
   'news': newsIcon,
   'achievements': achievementsIcon,
   'acceleration': accelerationIcon,
+  'acting': actingIcon,
+}
+
+/** Иконки параметров дохода И.О. (карточка «Доход И.О.») */
+export const actingParamImages: Record<string, string> = {
+  performance: actingPerformance,
+  duration: actingDuration,
+  tokens: actingTokens,
 }
 
 export const linkIconImages: Record<string, string> = {
@@ -372,6 +391,9 @@ export const tokenImages: Record<string, string> = {
   'accelerationTokenGold': tokenAccelerationGold,
   'accelerationTokenGreen': tokenAccelerationGreen,
   'accelerationTokenRed': tokenAccelerationRed,
+  'levelUpTokenGold': tokenLevelUpGold,
+  'levelUpTokenGreen': tokenLevelUpGreen,
+  'levelUpTokenRed': tokenLevelUpRed,
 }
 
 // Импортируем и заполняем маппинг
@@ -405,6 +427,10 @@ export function initEquipmentImages(): void {
   mastersImages['master_02'] = master02
   mastersImages['master_03'] = master03
   mastersImages['master_04'] = master04
+
+  // И.О. (исполняющий обязанности)
+  mastersImages['acting'] = actingPortrait
+  mastersImages['actingAva'] = actingAva
 
   // Иконки уровней мастеров
   masterLevelImages['first'] = masterLevelFirst

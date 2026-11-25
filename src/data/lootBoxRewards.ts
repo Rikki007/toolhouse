@@ -79,7 +79,7 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
 
   // --- Снаряжение: веса по редкости (слабое падает чаще, сильное — реже) ---
   // Каски: factor 1.25–1.3 обычные, 1.5 — золотая
-  { reward: { type: 'rigging', id: 'helmet_01' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'helmet_01' }, weight: 8 },
   { reward: { type: 'rigging', id: 'helmet_02' }, weight: 8 },
   { reward: { type: 'rigging', id: 'helmet_03' }, weight: 7 },
   { reward: { type: 'rigging', id: 'helmet_04' }, weight: 5 },
@@ -92,7 +92,7 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'helmet_12' }, weight: 4 },
 
   // Одежда: жилеты слабые (частые), куртки крепкие, золотая — редкая
-  { reward: { type: 'rigging', id: 'closes_01' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'closes_01' }, weight: 8 },
   { reward: { type: 'rigging', id: 'closes_02' }, weight: 8 },
   { reward: { type: 'rigging', id: 'closes_03' }, weight: 7 },
   { reward: { type: 'rigging', id: 'closes_04' }, weight: 2 },
@@ -105,7 +105,7 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'closes_12' }, weight: 5 },
 
   // Терминалы: самые дорогие и сильные предметы — падают реже всего
-  { reward: { type: 'rigging', id: 'ted_01' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'ted_01' }, weight: 8 },
   { reward: { type: 'rigging', id: 'ted_02' }, weight: 8},
   { reward: { type: 'rigging', id: 'ted_03' }, weight: 7 },
   { reward: { type: 'rigging', id: 'ted_04' }, weight: 3 },
@@ -113,9 +113,9 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'ted_06' }, weight: 4 },
   { reward: { type: 'rigging', id: 'ted_07' }, weight: 5 },
   { reward: { type: 'rigging', id: 'ted_08' }, weight: 2 },
-  { reward: { type: 'rigging', id: 'ted_09' }, weight: 9 },
-  { reward: { type: 'rigging', id: 'ted_10' }, weight: 9 },
-  { reward: { type: 'rigging', id: 'ted_11' }, weight: 9 },
+  { reward: { type: 'rigging', id: 'ted_09' }, weight: 8 },
+  { reward: { type: 'rigging', id: 'ted_10' }, weight: 8 },
+  { reward: { type: 'rigging', id: 'ted_11' }, weight: 8 },
 
   // --- Персонажное снаряжение (лутбокс) ---
   // Шлемы персонажей
@@ -176,6 +176,9 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'token', id: 'accelerationTokenGold' }, weight: 4 },
   { reward: { type: 'token', id: 'accelerationTokenGreen' }, weight: 7 },
   { reward: { type: 'token', id: 'accelerationTokenRed' }, weight: 8 },
+  { reward: { type: 'token', id: 'levelUpTokenGold' }, weight: 4 },
+  { reward: { type: 'token', id: 'levelUpTokenGreen' }, weight: 7 },
+  { reward: { type: 'token', id: 'levelUpTokenRed' }, weight: 8 },
 
 ]
 

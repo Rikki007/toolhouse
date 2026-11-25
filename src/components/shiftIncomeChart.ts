@@ -102,25 +102,12 @@ function createLegendRow(shiftId: number, income: number, total: number): HTMLEl
 }
 
 /**
- * Создаёт блок аналитики дохода по купленным сменам (круговая диаграмма).
- * Возвращает null, если активных смен нет или их доход нулевой —
- * тогда блок в модалке не показывается.
+ * Блок аналитики дохода по купленным сменам (круговая диаграмма).
+ * Возвращает элемент с методом refresh() — пересобирает диаграмму по актуальному
+ * стейту (после прокачки сотрудника, выдачи техники или снаряжения).
+ * Если активных смен нет или их доход нулевой, блок скрывается.
  */
-export function createShiftIncomeChart(): HTMLElement | null {
-  const state = getState()
-  const level = levelFromXp(state.xpMoney)
-
-  const entries = calculateShiftIncomes(
-    state.shifts,
-    state.staffUpgrades,
-    state.masterUpgrades,
-    level,
-  ).filter((entry) => entry.income > 0)
-
-  if (entries.length === 0) return null
-
-  const total = entries.reduce((sum, entry) => sum + entry.income, 0)
-
+export function createShiftIncomeChart(): HTMLElement & { refresh: () => void } {
   const section = document.createElement('div')
   section.className = 'shift-chart'
 
@@ -131,37 +118,62 @@ export function createShiftIncomeChart(): HTMLElement | null {
 
   const content = document.createElement('div')
   content.className = 'shift-chart-content'
-
-  // Диаграмма с подписью итога в центре
-  const chartWrapper = document.createElement('div')
-  chartWrapper.className = 'shift-chart-donut-wrapper'
-  chartWrapper.appendChild(createDonut(entries, total))
-
-  const center = document.createElement('div')
-  center.className = 'shift-chart-center'
-
-  const centerValue = document.createElement('span')
-  centerValue.className = 'shift-chart-center-value'
-  centerValue.textContent = formatMoney(total)
-  center.appendChild(centerValue)
-
-  const centerLabel = document.createElement('span')
-  centerLabel.className = 'shift-chart-center-label'
-  centerLabel.textContent = 'в секунду'
-  center.appendChild(centerLabel)
-
-  chartWrapper.appendChild(center)
-  content.appendChild(chartWrapper)
-
-  // Легенда
-  const legend = document.createElement('div')
-  legend.className = 'shift-chart-legend'
-  for (const entry of entries) {
-    legend.appendChild(createLegendRow(entry.shiftId, entry.income, total))
-  }
-  content.appendChild(legend)
-
   section.appendChild(content)
 
-  return section
+  const render = (): void => {
+    const state = getState()
+    const level = levelFromXp(state.xpMoney)
+
+    const entries = calculateShiftIncomes(
+      state.shifts,
+      state.staffUpgrades,
+      state.masterUpgrades,
+      level,
+    ).filter((entry) => entry.income > 0)
+
+    content.replaceChildren()
+
+    if (entries.length === 0) {
+      section.hidden = true
+      return
+    }
+    section.hidden = false
+
+    const total = entries.reduce((sum, entry) => sum + entry.income, 0)
+
+    // Диаграмма с подписью итога в центре
+    const chartWrapper = document.createElement('div')
+    chartWrapper.className = 'shift-chart-donut-wrapper'
+    chartWrapper.appendChild(createDonut(entries, total))
+
+    const center = document.createElement('div')
+    center.className = 'shift-chart-center'
+
+    const centerValue = document.createElement('span')
+    centerValue.className = 'shift-chart-center-value'
+    centerValue.textContent = formatMoney(total)
+    center.appendChild(centerValue)
+
+    const centerLabel = document.createElement('span')
+    centerLabel.className = 'shift-chart-center-label'
+    centerLabel.textContent = 'в секунду'
+    center.appendChild(centerLabel)
+
+    chartWrapper.appendChild(center)
+    content.appendChild(chartWrapper)
+
+    // Легенда
+    const legend = document.createElement('div')
+    legend.className = 'shift-chart-legend'
+    for (const entry of entries) {
+      legend.appendChild(createLegendRow(entry.shiftId, entry.income, total))
+    }
+    content.appendChild(legend)
+  }
+
+  render()
+
+  const result = section as unknown as HTMLElement & { refresh: () => void }
+  result.refresh = render
+  return result
 }

@@ -58,4 +58,32 @@ export const TOKENS: TokenConfig[] = [
     color: 'red',
     boostDurationMs: 30_000,
   },
+  // Токены прокачки скорости сотрудников
+  {
+    id: 'levelUpTokenGold',
+    label: 'Жетон повышения уровня',
+    description: '+3 звезды повышения',
+    imageKey: 'levelUpTokenGold',
+    kind: 'levelUp',
+    color: 'gold',
+    starCount: 3,
+  },
+  {
+    id: 'levelUpTokenGreen',
+    label: 'Жетон повышения уровня',
+    description: '+2 звезды повышения',
+    imageKey: 'levelUpTokenGreen',
+    kind: 'levelUp',
+    color: 'green',
+    starCount: 2,
+  },
+  {
+    id: 'levelUpTokenRed',
+    label: 'Жетон повышения уровня',
+    description: '+1 звезда повышения',
+    imageKey: 'levelUpTokenRed',
+    kind: 'levelUp',
+    color: 'red',
+    starCount: 1,
+  }
 ]

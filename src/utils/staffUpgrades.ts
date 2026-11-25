@@ -45,6 +45,13 @@ export function getMaxTierSpeed(tier: number): number {
   return tierCfg.baseSpeed + MAX_TIER_LEVEL * tierCfg.speedBonus
 }
 
+/** Скорость для произвольного прогресса (лига + уровень внутри неё) */
+export function getSpeedForProgress(tier: StaffTier, level: number): number {
+  const tierCfg = STAFF_TIERS[tier - 1]
+  if (!tierCfg) return 0
+  return tierCfg.baseSpeed + level * tierCfg.speedBonus
+}
+
 /** Прокачка завершена: последняя лига на максимуме */
 export function isStaffMaxedOut(staff: Staff, upgrades?: StaffUpgrades): boolean {
   const progress = getStaffTierProgress(staff, upgrades)
@@ -161,6 +168,118 @@ export function applyStaffUpgrade(
   return {
     upgrades: { ...current, [staff.id]: newProgress },
     cost,
+  }
+}
+
+/** Можно ли перейти в следующую лигу при текущем уровне игрока */
+function canEnterNextTier(tier: StaffTier, playerLevel?: number): boolean {
+  const nextTier = tier + 1
+  if (nextTier > MAX_STAFF_TIER) return false
+  if (playerLevel === undefined) return true
+  return playerLevel >= STAFF_TIERS[nextTier - 1].unlockLevel
+}
+
+/**
+ * Прогоняет звёзды по прогрессу: сначала уровни внутри лиги,
+ * затем переход в следующую лигу (если хватает уровня игрока).
+ * Неиспользованные звёзды возвращаются в leftover.
+ */
+function advanceProgress(
+  progress: { tier: StaffTier; level: number },
+  stars: number,
+  playerLevel?: number,
+): { tier: StaffTier; level: number; spent: number } {
+  let tier = progress.tier
+  let level = progress.level
+  let spent = 0
+
+  while (spent < stars) {
+    if (level < MAX_TIER_LEVEL) {
+      level += 1
+      spent += 1
+      continue
+    }
+    if (tier < MAX_STAFF_TIER && canEnterNextTier(tier, playerLevel)) {
+      tier = (tier + 1) as StaffTier
+      level = 1
+      spent += 1
+      continue
+    }
+    break
+  }
+
+  return { tier, level, spent }
+}
+
+/** Что даст применение звёзд сотруднику */
+export interface StarUpgradePreview {
+  from: { tier: StaffTier; level: number }
+  to: { tier: StaffTier; level: number }
+  /** Сколько звёзд реально потратится */
+  spent: number
+  /** Сколько звёзд останется (сотрудник упёрся в потолок) */
+  leftover: number
+  /** Скорость до применения */
+  speedFrom: number
+  /** Скорость после применения */
+  speedTo: number
+}
+
+/**
+ * Считает результат применения звёзд без изменения стейта.
+ * null — сотрудник уже на максимуме, тратить звёзды некуда.
+ */
+export function previewStarUpgrade(
+  staff: Staff,
+  upgrades: StaffUpgrades | undefined,
+  stars: number,
+  playerLevel?: number,
+): StarUpgradePreview | null {
+  const from = getStaffTierProgress(staff, upgrades)
+  const to = advanceProgress(from, stars, playerLevel)
+  if (to.spent === 0) return null
+
+  return {
+    from,
+    to: { tier: to.tier, level: to.level },
+    spent: to.spent,
+    leftover: stars - to.spent,
+    speedFrom: getSpeedForProgress(from.tier, from.level),
+    speedTo: getSpeedForProgress(to.tier, to.level),
+  }
+}
+
+/** Результат применения звёзд */
+export interface StarUpgradeResult {
+  /** Обновлённая карта прокачки */
+  upgrades: StaffUpgrades
+  /** Сколько звёзд реально потрачено */
+  spent: number
+  /** Сколько звёзд осталось неиспользованными */
+  leftover: number
+}
+
+/**
+ * Применяет звёзды к сотруднику без списания денег (жетон повышения).
+ * null — сотрудник уже на максимуме.
+ */
+export function applyStarUpgrade(
+  staff: Staff,
+  upgrades: StaffUpgrades | undefined,
+  stars: number,
+  playerLevel?: number,
+): StarUpgradeResult | null {
+  const from = getStaffTierProgress(staff, upgrades)
+  const to = advanceProgress(from, stars, playerLevel)
+  if (to.spent === 0) return null
+
+  return {
+    upgrades: {
+      ...(upgrades ?? {}),
+      [staff.id]: { tier: to.tier, level: to.level },
+    },
+    spent: to.spent,
+    leftover: stars - to.spent,
   }
 }
 

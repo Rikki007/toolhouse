@@ -6,12 +6,14 @@ import { sellItem, removeStaffFromInventory, sellRiggingItem, sellTechniqueItem,
 import { MAX_TIER_LEVEL } from '../data/staffUpgrades.ts'
 import { getStaffTierProgress, getNextUpgrade } from '../utils/staffUpgrades.ts'
 import { updateUpgradeCardUI } from '../utils/inventory.ts'
+import { createTokenUpgradeButton } from './staffUpgradeButton.ts'
+import { openStaffTokenPicker } from './staffTokenModal.ts'
 import { assignStaffToShift, getActiveShifts, getShiftSlotAvailability } from '../state/shiftsStore.ts'
 import { playSound } from '../state/audioManager.ts'
 import { levelFromXp } from '../data/playerLevels.ts'
 import { TOKENS } from '../data/tokens.ts'
 import type { TokenId } from '../types/index.ts'
-import { consumeToken } from '../state/tokenStore.ts'
+import { consumeToken, sellAllTokens, sellLootboxToken } from '../state/tokenStore.ts'
 import { applyTokenEffect } from '../utils/tokenEffects.ts'
 import { openLootBoxSequence } from './lootboxModal.ts'
 
@@ -154,6 +156,21 @@ function buildStaffUpgrade(staffId: string): InventoryCardUpgrade | undefined {
       updateUpgradeCardUI(staffId)
     },
   }
+}
+
+/**
+ * Кнопка «Применить жетон повышения» для карточки сотрудника.
+ * undefined — жетона нет либо сотрудник на максимуме.
+ */
+function buildTokenAction(staffId: string): HTMLElement[] | undefined {
+  const staff = getStaffById(staffId)
+  if (!staff) return undefined
+
+  const button = createTokenUpgradeButton(staff, () => {
+    // Обновляем карточку на месте — скролл не сбрасывается
+    updateUpgradeCardUI(staffId)
+  })
+  return button ? [button] : undefined
 }
 
 function renderInventoryModal(container: HTMLElement, onClose: () => void): HTMLElement {
@@ -342,6 +359,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
           buildStaffUpgrade(pickerId),
           {
             count,
+            extraActions: buildTokenAction(pickerId),
             onSellAll: () => {
               showConfirmModal(container, `Вы точно хотите продать все "${item.name}" (${count})?`, () => {
                 playSound('buy')
@@ -400,6 +418,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
           buildStaffUpgrade(driverId),
           {
             count,
+            extraActions: buildTokenAction(driverId),
             onSellAll: () => {
               showConfirmModal(container, `Вы точно хотите продать все "${item.name}" (${count})?`, () => {
                 playSound('buy')
@@ -503,7 +522,19 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
         config.label,
         config.description,
         count,
-        () => useTokenFromInventory(config.id, container),
+        {
+          onUse: () => useTokenFromInventory(config.id, container),
+          onSell: () => {
+            // Продать одну копию жетона по цене редкости
+            sellLootboxToken(config.id)
+            refreshInventory(container)
+          },
+          onSellAll: () => {
+            // Продать все копии этого жетона
+            sellAllTokens(config.id)
+            refreshInventory(container)
+          },
+        },
       )
       tokensGrid.appendChild(card)
     }
@@ -519,13 +550,24 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
  * (ускорение склада или серию лутбоксов).
  */
 function useTokenFromInventory(tokenId: TokenId, container: HTMLElement): void {
-  const config = consumeToken(tokenId)
+  const config = TOKENS.find((t) => t.id === tokenId)
   if (!config) return
+
+  // Жетон повышения — открываем выбор сотрудника, инвентарь не закрываем
+  if (config.kind === 'levelUp') {
+    openStaffTokenPicker(container, config.id, {
+      onApplied: () => refreshInventory(container),
+    })
+    return
+  }
+
+  const consumed = consumeToken(tokenId)
+  if (!consumed) return
 
   // По ТЗ окно инвентаря исчезает в обоих случаях — и для буста, и для лутбоксов
   inventoryCloseCallback?.()
 
-  applyTokenEffect(config.id, {
+  applyTokenEffect(consumed.id, {
     onLootboxOpen: (count) => openLootBoxSequence(container, count),
   })
 }

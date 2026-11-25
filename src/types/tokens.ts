@@ -6,6 +6,9 @@ export type TokenId =
   | 'accelerationTokenGold'
   | 'accelerationTokenGreen'
   | 'accelerationTokenRed'
+  | 'levelUpTokenGold'
+  | 'levelUpTokenGreen'
+  | 'levelUpTokenRed'
 
 /** Конфигурация одного типа жетона */
 export interface TokenConfig {
@@ -15,11 +18,13 @@ export interface TokenConfig {
   /** Ключ картинки из assetLoader */
   imageKey: string
   /** Тип жетона */
-  kind: 'lootbox' | 'acceleration'
+  kind: 'lootbox' | 'acceleration' | 'levelUp'
   /** Цвет (для UI-подсветки) */
   color: 'gold' | 'green' | 'red'
   /** Сколько лутбоксов открывает (для kind: 'lootbox') */
   lootboxCount?: number
   /** Сколько миллисекунд добавляет к ускорению (для kind: 'acceleration') */
   boostDurationMs?: number
+  /** Сколько звёзд (уровней скорости) даёт сотруднику (для kind: 'levelUp') */
+  starCount?: number
 }

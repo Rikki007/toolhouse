@@ -91,14 +91,20 @@ export async function renderGameScreen(
   // Уведомления о расширении смен
   const stopShiftExpansions = startShiftExpansionObserver(container)
 
-  // Начисляем оффлайн-доход сразу и сообщаем о нём новостью
-  if (offline.amount > 0) {
-    applyOfflineIncome(offline.amount)
+  // Начисляем оффлайн-доход сразу и сообщаем о нём новостью.
+  // Вызываем всегда: начисление сдвигает время последнего сохранения,
+  // иначе оффлайн копился бы повторно при нулевом доходе.
+  applyOfflineIncome(offline)
+  if (offline.amount > 0 || offline.tokens.length > 0) {
     addNewsItem({
       kind: 'offline',
       title: 'Оффлайн доход',
-      description: 'Вы заработали:',
+      description:
+        offline.amount > 0
+          ? 'Пока Вас не было, я заработала:'
+          : 'Пока Вас не было, я собрала:',
       amount: offline.amount,
+      tokens: offline.tokens.length,
     })
     if (moneyEl) moneyEl.textContent = formatMoney(getState().money)
   }
