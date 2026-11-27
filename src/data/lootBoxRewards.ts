@@ -90,6 +90,7 @@ export const LOOTBOX_DROPS: LootBoxDropConfig[] = [
   { reward: { type: 'rigging', id: 'helmet_09' }, weight: 5 },
   { reward: { type: 'rigging', id: 'helmet_10' }, weight: 4 },
   { reward: { type: 'rigging', id: 'helmet_12' }, weight: 4 },
+  { reward: { type: 'rigging', id: 'helmet_13' }, weight: 5 },
 
   // Одежда: жилеты слабые (частые), куртки крепкие, золотая — редкая
   { reward: { type: 'rigging', id: 'closes_01' }, weight: 8 },

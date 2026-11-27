@@ -43,7 +43,13 @@ function createNewsMessage(item: NewsItem): HTMLElement {
   }
 
   const bubble = document.createElement('div')
-  bubble.className = `news-message-bubble ${isIncome ? 'news-card-income' : 'news-card-expense'}`
+  const accentClass =
+    item.kind === 'achievement'
+      ? 'news-card-achievement'
+      : isIncome
+        ? 'news-card-income'
+        : 'news-card-expense'
+  bubble.className = `news-message-bubble ${accentClass}`
 
   const description = document.createElement('div')
   description.className = 'news-card-description'

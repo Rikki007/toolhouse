@@ -1,12 +1,23 @@
 import type { SkillId } from '../types/index.ts'
 import { skills } from '../data/skills.ts'
 import { BRANCH_GATES } from '../data/skillUnlocks.ts'
-import { TIER_ANALYSIS_TEXTS, FINALE_TEXT, PATH_LABEL, isLightPath } from '../data/skillAnalysis.ts'
+import {
+  TIER_ANALYSIS_TEXTS,
+  FINALE_TEXT,
+  PATH_LABEL,
+  AXIS_LABELS,
+  REGIME_SPEECH,
+  BUSINESS_SPEECH,
+  isLightPath,
+  type AxisSpeech,
+} from '../data/skillAnalysis.ts'
 import { chosenBranch, isFinalTier, markAnalysisShown, pendingAnalysisTier } from '../utils/skillProgress.ts'
-import { skillLevelImages } from '../assets/assetLoader.ts'
+import { getRegimeBalance, getBusinessBalance, type AxisBalance } from '../utils/skillAnalysis.ts'
+import { skillLevelImages, mastersImages } from '../assets/assetLoader.ts'
 import { createModal, type ModalHandle } from '../utils/modalFactory.ts'
 import { resetProgress, subscribe } from '../state/state.ts'
 import { playSound } from '../state/audioManager.ts'
+import { ACTING_MANAGER_PROFILE } from '../data/actingManager.ts'
 
 /** Название отдела по id */
 function departmentName(skillId: SkillId): string {
@@ -62,10 +73,56 @@ function createAnalysisItem(skillId: SkillId, tier: number): HTMLElement | null 
   return item
 }
 
+/** Создаёт блок оси анализа: подписи полюсов, полосу и текст-комментарий */
+function createAxisBlock(
+  labelLeft: string,
+  labelRight: string,
+  balance: AxisBalance,
+  speech: AxisSpeech,
+): HTMLElement {
+  const wrap = document.createElement('div')
+  wrap.className = 'skill-analysis-axis'
+
+  // Подписи полюсов
+  const head = document.createElement('div')
+  head.className = 'skill-analysis-axis-head'
+  const leftLabel = document.createElement('span')
+  leftLabel.className = 'skill-analysis-axis-label'
+  leftLabel.textContent = labelLeft
+  const rightLabel = document.createElement('span')
+  rightLabel.className = 'skill-analysis-axis-label'
+  rightLabel.textContent = labelRight
+  head.appendChild(leftLabel)
+  head.appendChild(rightLabel)
+  wrap.appendChild(head)
+
+  // Полоса и маркер
+  const track = document.createElement('div')
+  track.className = 'skill-analysis-axis-track'
+  const fill = document.createElement('div')
+  fill.className = 'skill-analysis-axis-fill'
+  fill.style.setProperty('--pos', `${((balance.value + 1) / 2) * 100}%`)
+  track.appendChild(fill)
+  wrap.appendChild(track)
+
+  // Счётчики
+  const counts = document.createElement('div')
+  counts.className = 'skill-analysis-axis-counts'
+  counts.textContent = `Мягких: ${balance.light} · Жёстких: ${balance.hard}`
+  wrap.appendChild(counts)
+
+  // Текст-комментарий
+  const note = document.createElement('div')
+  note.className = 'skill-analysis-axis-note'
+  note.textContent = speech[balance.band]
+  wrap.appendChild(note)
+
+  return wrap
+}
+
 /**
- * Окно анализа закрытого гейта разветвлений: что выбрал каждый отдел
- * и к какому курсу это приводит. Финальный уровень (10) — концовка игры
- * с кнопками «Продолжить» и «Начать заново».
+ * Окно анализа закрытого гейта разветвлений: И.О. докладывает обстановку
+ * по двум осям и показывает, что выбрали отделы.
  */
 export function renderSkillAnalysisModal(
   tier: number,
@@ -85,10 +142,9 @@ export function renderSkillAnalysisModal(
 
   const title = document.createElement('h3')
   title.className = 'skill-analysis-title'
-  title.textContent = text?.title ?? `Анализ: развилки ${tier} уровня`
+  title.textContent = text?.title ?? `Анализ И.О.: развилки ${tier} уровня`
   header.appendChild(title)
 
-  // В финальном окне нет крестика: игрок должен выбрать один из двух вариантов
   if (!isFinal) {
     const closeBtn = document.createElement('button')
     closeBtn.type = 'button'
@@ -106,12 +162,66 @@ export function renderSkillAnalysisModal(
   const body = document.createElement('div')
   body.className = 'skill-analysis-body'
 
+  // --- Блок И.О. ---
+  const speaker = document.createElement('div')
+  speaker.className = 'skill-analysis-speaker'
+
+  const portrait = document.createElement('img')
+  portrait.className = 'skill-analysis-portrait'
+  portrait.src = mastersImages['actingAva'] ?? ''
+  portrait.alt = ACTING_MANAGER_PROFILE.name
+  portrait.draggable = false
+  speaker.appendChild(portrait)
+
+  const speechWrap = document.createElement('div')
+  speechWrap.className = 'skill-analysis-speech'
+
+  const speakerName = document.createElement('div')
+  speakerName.className = 'skill-analysis-speaker-name'
+  speakerName.textContent = ACTING_MANAGER_PROFILE.name
+  speechWrap.appendChild(speakerName)
+
+  const speakerRole = document.createElement('div')
+  speakerRole.className = 'skill-analysis-speaker-role'
+  speakerRole.textContent = ACTING_MANAGER_PROFILE.role
+  speechWrap.appendChild(speakerRole)
+
   const intro = document.createElement('p')
   intro.className = 'skill-analysis-intro'
   intro.textContent = text?.intro ?? ''
-  body.appendChild(intro)
+  speechWrap.appendChild(intro)
 
-  // Список выборов отделов + подсчёт мягких/жёстких решений
+  speaker.appendChild(speechWrap)
+  body.appendChild(speaker)
+
+  // --- Оси ---
+  const regime = getRegimeBalance()
+  const business = getBusinessBalance()
+
+  const axesWrap = document.createElement('div')
+  axesWrap.className = 'skill-analysis-axes'
+
+  axesWrap.appendChild(
+    createAxisBlock(
+      AXIS_LABELS.regime.left,
+      AXIS_LABELS.regime.right,
+      regime,
+      REGIME_SPEECH,
+    ),
+  )
+
+  axesWrap.appendChild(
+    createAxisBlock(
+      AXIS_LABELS.business.left,
+      AXIS_LABELS.business.right,
+      business,
+      BUSINESS_SPEECH,
+    ),
+  )
+
+  body.appendChild(axesWrap)
+
+  // --- Список выборов отделов ---
   const list = document.createElement('div')
   list.className = 'skill-analysis-list'
 
@@ -119,10 +229,10 @@ export function renderSkillAnalysisModal(
   let factorTotal = 1
 
   for (const skillId of gate?.skillIds ?? []) {
-    const option = chosenBranch(skillId, tier)
     const item = createAnalysisItem(skillId, tier)
     if (!item) continue
     list.appendChild(item)
+    const option = chosenBranch(skillId, tier)
     if (option) {
       if (isLightPath(option.path)) lightCount++
       factorTotal *= option.factor
@@ -131,25 +241,18 @@ export function renderSkillAnalysisModal(
 
   body.appendChild(list)
 
-  const total = gate?.skillIds.length ?? 0
-  const hardCount = total - lightCount
-  const course = lightCount === total ? 'light' : hardCount === total ? 'dark' : 'mixed'
-
-  // ===== Итог =====
+  // --- Итог ---
   const summary = document.createElement('div')
   summary.className = 'skill-analysis-summary'
-
-  const counters = document.createElement('div')
-  counters.className = 'skill-analysis-counters'
-  counters.innerHTML =
-    `<span class="skill-analysis-counter skill-analysis-counter-light">Мягких решений: ${lightCount}</span>` +
-    `<span class="skill-analysis-counter skill-analysis-counter-hard">Жёстких: ${hardCount}</span>`
-  summary.appendChild(counters)
 
   const factorRow = document.createElement('div')
   factorRow.className = 'skill-analysis-factor'
   factorRow.textContent = `Совокупный множитель развилки: ×${factorTotal.toFixed(2)}`
   summary.appendChild(factorRow)
+
+  const total = gate?.skillIds.length ?? 0
+  const hardCount = total - lightCount
+  const course = lightCount === total ? 'light' : hardCount === total ? 'dark' : 'mixed'
 
   const verdict = document.createElement('p')
   verdict.className = 'skill-analysis-verdict'
@@ -187,7 +290,6 @@ export function renderSkillAnalysisModal(
     restartBtn.textContent = 'Начать заново'
     restartBtn.addEventListener('click', () => {
       playSound('buy')
-      // Сначала сброс: подписка на стейт не должна открыть следующее окно
       resetProgress()
       onClose()
       onRestart()
@@ -220,8 +322,6 @@ export function startSkillAnalysisWatcher(container: HTMLElement, onRestart: () 
     const tier = pendingAnalysisTier()
     if (tier === null) return
 
-    // Помечаем анализ показанным до создания окна: updateState внутри
-    // markAnalysisShown вызывает notify и повторную проверку
     opening = true
     markAnalysisShown(tier)
     opening = false
@@ -232,13 +332,11 @@ export function startSkillAnalysisWatcher(container: HTMLElement, onRestart: () 
       renderContent: (onClose) => renderSkillAnalysisModal(tier, onClose, onRestart),
       onClose: () => {
         currentHandle = null
-        // Если накопились незакрытые гейты — показываем следующий анализ
         check()
       },
     })
   }
 
-  // Первая проверка: гейт мог быть закрыт в предыдущей сессии
   check()
 
   const unsubscribe = subscribe(check)

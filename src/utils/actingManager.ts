@@ -2,6 +2,11 @@ import { getState, updateState } from '../state/state.ts'
 import { nextLevelProgress } from '../data/playerLevels.ts'
 import {
   ACTING_MAX_BRANCH_LEVELS,
+  ACTING_SKILL_COST_BASE_SECONDS,
+  ACTING_SKILL_COST_MAX_EXPONENT,
+  ACTING_SKILL_COST_MIN,
+  ACTING_SKILL_COST_MULTIPLIER,
+  ACTING_SKILL_LATE_COST_MULTIPLIER,
   ACTING_TOKEN_MAX_LEVELS,
 } from '../data/actingManager.ts'
 import { pluralRu } from './format.ts'
@@ -85,6 +90,33 @@ export function getActingSpentPoints(): number {
 /** Сколько очков навыков доступно: один уровень И.О. — одно очко */
 export function getActingAvailablePoints(): number {
   return Math.max(0, getState().actingManager.level - getActingSpentPoints())
+}
+
+/**
+ * Стоимость следующего уровня любого навыка (хаускоины).
+ * База привязана к пассивному доходу, чтобы цена не устаревала по мере роста экономики.
+ * Растёт с каждым купленным уровнем; после порога рост замедляется,
+ * иначе последние уровни становились бы недостижимыми.
+ */
+export function getActingUpgradeCost(): number {
+  const spent = getActingSpentPoints()
+  const base = Math.max(
+    ACTING_SKILL_COST_MIN,
+    getState().passiveIncomePerSecond * ACTING_SKILL_COST_BASE_SECONDS,
+  )
+  const exponent = Math.min(spent, ACTING_SKILL_COST_MAX_EXPONENT)
+  const lateExponent = Math.max(0, spent - ACTING_SKILL_COST_MAX_EXPONENT)
+
+  return Math.round(
+    base *
+      Math.pow(ACTING_SKILL_COST_MULTIPLIER, exponent) *
+      Math.pow(ACTING_SKILL_LATE_COST_MULTIPLIER, lateExponent),
+  )
+}
+
+/** Хватает ли денег на следующий уровень навыка */
+export function canAffordActingUpgrade(): boolean {
+  return getState().money >= getActingUpgradeCost()
 }
 
 /** Доход в час, который И.О. приносит оффлайн с учётом «Производительности» */
@@ -191,6 +223,7 @@ export function getActingBranchMaxLevel(branchId: ActingBranchId): number {
 /**
  * Улучшает навык «Производительность» или «Продолжительность» на один уровень.
  * «Сбор жетонов» прокачивается через upgradeActingTokenParam.
+ * Уровень навыка покупается за хаускоины и требует свободного очка навыков.
  * @returns true если улучшение прошло
  */
 export function upgradeActingBranch(branchId: ActingBranchId): boolean {
@@ -203,7 +236,11 @@ export function upgradeActingBranch(branchId: ActingBranchId): boolean {
   if (level >= ACTING_MAX_BRANCH_LEVELS[branchId]) return false
   if (getActingAvailablePoints() <= 0) return false
 
+  const cost = getActingUpgradeCost()
+  if (state.money < cost) return false
+
   updateState({
+    money: state.money - cost,
     actingManager: {
       ...acting,
       branches: { ...acting.branches, [branchId]: level + 1 },
@@ -214,6 +251,7 @@ export function upgradeActingBranch(branchId: ActingBranchId): boolean {
 
 /**
  * Улучшает один из трёх параметров «Сбора жетонов» на один уровень.
+ * Уровень покупается за хаускоины и требует свободного очка навыков.
  * @returns true если улучшение прошло
  */
 export function upgradeActingTokenParam(param: ActingTokenParam): boolean {
@@ -224,7 +262,11 @@ export function upgradeActingTokenParam(param: ActingTokenParam): boolean {
   if (current >= getActingTokenParamMaxLevel(param)) return false
   if (getActingAvailablePoints() <= 0) return false
 
+  const cost = getActingUpgradeCost()
+  if (state.money < cost) return false
+
   updateState({
+    money: state.money - cost,
     actingManager: {
       ...acting,
       tokenUpgrades: { ...acting.tokenUpgrades, [param]: current + 1 },

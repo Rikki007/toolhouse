@@ -1,11 +1,11 @@
-Ручной DOM: `document.createElement`, без виртуального DOM и `innerHTML` с данными.
+Manual DOM: `document.createElement`, no virtual DOM and no `innerHTML` with data.
 
-Модальные окна только через `createModal` (src/utils/modalFactory.ts) —
-свой оверлей ломает закрытие по фону и стек модалок.
+Modals only via `createModal` (src/utils/modalFactory.ts) — a custom overlay
+breaks backdrop closing and the modal stack.
 
-Хелперы уже есть: `domFactory`, `modalFactory`, `shopModalFactory`, `format`,
-`itemLookup`, `progressBar`. Сначала искать там, новое — только при повторе 3+.
+Helpers already exist: `domFactory`, `modalFactory`, `shopModalFactory`, `format`,
+`itemLookup`, `progressBar`. Look there first; add new ones only after 3+ repeats.
 
-Звук через `playSound` из `state/audioManager.ts`, не `new Audio()`.
-CSS-классы добавлять в существующие файлы `src/styles/*.css`, токены цвета
-брать из `variables.css`.
+Sound via `playSound` from `state/audioManager.ts`, not `new Audio()`.
+Add CSS classes to the existing `src/styles/*.css` files, take color tokens
+from `variables.css`.

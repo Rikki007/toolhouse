@@ -1,7 +1,7 @@
-Автоматического подхвата файлов нет (`import.meta.glob` не используется).
+There is no automatic file discovery (`import.meta.glob` is not used).
 
-Добавить картинку = 3 шага: файл в подпапку -> `import x from './<dir>/x.png'`
-в assetLoader.ts -> регистрация в нужный map (skillImages / skillLevelImages /
-interfaceIconImages / ...). Без третьего шага изображение молча не появится.
+Adding an image = 3 steps: file into a subfolder -> `import x from './<dir>/x.png'`
+in assetLoader.ts -> register it in the right map (skillImages / skillLevelImages /
+interfaceIconImages / ...). Without the third step the image silently does not appear.
 
-Звук добавляется так же в src/state/audioManager.ts (soundFiles).
+Sound is added the same way in src/state/audioManager.ts (soundFiles).

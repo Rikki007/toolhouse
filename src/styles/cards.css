@@ -1462,6 +1462,61 @@
   font-weight: 600;
 }
 
+/* Круглые иконки-фильтры под заголовком инвентаря */
+.inventory-filters {
+  display: flex;
+  gap: 10px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.inventory-filter-btn {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.inventory-filter-btn-active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.inventory-filter-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+@media (hover: hover) {
+  .inventory-filter-btn:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-filter-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .inventory-filter-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+
 .inventory-modal-body {
   padding: 16px 20px 20px;
   overflow-y: auto;
@@ -1799,6 +1854,11 @@
 
 .news-card-expense {
   border-left-color: #ff4444;
+}
+
+/* Сообщение о новом достижении — золотая полоска вместо дохода/расхода */
+.news-card-achievement {
+  border-left-color: #fbbf24;
 }
 
 .news-card-description {

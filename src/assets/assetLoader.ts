@@ -30,6 +30,7 @@ import master04 from './masters/master04.png'
 // И.О. — исполняющий обязанности управляющего
 import actingPortrait from './masters/acting.jpg'
 import actingAva from './masters/actingAva.png'
+import actingFirstMet from './masters/actingFirstMet.png'
 import actingPerformance from './acting/performance.png'
 import actingDuration from './acting/duration.png'
 import actingTokens from './acting/kollectingTokens.png'
@@ -114,6 +115,7 @@ import helmet09 from './rigging/helmet09.png'
 import helmet10 from './rigging/helmet10.png'
 import helmet11 from './rigging/helmet11.png'
 import helmet12 from './rigging/helmet12.png'
+import helmet13 from './rigging/helmet13.png'
 
 import closes01 from './rigging/closes01.png'
 import closes02 from './rigging/closes02.png'
@@ -431,6 +433,7 @@ export function initEquipmentImages(): void {
   // И.О. (исполняющий обязанности)
   mastersImages['acting'] = actingPortrait
   mastersImages['actingAva'] = actingAva
+  mastersImages['actingFirstMet'] = actingFirstMet
 
   // Иконки уровней мастеров
   masterLevelImages['first'] = masterLevelFirst
@@ -512,6 +515,7 @@ export function initEquipmentImages(): void {
   riggingImages['helmet_10'] = helmet10
   riggingImages['helmet_11'] = helmet11
   riggingImages['helmet_12'] = helmet12
+  riggingImages['helmet_13'] = helmet13
 
   riggingImages['closes_01'] = closes01
   riggingImages['closes_02'] = closes02

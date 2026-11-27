@@ -1,6 +1,8 @@
 import type { AchievementDef } from '../types/achievements.ts'
 import type { AppState } from '../state/state.ts'
 import type { SkillPath, BranchChoiceKey } from '../types/skills.ts'
+import type { ShiftStaff } from '../types/equipment.ts'
+import { LEGENDARY_SETS, type LegendarySet } from './legendarySets.ts'
 
 // ==================== Уровень игрока ====================
 function getPlayerLevel(state: AppState): number {
@@ -267,6 +269,62 @@ function isCorporateUniversity(state: AppState): boolean {
     state.skills.hr >= 8 &&
     state.skills.it >= 5 && state.branchChoices['it-5'] === 'liberal' &&
     state.skills.laborProt >= 1
+  )
+}
+
+// ==================== Легендарные сотрудники ====================
+
+/**
+ * Надет ли на легендарного сотрудника в любой смене его полный персонажный комплект.
+ * Сотрудник ищется по id, у надетого снаряжения проверяются каска, одежда и терминал.
+ */
+function isLegendarySetWorn(state: AppState, set: LegendarySet): boolean {
+  for (const key of ['first', 'second', 'third', 'fourth'] as const) {
+    const personnel = state.shifts[key].personnel
+    for (const list of [personnel.reachTruckDrivers, personnel.pickers]) {
+      for (const member of list) {
+        // Старые сейвы могли хранить сотрудника строкой без слотов
+        if (typeof member === 'string') continue
+        if (member.id !== set.staffId) continue
+
+        const { headdress, uniform, tool } = member.slots
+        if (headdress !== set.headdress) continue
+        if (uniform !== set.uniform) continue
+        if (tool === null || !set.tools.includes(tool)) continue
+
+        return true
+      }
+    }
+  }
+  return false
+}
+
+// ==================== Тематические смены ====================
+
+const SHIFT_KEYS = ['first', 'second', 'third', 'fourth'] as const
+
+/** Все сотрудники одной смены (водители + сборщики), старый формат-строка пропускается */
+function getShiftMembers(state: AppState, key: (typeof SHIFT_KEYS)[number]): ShiftStaff[] {
+  const personnel = state.shifts[key].personnel
+  return [...personnel.reachTruckDrivers, ...personnel.pickers].filter(
+    (member): member is ShiftStaff => typeof member !== 'string',
+  )
+}
+
+/** Есть ли смена, в которой стоят все указанные сотрудники */
+function isAllInSameShift(state: AppState, staffIds: string[]): boolean {
+  return SHIFT_KEYS.some((key) => {
+    const ids = getShiftMembers(state, key).map((member) => member.id)
+    return staffIds.every((id) => ids.includes(id))
+  })
+}
+
+/** Надет ли указанному сотруднику в смене этот головной убор */
+function isHeaddressWorn(state: AppState, staffId: string, headdressId: string): boolean {
+  return SHIFT_KEYS.some((key) =>
+    getShiftMembers(state, key).some(
+      (member) => member.id === staffId && member.slots.headdress === headdressId,
+    ),
   )
 }
 
@@ -605,5 +663,51 @@ export const achievements: AchievementDef[] = [
     description: 'Шесть отделов - шесть тёмных финалов. Компания-государство, где каждый шаг под контролем.',
     imageKey: 'achievements/cross_dystopia',
     check: isDystopia,
+  },
+
+  // ===== ЛЕГЕНДАРНЫЕ СОТРУДНИКИ =====
+  ...LEGENDARY_SETS.map((set) => ({
+    id: `legend_set_${set.key}`,
+    title: set.title,
+    description: `На сотрудника «${set.staffName}» в смене надет его полный персонажный комплект: каска, одежда и терминал.`,
+    imageKey: `achievements/legend_set_${set.key}`,
+    check: (state: AppState) => isLegendarySetWorn(state, set),
+  })),
+
+  // ===== ТЕМАТИЧЕСКИЕ СМЕНЫ =====
+  {
+    id: 'team_blue_shift',
+    title: 'Синяя смена',
+    description: 'Хена Абаканский, Паша Техник, Безумный Паша и Олег Монгол работают в одной смене.',
+    imageKey: 'achievements/team_blue_shift',
+    check: (state) => isAllInSameShift(state, ['picker_28', 'picker_29', 'picker_30', 'picker_19']),
+  },
+  {
+    id: 'team_manchester_united',
+    title: 'Фанат Манчестер Юнайтед',
+    description: 'Кирилл вышел в смену в каскетке «Манчестер».',
+    imageKey: 'achievements/team_manchester_united',
+    check: (state) => isHeaddressWorn(state, 'reachtruck_02', 'helmet_05'),
+  },
+  {
+    id: 'team_avangard',
+    title: 'Фанат Авангарда',
+    description: 'Артём вышел в смену в каскетке «Авангард».',
+    imageKey: 'achievements/team_avangard',
+    check: (state) => isHeaddressWorn(state, 'reachtruck_03', 'helmet_04'),
+  },
+  {
+    id: 'team_manchester_derby',
+    title: 'Манчестерское дерби',
+    description: 'Кирилл и Костя — болельщики враждующих клубов — работают в одной смене.',
+    imageKey: 'achievements/team_manchester_derby',
+    check: (state) => isAllInSameShift(state, ['reachtruck_02', 'picker_02']),
+  },
+  {
+    id: 'team_manchester_city',
+    title: 'Фанат Манчестер Сити',
+    description: 'Костя вышел в смену в каскетке «Манчестер Сити».',
+    imageKey: 'achievements/team_manchester_city',
+    check: (state) => isHeaddressWorn(state, 'picker_02', 'helmet_13'),
   },
 ]

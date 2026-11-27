@@ -3,8 +3,8 @@ import type { ActingBranch, ActingBranchId, ActingTokenParam } from '../types/in
 /** Доля пассивного дохода в оффлайне без прокачки «Производительности»: 40% */
 export const ACTING_PERFORMANCE_BASE_RATE = 0.4
 
-/** Прибавка к доле оффлайна за уровень «Производительности»: +3% */
-export const ACTING_PERFORMANCE_STEP = 0.03
+/** Прибавка к доле оффлайна за уровень «Производительности»: +2% */
+export const ACTING_PERFORMANCE_STEP = 0.02
 
 /** Потолок доли оффлайна: 100% — оффлайн не должен быть выгоднее онлайна */
 export const ACTING_PERFORMANCE_MAX_RATE = 1
@@ -12,8 +12,8 @@ export const ACTING_PERFORMANCE_MAX_RATE = 1
 /** Базовое время накопления оффлайн-дохода: 1 час */
 export const ACTING_DURATION_BASE_MS = 60 * 60 * 1000
 
-/** Прибавка ко времени накопления за уровень «Продолжительности»: +10 минут */
-export const ACTING_DURATION_STEP_MS = 10 * 60 * 1000
+/** Прибавка ко времени накопления за уровень «Продолжительности»: +6 минут */
+export const ACTING_DURATION_STEP_MS = 6 * 60 * 1000
 
 /** Потолок накопления оффлайн-дохода: 6 часов */
 export const ACTING_DURATION_MAX_MS = 6 * 60 * 60 * 1000
@@ -31,7 +31,7 @@ export const ACTING_TOKEN_FREQUENCY_MAX = 6
 export const ACTING_TOKEN_CHANCE_BASE = 25
 
 /** Прибавка к вероятности выпадения жетона за уровень «Вероятности», % */
-export const ACTING_TOKEN_CHANCE_STEP = 5
+export const ACTING_TOKEN_CHANCE_STEP = 2.5
 
 /** Максимальная вероятность выпадения жетона, % */
 export const ACTING_TOKEN_CHANCE_MAX = 75
@@ -43,13 +43,20 @@ export const ACTING_TOKEN_CHANCE_MAX = 75
  */
 export const ACTING_TOKEN_DISTRIBUTION: Array<[number, number, number]> = [
   [60, 30, 10],
-  [57, 32, 11],
-  [55, 33, 12],
-  [52, 35, 13],
-  [50, 36, 14],
-  [47, 38, 15],
-  [45, 39, 16],
-  [45, 37, 18],
+  [59, 30, 11],
+  [58, 31, 11],
+  [57, 31, 12],
+  [56, 31, 13],
+  [55, 32, 13],
+  [54, 32, 14],
+  [53, 32, 15],
+  [52, 33, 15],
+  [51, 33, 16],
+  [50, 33, 17],
+  [49, 34, 17],
+  [48, 34, 18],
+  [47, 34, 19],
+  [46, 35, 19],
   [45, 35, 20],
 ]
 
@@ -62,14 +69,34 @@ export const ACTING_TOKEN_MAX_LEVELS: Record<ActingTokenParam, number> = {
 
 /** Максимальный уровень каждого навыка */
 export const ACTING_MAX_BRANCH_LEVELS: Record<ActingBranchId, number> = {
-  performance: 20,
-  duration: 30,
+  // (100% - 40%) / 2% = 30 уровней
+  performance: 30,
+  // (6 ч - 1 ч) / 6 мин = 50 уровней
+  duration: 50,
   // «Сбор жетонов» прокачивается тремя параметрами — сумма их максимумов
   tokens:
     ACTING_TOKEN_MAX_LEVELS.frequency +
     ACTING_TOKEN_MAX_LEVELS.chance +
     ACTING_TOKEN_MAX_LEVELS.value,
 }
+
+/**
+ * Цена первого уровня навыка: столько секунд пассивного дохода он стоит.
+ * Цена привязана к доходу, чтобы не устаревать по мере роста экономики.
+ */
+export const ACTING_SKILL_COST_BASE_SECONDS = 600
+
+/** Минимальная цена уровня навыка — первые покупки не должны быть бесплатными */
+export const ACTING_SKILL_COST_MIN = 1_000
+
+/** Во сколько раз дорожает каждый следующий уровень навыка */
+export const ACTING_SKILL_COST_MULTIPLIER = 1.6
+
+/** Показатель, после которого рост цены навыка замедляется */
+export const ACTING_SKILL_COST_MAX_EXPONENT = 15
+
+/** Множитель роста цены после достижения порога */
+export const ACTING_SKILL_LATE_COST_MULTIPLIER = 1.2
 
 /** Личные данные И.О. для карточки профиля */
 export const ACTING_MANAGER_PROFILE = {
@@ -89,7 +116,7 @@ export const ACTING_BRANCHES: ActingBranch[] = [
     iconKey: 'departments',
     color: 'blue',
     description:
-      'Какая доля пассивного дохода начисляется в оффлайне. Без прокачки — 40%, каждый уровень добавляет 3%. На 100% оффлайн-доход сравнивается с онлайн-доходом.',
+      'Какая доля пассивного дохода начисляется в оффлайне. Без прокачки — 40%, каждый уровень добавляет 2%. На 100% оффлайн-доход сравнивается с онлайн-доходом.',
   },
   {
     id: 'duration',
@@ -97,7 +124,7 @@ export const ACTING_BRANCHES: ActingBranch[] = [
     iconKey: 'acceleration',
     color: 'green',
     description:
-      'Сколько времени оффлайн-доход продолжает копиться без игрока. Без прокачки — 1 час, каждый уровень добавляет 10 минут. Максимум — 6 часов.',
+      'Сколько времени оффлайн-доход продолжает копиться без игрока. Без прокачки — 1 час, каждый уровень добавляет 6 минут. Максимум — 6 часов.',
   },
   {
     id: 'tokens',

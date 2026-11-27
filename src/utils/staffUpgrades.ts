@@ -5,6 +5,7 @@ import {
   MAX_TIER_LEVEL,
   STAFF_TIERS,
   UPGRADE_COST_RATIO,
+  UPGRADE_LATE_PRICE_MULTIPLIER,
   UPGRADE_MAX_COST_EXPONENT,
   UPGRADE_PRICE_MULTIPLIER,
 } from '../data/staffUpgrades.ts'
@@ -103,8 +104,16 @@ export function getUpgradeCost(staff: Staff, upgrades?: StaffUpgrades): number |
   }
 
   const count = getGlobalUpgradeCount(staff, progress)
-  const exponent = Math.min(count, UPGRADE_MAX_COST_EXPONENT)
-  return Math.round(staff.cost * UPGRADE_COST_RATIO * Math.pow(UPGRADE_PRICE_MULTIPLIER, exponent))
+  // До потолка цена растёт по базовому множителю, после — по уменьшенному,
+  // чтобы она не замирала на месте (мягкий потолок).
+  const baseExponent = Math.min(count, UPGRADE_MAX_COST_EXPONENT)
+  const lateExponent = Math.max(0, count - UPGRADE_MAX_COST_EXPONENT)
+  const price =
+    staff.cost *
+    UPGRADE_COST_RATIO *
+    Math.pow(UPGRADE_PRICE_MULTIPLIER, baseExponent) *
+    Math.pow(UPGRADE_LATE_PRICE_MULTIPLIER, lateExponent)
+  return Math.round(price)
 }
 
 /**

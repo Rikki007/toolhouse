@@ -1,9 +1,9 @@
-Здесь чистые данные без логики. Правки баланса — только числами.
+Pure data, no logic here. Balance changes — numbers only.
 
-skills.ts: у level с `branch` ровно 2 стороны, шаг factor между ними = 0.01
-(напр. 1.10 / 1.11). Тёмные пути: dark, totalitarian.
+skills.ts: a level with `branch` has exactly 2 sides, factor step between them = 0.01
+(e.g. 1.10 / 1.11). Dark paths: dark, totalitarian.
 
-Значение `unlocksImage` обязано существовать в skillLevelImages
-(src/assets/assetLoader.ts), иначе иконка отрендерится пустой.
+An `unlocksImage` value must exist in skillLevelImages
+(src/assets/assetLoader.ts), otherwise the icon renders empty.
 
-Новый уровень навыка: id уровня -> `<dept>-<n>`, ветка -> `<dept><Path>-<n>`.
+New skill level: level id -> `<dept>-<n>`, branch -> `<dept><Path>-<n>`.

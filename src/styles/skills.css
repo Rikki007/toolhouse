@@ -716,6 +716,130 @@
   line-height: 1.5;
 }
 
+/* ===== Блок И.О. с портретом и репликой ===== */
+.skill-analysis-speaker {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.skill-analysis-portrait {
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-border);
+  background: var(--code-bg);
+}
+
+.skill-analysis-speech {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+}
+
+/* Хвостик пузыря в сторону портрета */
+.skill-analysis-speech::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 24px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-bg);
+  border-left: 1px solid var(--accent-border);
+  border-bottom: 1px solid var(--accent-border);
+  transform: rotate(45deg);
+}
+
+.skill-analysis-speaker-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.skill-analysis-speaker-role {
+  font-size: 11px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* ===== Оси анализа ===== */
+.skill-analysis-axes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skill-analysis-axis {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--code-bg);
+}
+
+.skill-analysis-axis-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Левый полюс — жёсткий курс, правый — мягкий */
+.skill-analysis-axis-label:first-child {
+  color: #ef4444;
+}
+
+.skill-analysis-axis-label:last-child {
+  color: #38bdf8;
+}
+
+.skill-analysis-axis-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(239, 68, 68, 0.5),
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(56, 189, 248, 0.5)
+  );
+}
+
+.skill-analysis-axis-fill {
+  position: absolute;
+  top: 50%;
+  left: var(--pos, 50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--text-h);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--border);
+  transition: left 0.3s ease;
+}
+
+.skill-analysis-axis-counts {
+  font-size: 11px;
+  color: var(--text);
+}
+
+.skill-analysis-axis-note {
+  font-size: 13px;
+  color: var(--text-h);
+  line-height: 1.5;
+}
+
 .skill-analysis-list {
   display: flex;
   flex-direction: column;
@@ -789,20 +913,6 @@
   padding: 12px;
   border-radius: 12px;
   background: var(--accent-bg);
-}
-
-.skill-analysis-counters {
-  display: flex;
-  gap: 12px;
-  font-size: 12px;
-}
-
-.skill-analysis-counter-light {
-  color: #38bdf8;
-}
-
-.skill-analysis-counter-hard {
-  color: #ef4444;
 }
 
 .skill-analysis-factor {
@@ -898,6 +1008,15 @@
   .skill-analysis-item-image {
     width: 36px;
     height: 36px;
+  }
+
+  .skill-analysis-portrait {
+    width: 60px;
+    height: 60px;
+  }
+
+  .skill-analysis-speaker {
+    gap: 10px;
   }
 
   .skill-analysis-actions {

@@ -211,6 +211,8 @@ export interface AppState {
   actingManager: ActingManagerState
   /** Последний уровень И.О., который игрок уже видел (для индикатора на кнопке) */
   actingSeenLevel: number
+  /** Показано ли стартовое приветствие И.О. (только при первом входе в игру) */
+  introSeen: boolean
 }
 
 let state: AppState
@@ -621,6 +623,8 @@ function loadState(): AppState {
         actingManager: migrateActingManager(parsed.actingManager),
         // Старые сейвы без поля: считаем текущий уровень уже просмотренным
         actingSeenLevel: parsed.actingSeenLevel ?? levelFromXp(parsed.actingManager?.xp ?? 0),
+        // Старые сейвы: приветствие уже неактуально, не показываем его повторно
+        introSeen: parsed.introSeen ?? true,
       }
     }
   } catch (error) {
@@ -671,6 +675,7 @@ function loadState(): AppState {
       boostCooldownEndsAt: 0,
       actingManager: migrateActingManager(null),
       actingSeenLevel: 1,
+      introSeen: true,
     }
   }
 
@@ -716,6 +721,7 @@ function createDefaultState(): AppState {
     boostCooldownEndsAt: 0,
     actingManager: migrateActingManager(null),
     actingSeenLevel: 1,
+    introSeen: false,
   }
 }
 
@@ -723,19 +729,46 @@ function saveState(): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
-/** Проверяет все ачивки и разблокирует новые */
+/**
+ * Проверяет все ачивки и разблокирует новые.
+ * О новых достижениях И.О. пишет сообщение в новости.
+ * Новости добавляем напрямую в state: addNewsItem вызвал бы updateState
+ * и повторный заход в эту же функцию.
+ */
 function checkAchievements(): void {
   const current = state.achievements
-  let changed = false
-  for (const ach of achievements) {
-    if (current[ach.id] === 'unlocked') continue
-    if (ach.check(state)) {
-      current[ach.id] = 'unlocked'
-      changed = true
-    }
+  const unlocked = achievements.filter((ach) => {
+    if (current[ach.id] === 'unlocked') return false
+    if (!ach.check(state)) return false
+    current[ach.id] = 'unlocked'
+    return true
+  })
+  if (unlocked.length === 0) return
+
+  // При обычной игре достижения открываются по одному; пачка возможна
+  // только после обновления на старом сейве — тогда шлём одно сводное сообщение.
+  let description: string
+  if (unlocked.length === 1) {
+    const ach = unlocked[0]
+    description = `Получено новое достижение «${ach.title}». ${ach.description}`
+  } else {
+    const titles = unlocked.slice(0, 5).map((ach) => `«${ach.title}»`).join(', ')
+    const rest = unlocked.length - 5
+    description = `Получено сразу ${unlocked.length} новых достижений: ${titles}${rest > 0 ? ` и ещё ${rest}` : ''}.`
   }
-  if (changed) {
-    state = { ...state, achievements: { ...current } }
+
+  state = {
+    ...state,
+    achievements: { ...current },
+    news: [
+      ...state.news,
+      createNewsItem({
+        kind: 'achievement',
+        title: 'Новое достижение',
+        description,
+        amount: 0,
+      }),
+    ],
   }
 }
 
@@ -831,6 +864,13 @@ export function markPlayerLevelSeen(): void {
 export function markActingLevelSeen(): void {
   if (state.actingManager.level > state.actingSeenLevel) {
     updateState({ actingSeenLevel: state.actingManager.level })
+  }
+}
+
+/** Помечает стартовое приветствие И.О. показанным */
+export function markIntroSeen(): void {
+  if (!state.introSeen) {
+    updateState({ introSeen: true })
   }
 }
 

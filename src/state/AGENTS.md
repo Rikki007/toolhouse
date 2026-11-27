@@ -1,8 +1,8 @@
-Единственный ключ localStorage — `toolhouse_app_state`.
+The only localStorage key is `toolhouse_app_state`.
 
-Новое поле в GameState: добавить дефолт в `DEFAULT_*` и обработчик
-старых сейвов (см. `migrateShopToIds` / `OLD_KEYS`). Не удалять и не
-переименовывать ключи — игроки теряют прогресс.
+New GameState field: add a default in `DEFAULT_*` and a handler for
+old saves (see `migrateShopToIds` / `OLD_KEYS`). Never delete or
+rename keys — players lose progress.
 
-Экран обязан вызывать cleanup для подписок `subscribe()`/`start*Observer`
-и Pixi-контекста, иначе утечка при возврате в меню.
+A screen must call cleanup for `subscribe()`/`start*Observer` subscriptions
+and for the Pixi context, otherwise it leaks when returning to the menu.

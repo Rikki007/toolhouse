@@ -1,8 +1,8 @@
-Vite + vanilla TS, без фреймворков. Не предлагать React/Vue.
-Проверка изменений: `npx tsc --noEmit` (тестов и линтера нет).
+Vite + vanilla TS, no frameworks. Do not suggest React/Vue.
+Verify changes with `npx tsc --noEmit` (no tests, no linter).
 
-Импорты: всегда с расширением `.ts` (`from '../state/state.ts'`).
-Типы: `import type` и импортировать из `src/types/index.ts`.
-`enum` запрещён (`erasableSyntaxOnly`) — используй union literal.
-Имена файлов: camelCase.ts, для компонентов тоже.
-Комментарии и пользовательский текст — на русском.
+Imports: always with the `.ts` extension (`from '../state/state.ts'`).
+Types: `import type`, and import from `src/types/index.ts`.
+`enum` is forbidden (`erasableSyntaxOnly`) — use union literal types.
+File names: camelCase.ts, components included.
+Comments and user-facing text: Russian.

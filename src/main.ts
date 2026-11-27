@@ -15,6 +15,7 @@ import { renderSettings } from './ui/settings.ts'
 import { renderShare } from './ui/share.ts'
 import { renderTutorial } from './ui/tutorial.ts'
 import { renderGameScreen } from './ui/gameScreen.ts'
+import { maybeShowIntro } from './components/introModal.ts'
 import { getState } from './state/state.ts'
 import { setTheme } from './state/settingsStore.ts'
 import { initEquipmentImages, initSkillsImages } from './assets/assetLoader.ts'
@@ -86,6 +87,8 @@ export async function showGame(): Promise<void> {
   currentCleanup = gameCleanup
   // Показываем прелоадер минимум 2 секунды
   await showPreloaderWithMinDuration(2000)
+  // Стартовое приветствие И.О. — только при первом входе в игру
+  maybeShowIntro(app)
 }
 
 export async function showSettings(): Promise<void> {
@@ -149,5 +152,7 @@ export async function showTutorial(): Promise<void> {
 window.addEventListener('load', async () => {
   // Ждём ещё 2 секунды после загрузки, чтобы пользователь увидел прелоадер
   await showPreloaderWithMinDuration(2000)
-  showMenu()
+  // ВРЕМЕННАЯ ЗАГЛУШКА: сразу открываем игровое поле для отладки расстановки
+  // стеллажей, минуя игровое меню. Вернуть showMenu() после настройки.
+  showGame()
 })

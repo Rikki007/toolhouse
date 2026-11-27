@@ -1,9 +1,11 @@
 import type { ActingBranchId, ActingTokenParam } from '../types/index.ts'
 import { createModal } from '../utils/modalFactory.ts'
 import { playSound } from '../state/audioManager.ts'
+import { formatMoney } from '../utils/format.ts'
 import { ACTING_BRANCHES } from '../data/actingManager.ts'
 import {
   ACTING_TOKEN_PARAM_TITLES,
+  canAffordActingUpgrade,
   getActingAvailablePoints,
   getActingBranchEffectText,
   getActingBranchIconSrc,
@@ -13,6 +15,7 @@ import {
   getActingTokenParamMaxLevel,
   getActingTokenParamValueText,
   getActingTokensPerHourText,
+  getActingUpgradeCost,
   upgradeActingBranch,
   upgradeActingTokenParam,
 } from '../utils/actingManager.ts'
@@ -86,7 +89,9 @@ function createTokenParamBlock(
     upgradeBtn.textContent = 'Нет очков'
     upgradeBtn.disabled = true
   } else {
-    upgradeBtn.textContent = 'Улучшить'
+    const cost = getActingUpgradeCost()
+    upgradeBtn.textContent = `Улучшить · ${formatMoney(cost)}`
+    upgradeBtn.disabled = !canAffordActingUpgrade()
     upgradeBtn.addEventListener('click', () => {
       if (!upgradeActingTokenParam(param)) return
       playSound('levelUp')
@@ -221,7 +226,9 @@ export function openActingSkillModal(
           upgradeBtn.textContent = 'Нет очков навыков'
           upgradeBtn.disabled = true
         } else {
-          upgradeBtn.textContent = 'Улучшить'
+          const cost = getActingUpgradeCost()
+          upgradeBtn.textContent = `Улучшить · ${formatMoney(cost)}`
+          upgradeBtn.disabled = !canAffordActingUpgrade()
           upgradeBtn.addEventListener('click', () => {
             if (!upgradeActingBranch(branch.id)) return
             playSound('levelUp')

@@ -1,5 +1,5 @@
 import { Application, Assets, Sprite } from 'pixi.js'
-import { resizeBackground, resizeToStretch } from '../utils/pixiHelpers.ts'
+import { resizeBackground, resizeRotatedStretch, resizeToStretch } from '../utils/pixiHelpers.ts'
 
 export type PixiBackgroundResizeMode = 'cover' | 'stretch'
 
@@ -10,6 +10,8 @@ export interface PixiBackgroundConfig {
   backgroundUrl: string
   /** Режим масштабирования: cover (с сохранением пропорций) или stretch (растянуть) */
   resizeMode?: PixiBackgroundResizeMode
+  /** Поворот фона в градусах (положительный — по часовой стрелке) */
+  rotation?: number
   /** Цвет фона (используется если картинка не загрузилась) */
   backgroundColor?: number
 }
@@ -31,6 +33,7 @@ export async function initPixiBackground(config: PixiBackgroundConfig): Promise<
     container,
     backgroundUrl,
     resizeMode = 'stretch',
+    rotation = 0,
     backgroundColor = 0x000000,
   } = config
 
@@ -59,7 +62,10 @@ export async function initPixiBackground(config: PixiBackgroundConfig): Promise<
     const resizeHandler = () => {
       const w = window.innerWidth
       const h = window.innerHeight
-      if (resizeMode === 'cover') {
+      if (rotation !== 0) {
+        // С поворотом растягиваем с запасом, чтобы не было пустых углов
+        resizeRotatedStretch(bgSprite, w, h, (rotation * Math.PI) / 180)
+      } else if (resizeMode === 'cover') {
         resizeBackground(bgSprite, w, h)
       } else {
         resizeToStretch(bgSprite, w, h)

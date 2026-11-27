@@ -7,6 +7,7 @@ import { renderAchievementsModal } from '../components/achievements.ts'
 import { renderGameToolbar } from '../components/minigamesToolbar.ts'
 import { createCoinAnimation } from '../effects/coinAnimation.ts'
 import { initPixiBackground } from '../effects/pixiBackground.ts'
+import { startWarehouseRacks } from '../effects/warehouseRacks.ts'
 import { showPreloaderWithMinDuration } from '../utils/preloader.ts'
 import { createBackButton, createBackgroundContainer } from '../utils/domFactory.ts'
 import { createModal } from '../utils/modalFactory.ts'
@@ -40,11 +41,16 @@ export async function renderGameScreen(
   const bgContainer = createBackgroundContainer()
   container.insertBefore(bgContainer, container.firstChild)
 
-  const { cleanup: cleanupPixi } = await initPixiBackground({
+  const { cleanup: cleanupPixi, app } = await initPixiBackground({
     container: bgContainer,
     backgroundUrl: gameBackUrl,
     resizeMode: 'stretch',
+    // Небольшой поворот фона по часовой стрелке (градусы). 0 — без поворота.
+    rotation: 0,
   })
+
+  // Стеллажи на игровом поле (рисуются поверх фона)
+  const cleanupRacks = startWarehouseRacks(app)
 
   // Верхняя панель
   const topBar = createTopBar(onBack)
@@ -119,6 +125,7 @@ export async function renderGameScreen(
   container.appendChild(bottomBar.element)
 
   return () => {
+    cleanupRacks()
     cleanupPixi()
     clicker.cleanup()
     stopGlobalEvents()

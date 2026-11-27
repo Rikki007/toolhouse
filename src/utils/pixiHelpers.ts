@@ -84,6 +84,31 @@ export function resizeToStretch(sprite: Sprite, width: number, height: number): 
 }
 
 /**
+ * Растягивает спрайт на весь экран с поворотом вокруг центра.
+ * Размер считается с запасом, чтобы после поворота картинка
+ * полностью закрывала экран (без пустых углов).
+ * @param radians угол поворота в радианах (положительный — по часовой стрелке)
+ */
+export function resizeRotatedStretch(
+  sprite: Sprite,
+  width: number,
+  height: number,
+  radians: number,
+): void {
+  const cos = Math.abs(Math.cos(radians))
+  const sin = Math.abs(Math.sin(radians))
+
+  sprite.anchor.set(0.5)
+  sprite.rotation = radians
+  // Чтобы повёрнутый прямоугольник покрыл экран, его стороны должны быть
+  // больше: width' = w·|cos| + h·|sin|, height' = w·|sin| + h·|cos|
+  sprite.width = width * cos + height * sin
+  sprite.height = width * sin + height * cos
+  sprite.x = width / 2
+  sprite.y = height / 2
+}
+
+/**
  * Рисует прямоугольник-заглушку заданного цвета.
  */
 export function drawFallbackBackground(graphics: Graphics, width: number, height: number, color: number): void {

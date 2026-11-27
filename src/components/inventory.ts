@@ -16,8 +16,33 @@ import type { TokenId } from '../types/index.ts'
 import { consumeToken, sellAllTokens, sellLootboxToken } from '../state/tokenStore.ts'
 import { applyTokenEffect } from '../utils/tokenEffects.ts'
 import { openLootBoxSequence } from './lootboxModal.ts'
+import { interfaceIconImages, tokenImages } from '../assets/assetLoader.ts'
 
 let inventoryModalHandle: ReturnType<typeof createModal> | null = null
+
+/** Активный фильтр инвентаря; null — показаны все разделы */
+type InventoryFilterId = 'technique' | 'pickers' | 'drivers' | 'rigging' | 'tokens'
+
+interface InventoryFilterOption {
+  id: InventoryFilterId
+  label: string
+  icon: string
+}
+
+const INVENTORY_FILTERS: InventoryFilterOption[] = [
+  { id: 'technique', label: 'Техника', icon: interfaceIconImages['forclifts'] },
+  { id: 'pickers', label: 'Сборщики', icon: interfaceIconImages['pickers'] },
+  { id: 'drivers', label: 'Водители', icon: interfaceIconImages['forcliftDriver'] },
+  { id: 'rigging', label: 'Снаряжение', icon: interfaceIconImages['rigging'] },
+  { id: 'tokens', label: 'Жетоны', icon: tokenImages['lootboxTokenGold'] },
+]
+
+let activeInventoryFilter: InventoryFilterId | null = null
+
+/** Показывать ли раздел при текущем фильтре */
+function isSectionVisible(id: InventoryFilterId): boolean {
+  return activeInventoryFilter === null || activeInventoryFilter === id
+}
 
 /** Колбэк закрытия текущей модалки инвентаря (для использования жетонов) */
 let inventoryCloseCallback: (() => void) | null = null
@@ -28,6 +53,9 @@ export function openInventoryModal(container: HTMLElement): void {
     inventoryModalHandle = null
     return
   }
+
+  // При каждом открытии показываем все разделы
+  activeInventoryFilter = null
 
   inventoryModalHandle = createModal(container, {
     overlayClass: 'inventory-modal-overlay',
@@ -201,6 +229,12 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
 
   modal.appendChild(header)
 
+  // Фильтры категорий — сразу под заголовком, вне прокручиваемой области
+  const filters = document.createElement('div')
+  filters.className = 'inventory-filters'
+  renderInventoryFilters(filters, container)
+  modal.appendChild(filters)
+
   const body = document.createElement('div')
   body.className = 'inventory-modal-body'
   renderInventoryBody(body, container)
@@ -216,6 +250,46 @@ function renderInventoryModal(container: HTMLElement, onClose: () => void): HTML
   })
 
   return modal
+}
+
+/**
+ * Панель круглых иконок-фильтров.
+ * Повторное нажатие на активную иконку сбрасывает фильтр и показывает все разделы.
+ */
+function renderInventoryFilters(bar: HTMLElement, container: HTMLElement): void {
+  bar.replaceChildren()
+
+  for (const filter of INVENTORY_FILTERS) {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'inventory-filter-btn'
+    btn.title = filter.label
+    btn.setAttribute('aria-label', filter.label)
+    btn.setAttribute('aria-pressed', String(activeInventoryFilter === filter.id))
+    if (activeInventoryFilter === filter.id) {
+      btn.classList.add('inventory-filter-btn-active')
+    }
+
+    const icon = document.createElement('img')
+    icon.className = 'inventory-filter-icon'
+    icon.src = filter.icon
+    icon.alt = filter.label
+    btn.appendChild(icon)
+
+    btn.addEventListener('click', () => {
+      playSound('click')
+      activeInventoryFilter = activeInventoryFilter === filter.id ? null : filter.id
+      // Обновляем панель и содержимое на месте — скролл не сбрасывается
+      renderInventoryFilters(bar, container)
+      refreshInventory(container)
+
+      // При смене фильтра показываем начало списка
+      const body = document.querySelector<HTMLElement>('.inventory-modal .inventory-modal-body')
+      if (body) body.scrollTop = 0
+    })
+
+    bar.appendChild(btn)
+  }
 }
 
 /**
@@ -316,7 +390,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
   }
 
   transportSection.appendChild(transportGrid)
-  body.appendChild(transportSection)
+  if (isSectionVisible('technique')) body.appendChild(transportSection)
 
   // Секция: Сборщики
   const pickersSection = document.createElement('div')
@@ -375,7 +449,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
   }
 
   pickersSection.appendChild(pickersGrid)
-  body.appendChild(pickersSection)
+  if (isSectionVisible('pickers')) body.appendChild(pickersSection)
 
   // Секция: Водители ричтраков
   const driversSection = document.createElement('div')
@@ -434,7 +508,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
   }
 
   driversSection.appendChild(driversGrid)
-  body.appendChild(driversSection)
+  if (isSectionVisible('drivers')) body.appendChild(driversSection)
 
   // Секция: Снаряжение
   const equipmentSection = document.createElement('div')
@@ -491,7 +565,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
   }
 
   equipmentSection.appendChild(equipmentGrid)
-  body.appendChild(equipmentSection)
+  if (isSectionVisible('rigging')) body.appendChild(equipmentSection)
 
   // Секция: Жетоны
   const tokensSection = document.createElement('div')
@@ -541,7 +615,7 @@ function renderInventoryBody(body: HTMLElement, container: HTMLElement): void {
   }
 
   tokensSection.appendChild(tokensGrid)
-  body.appendChild(tokensSection)
+  if (isSectionVisible('tokens')) body.appendChild(tokensSection)
 }
 
 /**
